@@ -16,11 +16,11 @@
     display: block;
     margin-top: 5px;
     margin-bottom: 10px;
-    color: #f30;
+    color: #9fda58;
   }
   input.error,
   select.error {
-    border-color: #f30;
+    border-color: #9fda58;
     box-shadow: none;
   }
 </style>

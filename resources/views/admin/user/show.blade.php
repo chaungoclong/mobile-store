@@ -138,7 +138,7 @@
 
                 <div class="timeline-item">
 
-                  <h3 class="timeline-header"><a>{{ $user->name }}</a> đã mua <b style="color: #f30;">{{ $qty }}</b> sản phẩm với giá trị <b style="color: #f30;">{{ number_format($price,0,',','.') }}</b> VNĐ</h3>
+                  <h3 class="timeline-header"><a>{{ $user->name }}</a> đã mua <b style="color: #9fda58;">{{ $qty }}</b> sản phẩm với giá trị <b style="color: #9fda58;">{{ number_format($price,0,',','.') }}</b> VNĐ</h3>
 
                   <div class="timeline-body">
                     <div class="table-responsive">
@@ -161,7 +161,7 @@
                               <td class="text-center" style="vertical-align: middle;">{{ $order_detail->product_detail->product->name }}</td>
                               <td class="text-center" style="vertical-align: middle;">{{ $order_detail->product_detail->color }}</td>
                               <td class="text-center" style="vertical-align: middle;">{{ $order_detail->quantity }}</td>
-                              <td class="text-center" style="color: #f30; vertical-align: middle;">{{ number_format($order_detail->price,0,',','.') }}₫</td>
+                              <td class="text-center" style="color: #9fda58; vertical-align: middle;">{{ number_format($order_detail->price,0,',','.') }}₫</td>
                             </tr>
                           @endforeach
                         </tbody>

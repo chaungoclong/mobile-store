@@ -26,7 +26,7 @@
       </div>
     </section>
 
-    <section class="section-product">
+    <section class="section-product" style="border-radius: 10px;">
       <div class="section-header">
         <h2 class="section-title">{{ $data['product']->name }}</h2>
         <div class="section-sub-title">
@@ -85,7 +85,7 @@
                         @if($product->quantity > 0)
                           <div class="status">Tình trạng: <span style="color: #1a2;">Còn hàng</span></div>
                         @else
-                          <div class="status">Tình trạng: <span style="color: #f30;">Hết hàng</span></div>
+                          <div class="status">Tình trạng: <span style="color: #9fda58;">Hết hàng</span></div>
                         @endif
                       </div>
                     @endforeach

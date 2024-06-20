@@ -102,7 +102,7 @@
   min-width: 25px;
   border-radius: 50%;
   color: #fff;
-  background-color: #f30;
+  background-color: #9fda58;
   text-align: center;
   line-height: 25px;
   z-index: 9999;
@@ -138,7 +138,7 @@ ul#cart-sidebar {
 }
 .support-cart:before {
   border: 15px solid transparent;
-  border-bottom: 15px solid #f30;
+  border-bottom: 15px solid #9fda58;
   margin-left: -15px;
   bottom: 75px;
   left: 30px;
@@ -243,10 +243,10 @@ ul#cart-sidebar {
 .mini-cart .top-cart-content li.item .detail-item .product-name a:hover,
 .mini-cart .top-cart-content li.item .detail-item .product-name a:focus {
   text-decoration: none;
-  color: #f30;
+  color: #9fda58;
 }
 .mini-cart .top-cart-content li.item .detail-item .product-details-bottom .price {
-  color: #f30;
+  color: #9fda58;
   font-weight: 600;
 }
 .top-cart-content li.item .detail-item input {
@@ -286,7 +286,7 @@ ul#cart-sidebar {
 }
 .top-subtotal .price {
   font-weight: 500;
-  color: #f30;
+  color: #9fda58;
   float: right;
 }
 .mini-cart .top-cart-content .top-subtotal .price {
@@ -294,15 +294,15 @@ ul#cart-sidebar {
 }
 .top-cart-content .actions .btn {
   border-radius: 3px;
-  border: 1px solid #f30;
-  color: #f30;
+  border: 1px solid #9fda58;
+  color: #9fda58;
   background-color: #fff;
   min-width: 145px;
   text-transform: uppercase;
 }
 .mini-cart .top-cart-content .actions a.btn-checkout {
   color: #fff;
-  background-color: #f30;
+  background-color: #9fda58;
   float: left;
   font-weight: 600;
 }

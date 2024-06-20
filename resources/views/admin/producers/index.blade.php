@@ -37,7 +37,7 @@
             font-size: 18px;
             line-height: 34px;
             width: 34px;
-            color: #f30;
+            color: #9fda58;
         }
 
         #search-input input {

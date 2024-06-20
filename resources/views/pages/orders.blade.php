@@ -60,7 +60,7 @@
                         <td class="text-center"><a href="{{ route('order_page', ['id' => $order->id]) }}" title="Chi tiết đơn hàng: {{ $order->order_code }}">{{ $order->order_code }}</a></td>
                         <td class="text-center">{{ $order->payment_method->name }}</td>
                         <td class="text-center">{{ $qty }}</td>
-                        <td class="text-center" style="color: #f30;">{{ number_format($price,0,',','.') }}₫</td>
+                        <td class="text-center" style="color: #9fda58;">{{ number_format($price,0,',','.') }}₫</td>
                         @if($order->status)
                         <td class="text-center"><span class="label label-success">Thành Công</span></td>
                         @else

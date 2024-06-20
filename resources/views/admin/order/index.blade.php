@@ -32,7 +32,7 @@
     font-size: 18px;
     line-height: 34px;
     width: 34px;
-    color: #f30;
+    color: #9fda58;
   }
   #search-input input {
     position: static;
@@ -96,7 +96,7 @@
                 <th data-orderable="false" data-width="130px">Tác Vụ</th>
               </tr>
             </thead>
-            
+
             <tbody>
               @foreach($orders as $order)
                 <tr>
@@ -111,7 +111,7 @@
                   <td>{{ $order->payment_method->name }}</td>
                   <td> {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y')}}</td>
                   <td>
-                
+
                    @if($order->status == 1)
                    <span class="label label-default" style="font-size:13px">Đang Xử Lý</span>
                    @elseif ($order->status == 2)

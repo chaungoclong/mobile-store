@@ -16,11 +16,11 @@
     display: block;
     margin-top: 5px;
     margin-bottom: 10px;
-    color: #f30;
+    color: #9fda58;
   }
   input.error,
   select.error {
-    border-color: #f30;
+    border-color: #9fda58;
     box-shadow: none;
   }
 </style>
@@ -168,7 +168,7 @@
             <h3 class="box-title">{{ $promotion->content }}</h3>
             <div class="box-tools">
               <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
-              <a href="javascript:void(0);" data-id="{{ $promotion->id }}" class="btn btn-box-tool remove-promotion" title="Xóa" data-url="{{ route('admin.product.delete_promotion') }}" style="color: #f30;">
+              <a href="javascript:void(0);" data-id="{{ $promotion->id }}" class="btn btn-box-tool remove-promotion" title="Xóa" data-url="{{ route('admin.product.delete_promotion') }}" style="color: #9fda58;">
                 <i class="fa fa-times"></i>
               </a>
             </div>
@@ -223,7 +223,7 @@
               </h3>
               <div class="box-tools">
                 <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
-                <a href="javascript:void(0);" data-id="{{ $product_detail->id }}" class="btn btn-box-tool remove-product-detail" title="Xóa" data-url="{{ route('admin.product.delete_product_detail') }}" style="color: #f30;">
+                <a href="javascript:void(0);" data-id="{{ $product_detail->id }}" class="btn btn-box-tool remove-product-detail" title="Xóa" data-url="{{ route('admin.product.delete_product_detail') }}" style="color: #9fda58;">
                   <i class="fa fa-times"></i>
                 </a>
               </div>

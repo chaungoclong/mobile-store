@@ -30,7 +30,7 @@
   margin: 0 auto;
   padding: 10px;
   color: #fff;
-  background: #f30;
+  background: #9fda58;
   border-radius: 5px;
   font-size: 18px;
   font-weight: 600;
@@ -79,11 +79,11 @@
 .site-cart .section-cart .info-product .name>a:hover,
 .site-cart .section-cart .info-product .name>a:focus {
   text-decoration: none;
-  color: #f30;
+  color: #9fda58;
 }
 .site-cart .section-cart .info-product .price {
   font-size: 18px;
-  color: #f30;
+  color: #9fda58;
   margin-top: 5px;
 }
 .site-cart .section-cart .info-product .price del {
@@ -181,7 +181,7 @@
   font-size: 28px;
   line-height: 1.2;
   font-weight: 600;
-  color: #f30;
+  color: #9fda58;
 }
 .site-cart .section-cart .total-price .btn-action {
   padding-bottom: 20px;
@@ -191,7 +191,7 @@
   width: 100%;
   font-size: 18px;
   color: #fff;
-  background: #f30;
+  background: #9fda58;
   border: none;
   box-shadow: none;
   border-radius: 2px;
@@ -203,9 +203,9 @@
   display: block;
   width: 100%;
   font-size: 18px;
-  color: #f30;
+  color: #9fda58;
   background: transparent;
-  border: 1px solid #f30;
+  border: 1px solid #9fda58;
   box-shadow: none;
   border-radius: 2px;
   font-weight: 600;

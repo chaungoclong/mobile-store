@@ -19,7 +19,7 @@
         <div class="col-md-4">
           <div class="new-posts">
             <div class="posts-header">
-              <h3 class="posts-title">TIN CÔNG NGHỆ</h3>
+              <h3 class="posts-title">BÀI VIẾT</h3>
             </div>
             <div class="posts-content">
               @foreach($data['posts'] as $post)
@@ -60,9 +60,9 @@
                 <div class="content-product">
                   <h3 class="title">{{ $product->name }}</h3>
                   <div class="start-vote">
-                  
+
                     {!! Helper::get_start_vote($product->rate) !!}
-                  
+
                   </div>
                   <div class="price">
                     {!! Helper::get_real_price($product->product_detail->sale_price, $product->product_detail->promotion_price, $product->product_detail->promotion_start_date, $product->product_detail->promotion_end_date) !!}
@@ -70,7 +70,7 @@
                 </div>
               </a>
             </div>
-            @endif 
+            @endif
           @endforeach
         </div>
       </div>
@@ -181,12 +181,6 @@
       </div>
     </section>
   </div>
-@endsection
-
-@section('css')
-  <style>
-
-  </style>
 @endsection
 
 @section('js')

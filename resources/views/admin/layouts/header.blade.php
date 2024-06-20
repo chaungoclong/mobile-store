@@ -1,4 +1,4 @@
-<header class="main-header">
+<header class="main-header" style="background: green;">
 
   <!-- Logo -->
   <a href="{{ route('admin.dashboard') }}" class="logo">

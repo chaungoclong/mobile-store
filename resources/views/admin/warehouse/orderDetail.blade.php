@@ -32,7 +32,7 @@
     font-size: 18px;
     line-height: 34px;
     width: 34px;
-    color: #f30;
+    color: #9fda58;
   }
   #search-input input {
     position: static;
@@ -60,7 +60,7 @@
 @section('content')
 
 
-              
+
 
 <!-- Main row -->
 <div class="row">
@@ -76,11 +76,11 @@
             </div>
             <div class="col-md-3 col-sm-6 col-xs-6" style="float:right">
               <div class="input-groups">
-                 
+
                 <form action="{{route('admin.orderDetails')}}" method="GET">
                 <div><input type="date" class="form-control pull-right" id="reservation" name="date_to" autocomplete="off" ></div>
                 <div><input type="date" class="form-control pull-right" id="reservation" name="date_from" autocomplete="off" ></div>
-                  
+
                 <!-- /.input group -->
                 <div class="input-group-ass">
                   <button type="submit" class="btn btn-success">Tìm</button>
@@ -104,7 +104,7 @@
               </tr>
             </thead>
             <tbody>
-           
+
             @foreach($product_details as $key=>$product_dt)
 
                 <tr>
@@ -119,7 +119,7 @@
                   <td>{{ \Carbon\Carbon::parse($product_dt->created_at)->format('d/m/Y')}}</td>
                 </tr>
               @endforeach
-   
+
             </tbody>
           </table>
         </div>

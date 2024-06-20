@@ -52,8 +52,8 @@ body {
 .pagination>.active>span,
 .pagination>.active>span:focus,
 .pagination>.active>span:hover {
-  background-color: #f30;
-  border-color: #f30;
+  background-color: #9fda58;
+  border-color: #9fda58;
 }
 
 /*filter*/
@@ -90,7 +90,7 @@ body {
   outline: none;
 }
 .section-filter button {
-  background: #f30;
+  background: #9fda58;
   color: #fff;
   text-shadow: none;
   border: none;
@@ -106,11 +106,11 @@ body {
 }
 .empty-content .icon {
   font-size: 130px;
-  color: #f30;
+  color: #9fda58;
 }
 .empty-content .title {
   font-size: 36px;
-  color: #f30;
+  color: #9fda58;
   font-weight: 600;
 }
 .empty-content .content {
@@ -156,7 +156,7 @@ body {
 }
 .footer-widget a:hover {
 	text-decoration: unset;
-	color: #f30;
+	color: #9fda58;
 }
 .footer-widget .payment {
   border-radius: 5px;
@@ -178,7 +178,7 @@ body {
 # Header
 --------------------------------------------------------------*/
 .header {
-	background: #f30;
+	background: #9fda58;
 	-webkit-box-shadow: 0px 5px 7px 0px rgba(50,50,50,0.33);
 	-moz-box-shadow: 0px 5px 7px 0px rgba(50,50,50,0.33);
 	box-shadow: 0px 5px 7px 0px rgba(50,50,50,0.33);
@@ -189,7 +189,7 @@ body {
 .header a:hover,
 .header a:focus {
 	text-decoration: unset;
-	color: #f30;
+	color: #9fda58;
   cursor: pointer;
 }
 .header a:hover span,
@@ -227,7 +227,7 @@ body {
 }
 .header .search button[type='submit'] {
   background-color: transparent;
-  color: #f30;
+  color: #9fda58;
   border: none;
   border-radius: 5px;
   position: absolute;
@@ -251,7 +251,7 @@ body {
 .header .main-menu .nav-item.active > a,
 .header .main-menu .menu-item.active > a,
 .header .main-menu .dropdown-menu-subitem .active{
-  color: #f30;
+  color: #9fda58;
 }
 .header .main-menu .menu-item.active > a> div.avatar {
   border-color: #f6a896;
@@ -285,7 +285,7 @@ body {
 	margin: 0;
 }
 .header .main-menu .dropdown-menu>li.active>a {
-  background: #f30;
+  background: #9fda58;
 }
 .header .main-menu .nav-item.dropdown:hover .dropdown-menu {
 	display: block;
@@ -322,7 +322,7 @@ body {
   text-align: center;
   font-weight: 600;
   font-size: 38px;
-  color: #f30;
+  color: #9fda58;
 }
 .site-register .register-body .form_message,
 .site-login .login-body .form_message {
@@ -365,7 +365,7 @@ body {
   font-size: 18px;
   line-height: 40px;
   width: 40px;
-  color: #f30;
+  color: #9fda58;
 }
 .site-register .register-body .input-group input,
 .site-login .login-body .input-group input {
@@ -417,7 +417,7 @@ body {
   line-height: 20px;
   font-weight: 600;
   border: none;
-  background: #f30;
+  background: #9fda58;
   color: #fff;
   width: 100%;
   margin-bottom: 30px;
@@ -448,8 +448,8 @@ body {
 }
 .site-register .register-social a[title='Google'],
 .site-login .login-social a[title='Google'] {
-  color: #f30;
-  border: 1px solid #f30;
+  color: #9fda58;
+  border: 1px solid #9fda58;
 }
 .site-register .sign-in-now,
 .site-login .sign-up-now {
@@ -512,7 +512,7 @@ body {
   background-color: #fff;
 }
 .custom-dots-slide-advertises .owl-dot.active {
-  border-bottom: 3px solid #f30;
+  border-bottom: 3px solid #9fda58;
 }
 .custom-dots-slide-advertises .owl-dot button {
   border: none;
@@ -537,7 +537,7 @@ body {
   line-height: 1.2;
   width: fit-content;
   color: #fff;
-  background: #f30;
+  background: #9fda58;
   display: inline-block;
   position: relative;
 }
@@ -561,7 +561,7 @@ body {
   color: initial;
 }
 .new-posts .posts-content .post-item a:hover .post-content-title {
-  color: #f30;
+  color: #9fda58;
 }
 .new-posts .posts-content .row {
   margin-right: -5px;
@@ -597,7 +597,7 @@ body {
   position: relative;
   margin-top: 40px;
   background-color: #fff;
-  border: 1px solid #f30;
+  border: 1px solid #9fda58;
 }
 .section-favorite-products .owl-stage-outer {
   padding-top: 50px;
@@ -616,7 +616,7 @@ body {
   font-size: 20px;
   font-weight: 600;
   color: #fff;
-  background-color: #f30;
+  background-color: #9fda58;
   padding: 0 25px;
   line-height: 40px;
   height: 40px;
@@ -629,7 +629,7 @@ body {
   right: 100%;
   top: 0;
   bottom: 0;
-  border-right: 20px solid #f30;
+  border-right: 20px solid #9fda58;
   border-top: 20px solid transparent;
   border-bottom: 20px solid transparent;
 }
@@ -639,7 +639,7 @@ body {
   left: 100%;
   top: 0;
   bottom: 0;
-  border-left: 20px solid #f30;
+  border-left: 20px solid #9fda58;
   border-top: 20px solid transparent;
   border-bottom: 20px solid transparent;
 }
@@ -693,7 +693,7 @@ body {
   text-decoration: none;
 }
 .section-products .section-header-right a:hover {
-  color: #f30;
+  color: #9fda58;
 }
 .section-products .section-content .row {
   margin-left: 0;
@@ -714,7 +714,7 @@ body {
   transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -webkit-transition: all 0.5s ease-in-out;
-  color: #f30;
+  color: #9fda58;
 }
 .section-products .section-content>.row>div:hover {
   -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.1);
@@ -757,7 +757,7 @@ body {
   text-decoration: none;
 }
 .section-products .item-product a:hover .content-product .title {
-  color: #f30;
+  color: #9fda58;
 }
 .section-favorite-products .item-product .image-product,
 .section-products .item-product .image-product {
@@ -826,7 +826,7 @@ body {
 }
 .section-favorite-products .item-product .content-product .price strong,
 .section-products .item-product .content-product .price strong {
-  color: #f30;
+  color: #9fda58;
 }
 .section-favorite-products .item-product .content-product .price del,
 .section-products .item-product .content-product .price del {
@@ -885,7 +885,7 @@ body {
   text-indent: 25px;
 }
 .site-about .section-about .section-content .content-left .note {
-  border: 1px solid #f30;
+  border: 1px solid #9fda58;
   margin-bottom: 15px;
   border-radius: 5px;
   overflow: hidden;
@@ -894,7 +894,7 @@ body {
 .site-about .section-about .section-content .content-left .note .note-icon {
   width: 50px;
   text-align: center;
-  background: #f30;
+  background: #9fda58;
   display: table-cell;
   vertical-align: middle;
 }
@@ -958,7 +958,7 @@ body {
   text-decoration: none;
 }
 .site-about .section-about .online_support .phone a:hover {
-  color: #f30;
+  color: #9fda58;
 }
 .site-about .section-about .online_support .or {
   width: 100%;
@@ -1056,7 +1056,7 @@ body {
   font-weight: 600;
 }
 .site-search .section-posts .section-content .item-post a:hover .title-post h3 {
-  color: #f30;
+  color: #9fda58;
 }
 .site-search .section-posts .section-content .item-post .date-post {
   font-size: 14px;
@@ -1113,7 +1113,7 @@ body {
   overflow: hidden;
 }
 .site-posts .section-posts .section-left .section-content a:hover .item-post .info-post .title-post h3 {
-  color: #f30;
+  color: #9fda58;
 }
 .site-posts .section-posts .section-left .section-content .item-post .info-post .desc-post {
   font-size: 16px;
@@ -1226,7 +1226,7 @@ body {
 }
 .site-post .suggest-product .suggest-content .product-content .content .price strong,
 .site-posts .suggest-content .product-content .content .price strong {
-  color: #f30;
+  color: #9fda58;
 }
 .site-post .suggest-product .suggest-content .product-content .content .price del,
 .site-posts .suggest-content .product-content .content .price del {
@@ -1239,7 +1239,7 @@ body {
 }
 .site-post .suggest-content a:hover .product-content .content .title,
 .site-posts .suggest-content a:hover .product-content .content .title {
-  color: #f30;
+  color: #9fda58;
 }
 .site-post .section-post .section-left .section-content .header-post {
   position: relative;
@@ -1325,7 +1325,7 @@ body {
   text-decoration: none;
 }
 .site-post .suggest-post a:hover .post-content .content .title {
-  color: #f30;
+  color: #9fda58;
 }
 .site-post .suggest-post a:last-child .post-content {
   border-bottom: none;
@@ -1389,7 +1389,7 @@ body {
 .section-user .online_support .phone a:hover,
 .section-order .online_support .phone a:hover,
 .section-orders .online_support .phone a:hover {
-  color: #f30;
+  color: #9fda58;
 }
 .section-user .online_support .or,
 .section-order .online_support .or,
@@ -1421,7 +1421,7 @@ body {
 }
 .site-order .order-table thead,
 .site-orders .orders-table thead {
-  background: #f30;
+  background: #9fda58;
   color: #fff;
 }
 .site-order .order-table thead th,
@@ -1448,7 +1448,7 @@ body {
 .site-order .order-table tbody a:hover,
 .site-orders .orders-table tbody a:hover {
   text-decoration: none;
-  color: #f30;
+  color: #9fda58;
 }
 /*order*/
 .site-order .order-info .order-info-left,
@@ -1532,7 +1532,7 @@ body {
 .site-user .action-edit a {
   border: none;
   box-shadow: none;
-  background: #f30;
+  background: #9fda58;
   color: #fff;
   font-weight: 600;
   text-shadow: none;
@@ -1553,7 +1553,7 @@ body {
 .site-user .upload-avatar label {
   padding: 5px 10px;
   font-size: 12px;
-  background: #f30;
+  background: #9fda58;
   border-radius: 5px;
   color: #fff;
   margin: 10px 0;
@@ -1593,7 +1593,7 @@ body {
 .site-user .form-user .action-edit button {
   border: none;
   box-shadow: none;
-  background: #f30;
+  background: #9fda58;
   color: #fff;
   font-weight: 600;
   text-shadow: none;
@@ -1661,7 +1661,7 @@ body {
   opacity: 1;
 }
 .mobile-main-menu .mb-menu-top-header {
-  background-color: #f30;
+  background-color: #9fda58;
   display: flex;
   align-items: center;
   padding: 14px 10px;
@@ -1780,7 +1780,7 @@ body {
   vertical-align: middle;
 }
 .mobile-main-menu .mobile-main-menu-middle .mb-menu-middle-body>ul>li.mb-nav-item.active>a {
-  color: #f30;
+  color: #9fda58;
 }
 .mobile-main-menu .mobile-main-menu-middle .mb-menu-middle-body>ul>li.mb-nav-item.has-item-child>a {
   width: calc(100% - 30px);
@@ -1819,7 +1819,7 @@ body {
   border-top: 1px solid #dadada;
 }
 #item-child-collapse>ul>li.active>a {
-  color: #f30;
+  color: #9fda58;
 }
 
 .mobile-main-menu .mobile-main-menu-bottom {
@@ -1839,7 +1839,7 @@ body {
   margin-bottom: 5px;
 }
 .mobile-main-menu .mobile-main-menu-bottom .mobile-support .info-support a {
-  color: #f30;
+  color: #9fda58;
 }
 .mobile-main-menu a:focus,
 .mobile-main-menu a:hover {
@@ -2146,7 +2146,7 @@ body {
     transform: scale(1.12);
   }
   .site-posts .section-posts .section-left .section-content a:hover .item-post .info-post .title-post h3 {
-    color: #f30 !important;
+    color: #9fda58 !important;
   }
   .site-post .section-post .section-left .section-content .header-post .info-post {
     position: static;

@@ -141,7 +141,7 @@
                   <!-- /.col -->
                   <div class="col-sm-3 col-xs-3">
                     <div class="description-block border-right description-revenue">
-                      <h5 class="description-header"><span style="color: #f30;">{{ number_format($data['total_revenue'],0,',','.').' VNĐ' }}</span></h5>
+                      <h5 class="description-header"><span style="color: #9fda58;">{{ number_format($data['total_revenue'],0,',','.').' VNĐ' }}</span></h5>
                       <span class="description-text">DOANH THU THÁNG</span>
                     </div>
                     <!-- /.description-block -->
@@ -149,7 +149,7 @@
                   <!-- /.col -->
                   <div class="col-sm-3 col-xs-3">
                     <div class="description-block description-profit">
-                      <h5 class="description-header"><span style="color: #f30;">{{ number_format($data['total_profit'],0,',','.').' VNĐ' }}</span></h5>
+                      <h5 class="description-header"><span style="color: #9fda58;">{{ number_format($data['total_profit'],0,',','.').' VNĐ' }}</span></h5>
                       <span class="description-text">LỢI NHUẬN THÁNG</span>
                     </div>
                     <!-- /.description-block -->
@@ -194,16 +194,16 @@
                           <td style="vertical-align: middle;">{{ '#'.$order_detail->order->order_code }}</td>
                           <td style="vertical-align: middle;">{{ date_format($order_detail->created_at, 'd/m/Y') }}</td>
                           <td style="text-align: center; vertical-align: middle;">{{ $order_detail->quantity }}</td>
-                          <td style="vertical-align: middle;"><span style="color: #f30;">{{ number_format($order_detail->product_detail->import_price,0,',','.') }} VNĐ</span></td>
-                          <td style="vertical-align: middle;"><span style="color: #f30;">{{ number_format($order_detail->price,0,',','.') }} VNĐ</span></td>
-                          <td style="vertical-align: middle;"><span style="color: #f30;">{{ number_format($order_detail->price * $order_detail->quantity,0,',','.') }} VNĐ</span></td>
-                          <td style="vertical-align: middle;"><span style="color: #f30;">{{ number_format($order_detail->quantity * ($order_detail->price - $order_detail->product_detail->import_price),0,',','.') }} VNĐ</span></td>
+                          <td style="vertical-align: middle;"><span style="color: #9fda58;">{{ number_format($order_detail->product_detail->import_price,0,',','.') }} VNĐ</span></td>
+                          <td style="vertical-align: middle;"><span style="color: #9fda58;">{{ number_format($order_detail->price,0,',','.') }} VNĐ</span></td>
+                          <td style="vertical-align: middle;"><span style="color: #9fda58;">{{ number_format($order_detail->price * $order_detail->quantity,0,',','.') }} VNĐ</span></td>
+                          <td style="vertical-align: middle;"><span style="color: #9fda58;">{{ number_format($order_detail->quantity * ($order_detail->price - $order_detail->product_detail->import_price),0,',','.') }} VNĐ</span></td>
                         </tr>
                       @endforeach
                       <tr>
                         <td colspan="11" style="text-align: right;">
-                          <i style="margin-right: 10px;">*Tổng Doanh Thu = <span style="color: #f30;">{{ number_format($price,0,',','.') }} VNĐ</span></i>
-                          <i>*Tổng Lợi Nhuận = <span style="color: #f30;">{{ number_format($profit,0,',','.') }} VNĐ</span></i>
+                          <i style="margin-right: 10px;">*Tổng Doanh Thu = <span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></i>
+                          <i>*Tổng Lợi Nhuận = <span style="color: #9fda58;">{{ number_format($profit,0,',','.') }} VNĐ</span></i>
                         </td>
                       </tr>
                     </tbody>
@@ -443,22 +443,22 @@
                 '<td style="vertical-align: middle;">' + formatDate(value.created_at) + '</td>' +
                 '<td style="text-align: center; vertical-align: middle;">' + value.quantity + '</td>' +
                 '<td style="vertical-align: middle;">' +
-                  '<span style="color: #f30;">' +
+                  '<span style="color: #9fda58;">' +
                     formatMoney(value.product_detail.import_price) +
                   '</span>' +
                 '</td>' +
                 '<td style="vertical-align: middle;">' +
-                  '<span style="color: #f30;">' +
+                  '<span style="color: #9fda58;">' +
                     formatMoney(value.price) +
                   '</span>' +
                 '</td>' +
                 '<td style="vertical-align: middle;">' +
-                  '<span style="color: #f30;">' +
+                  '<span style="color: #9fda58;">' +
                     formatMoney(value.price * value.quantity) +
                   '</span>' +
                 '</td>' +
                 '<td style="vertical-align: middle;">' +
-                  '<span style="color: #f30;">' +
+                  '<span style="color: #9fda58;">' +
                     formatMoney(value.quantity * (value.price - value.product_detail.import_price)) +
                   '</span>' +
                 '</td>' +
@@ -469,8 +469,8 @@
           $('.box-table table tbody').append(
             '<tr>' +
               '<td colspan="11" style="text-align: right;">' +
-                '<i style="margin-right: 10px;">*Tổng Doanh Thu = <span style="color: #f30;">' + formatMoney(price) + '</span></i>' +
-                '<i>*Tổng Lợi Nhuận = <span style="color: #f30;">' + formatMoney(profit) + '</span></i>' +
+                '<i style="margin-right: 10px;">*Tổng Doanh Thu = <span style="color: #9fda58;">' + formatMoney(price) + '</span></i>' +
+                '<i>*Tổng Lợi Nhuận = <span style="color: #9fda58;">' + formatMoney(profit) + '</span></i>' +
               '</td>' +
             '</tr>'
           );

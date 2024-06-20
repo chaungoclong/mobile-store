@@ -106,12 +106,12 @@
                   <td>{{ $order_detail->product_detail->product->name }}</td>
                   <td>{{ $order_detail->product_detail->color }}</td>
                   <td style="text-align: center;">{{ $order_detail->quantity }}</td>
-                  <td><span style="color: #f30;">{{ number_format($order_detail->price,0,',','.') }} VNĐ</span></td>
-                  <td><span style="color: #f30;">{{ number_format($order_detail->price * $order_detail->quantity,0,',','.') }} VNĐ</span></td>
+                  <td><span style="color: #9fda58;">{{ number_format($order_detail->price,0,',','.') }} VNĐ</span></td>
+                  <td><span style="color: #9fda58;">{{ number_format($order_detail->price * $order_detail->quantity,0,',','.') }} VNĐ</span></td>
                 </tr>
               @endforeach
               <tr>
-                  <td colspan="7" style="text-align: right;"><b>Tổng = <span style="color: #f30;">{{ number_format($price,0,',','.') }} VNĐ</span></b></td>
+                  <td colspan="7" style="text-align: right;"><b>Tổng = <span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></b></td>
               </tr>
             </tbody>
           </table>
@@ -147,26 +147,26 @@
             <table class="table">
               <tr>
                 <th style="width:50%">Tổng Tiền:</th>
-                <td><span style="color: #f30;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
+                <td><span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
               </tr>
               <tr>
                 <th>Đã Thanh Toán:</th>
                 @if(Str::contains($order->payment_method->name, 'Online Payment'))
-                <td><span style="color: #f30;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
+                <td><span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
                 @else
-                <td><span style="color: #f30;">0 VNĐ</span></td>
+                <td><span style="color: #9fda58;">0 VNĐ</span></td>
                 @endif
               </tr>
               <tr>
                 <th>Phí Vận Chuyển:</th>
-                <td><span style="color: #f30;">0 VNĐ</span></td>
+                <td><span style="color: #9fda58;">0 VNĐ</span></td>
               </tr>
               <tr>
                 <th>Tổng Số Tiền Phải Thanh Toán:</th>
                 @if(Str::contains($order->payment_method->name, 'Online Payment'))
-                <td><span style="color: #f30;">0 VNĐ</span></td>
+                <td><span style="color: #9fda58;">0 VNĐ</span></td>
                 @else
-                <td><span style="color: #f30;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
+                <td><span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
                 @endif
               </tr>
             </table>
