@@ -26,9 +26,9 @@
           <h2 class="page-header">
             <div style="display: inline-flex; align-items: center;">
               <div style="width: 30px; margin-right: 5px;">
-                <img src="{{ asset('images/favicon.png') }}" alt="PhoneStore Logo" style="width: 100%; height: auto; object-fit: cover;">
+{{--                <img src="{{ asset('images/favicon.png') }}" alt="PhoneStore Logo" style="width: 100%; height: auto; object-fit: cover;">--}}
               </div>
-              <div style="color: #f33;">VDO</div>
+              <div style="color: #f33;">{{ config('app.name') }}</div>
             </div>
             <small class="pull-right">Date: {{ date("d/m/Y") }}</small>
           </h2>
@@ -42,7 +42,7 @@
             From: <br>
             <br>
             <address>
-              <b>Admin VDO</b><br>
+              <b>Admin {{config('app.name')}}</b><br>
               Phone: (+84) 343 754 517<br>
               Email: thanhtrung@gmail.com<br>
               Address: Đinh Bộ Lĩnh - P 25 - Bình Thạnh.

@@ -16,6 +16,6 @@ class Producer extends Model
 
     public function getLogoUrlLinkAttribute(): string
     {
-        return asset('storage/' . $this->getAttribute('logo_url') ?? '');
+        return asset('storage/' . $this->getAttribute('logo') ?? '');
     }
 }

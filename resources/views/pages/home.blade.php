@@ -51,7 +51,7 @@
       <div class="section-content">
         <div id="slide-favorite" class="owl-carousel">
           @foreach($data['favorite_products'] as $product)
-          @if($product->rate >= 3.5)
+          @if(true)
             <div class="item-product">
               <a href="{{ route('product_page', ['id' => $product->id]) }}" title="{{ $product->name }}">
                 <div class="image-product" style="background-image: url('{{ Helper::get_image_product_url($product->image) }}');padding-top: 100%;">

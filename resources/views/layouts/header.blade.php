@@ -12,7 +12,7 @@
 
                 <div class="logo">
                     <a class="logo-wrapper" href="{{ route('home_page') }}" title="{{ config('app.name') }}">
-                        <img src="{{ asset('images/logo.png') }}" alt="{{ config('app.name') }}"></a>
+                        <img src="https://cdn.xtmobile.vn/vnt_upload/weblink/logoxt-01-01_1_copy.png" alt="{{ config('app.name') }}"></a>
                 </div>
             </div>
             <div class="col-md-6">

@@ -65,19 +65,19 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-3 col-md-4">
-            <div class="online_support">
-              <h2 class="title">CHÚNG TÔI LUÔN SẴN SÀNG<br>ĐỂ GIÚP ĐỠ BẠN</h2>
-              <img src="{{ asset('images/support_online.jpg') }}">
-              <h3 class="sub_title">Để được hỗ trợ tốt nhất. Hãy gọi</h3>
-              <div class="phone">
-                <a href="tel:18006750" title="1800 6750">1800 6750</a>
-              </div>
-              <div class="or"><span>HOẶC</span></div>
-              <h3 class="title">Chat hỗ trợ trực tuyến</h3>
-              <h3 class="sub_title">Chúng tôi luôn trực tuyến 24/7.</h3>
-            </div>
-          </div>
+{{--          <div class="col-lg-3 col-md-4">--}}
+{{--            <div class="online_support">--}}
+{{--              <h2 class="title">CHÚNG TÔI LUÔN SẴN SÀNG<br>ĐỂ GIÚP ĐỠ BẠN</h2>--}}
+{{--              <img src="{{ asset('images/support_online.jpg') }}">--}}
+{{--              <h3 class="sub_title">Để được hỗ trợ tốt nhất. Hãy gọi</h3>--}}
+{{--              <div class="phone">--}}
+{{--                <a href="tel:18006750" title="1800 6750">1800 6750</a>--}}
+{{--              </div>--}}
+{{--              <div class="or"><span>HOẶC</span></div>--}}
+{{--              <h3 class="title">Chat hỗ trợ trực tuyến</h3>--}}
+{{--              <h3 class="sub_title">Chúng tôi luôn trực tuyến 24/7.</h3>--}}
+{{--            </div>--}}
+{{--          </div>--}}
         </div>
       </div>
     </section>

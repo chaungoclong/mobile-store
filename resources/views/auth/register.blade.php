@@ -75,17 +75,17 @@
         <button type="submit" class="btn btn-default">REGISTER</button>
       </form>
     </div>
-    <div class="register-social">
-      <div class="register-social-text">Or Register With</div>
-      <div class="row">
-        <div class="col-md-6">
-          <a href="#" title="Facebook" class="btn btn-defaule"><i class="fab fa-facebook-square"></i> Facebook</a>
-        </div>
-        <div class="col-md-6">
-          <a href="#" title="Google" class="btn btn-defaule"><i class="fab fa-google"></i> Google</a>
-        </div>
-      </div>
-    </div>
+{{--    <div class="register-social">--}}
+{{--      <div class="register-social-text">Or Register With</div>--}}
+{{--      <div class="row">--}}
+{{--        <div class="col-md-6">--}}
+{{--          <a href="#" title="Facebook" class="btn btn-defaule"><i class="fab fa-facebook-square"></i> Facebook</a>--}}
+{{--        </div>--}}
+{{--        <div class="col-md-6">--}}
+{{--          <a href="#" title="Google" class="btn btn-defaule"><i class="fab fa-google"></i> Google</a>--}}
+{{--        </div>--}}
+{{--      </div>--}}
+{{--    </div>--}}
     <div class="sign-in-now">
       You are a member? <a href="{{ route('login') }}">Sign in now</a>
     </div>

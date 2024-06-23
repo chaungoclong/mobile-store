@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProducerController;
 use Illuminate\Support\Facades\Route;
 
@@ -70,9 +71,16 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::get('producers', [ProducerController::class, 'index'])->name('producers.index');
         Route::get('producers/create', [ProducerController::class, 'create'])->name('producers.create');
         Route::post('producers/store', [ProducerController::class, 'store'])->name('producers.store');
-        Route::post('producers/destroy', [ProducerController::class, 'destroy'])->name('producers.destroy');
-        Route::post('producers/edit', [ProducerController::class, 'store'])->name('producers.edit');
-        Route::post('producers/update/{producer}', [ProducerController::class, 'destroy'])->name('producers.update');
+        Route::delete('producers/destroy{producer}', [ProducerController::class, 'destroy'])->name('producers.destroy');
+        Route::get('producers/edit/{producer}', [ProducerController::class, 'edit'])->name('producers.edit');
+        Route::put('producers/update/{producer}', [ProducerController::class, 'update'])->name('producers.update');
+
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('categories/store', [CategoryController::class, 'store'])->name('categories.store');
+        Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::get('categories/edit{category}', [CategoryController::class, 'store'])->name('categories.edit');
+        Route::put('categories/update/{category}', [CategoryController::class, 'destroy'])->name('categories.update');
     });
 
 Route::namespace('Pages')->group(function () {

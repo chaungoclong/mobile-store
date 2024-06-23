@@ -65,17 +65,17 @@
           <button type="submit" class="btn btn-default">LOGIN</button>
         </form>
       </div>
-      <div class="login-social">
-        <div class="login-social-text">Or login with</div>
-        <div class="row">
-          <div class="col-md-6">
-            <a href="#" title="Facebook" class="btn btn-defaule"><i class="fab fa-facebook-square"></i> Facebook</a>
-          </div>
-          <div class="col-md-6">
-            <a href="#" title="Google" class="btn btn-defaule"><i class="fab fa-google"></i> Google</a>
-          </div>
-        </div>
-      </div>
+{{--      <div class="login-social">--}}
+{{--        <div class="login-social-text">Or login with</div>--}}
+{{--        <div class="row">--}}
+{{--          <div class="col-md-6">--}}
+{{--            <a href="#" title="Facebook" class="btn btn-defaule"><i class="fab fa-facebook-square"></i> Facebook</a>--}}
+{{--          </div>--}}
+{{--          <div class="col-md-6">--}}
+{{--            <a href="#" title="Google" class="btn btn-defaule"><i class="fab fa-google"></i> Google</a>--}}
+{{--          </div>--}}
+{{--        </div>--}}
+{{--      </div>--}}
       <div class="sign-up-now">
         Not a member? <a href="{{ route('register') }}">Sign up now</a>
       </div>

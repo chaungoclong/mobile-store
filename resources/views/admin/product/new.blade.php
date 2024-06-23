@@ -16,7 +16,7 @@
     display: block;
     margin-top: 5px;
     margin-bottom: 10px;
-    color: #9fda58;
+    color: red;
   }
   input.error,
   select.error {
@@ -151,24 +151,24 @@
       </div>
     </div>
   </div>
+{{--  <div class="box box-primary">--}}
+{{--    <div class="box-header with-border">--}}
+{{--      <h3 class="box-title">Thông Tin Khuyến Mãi</h3>--}}
+{{--      <div class="box-tools">--}}
+{{--        <!-- This will cause the box to collapse when clicked -->--}}
+{{--        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>--}}
+{{--      </div>--}}
+{{--    </div>--}}
+{{--    <div class="box-body">--}}
+{{--      <div id="product-promotions"></div>--}}
+{{--      <div class="text-center">--}}
+{{--        <button class="add-promotion btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i> Thêm Khuyến Mãi</button>--}}
+{{--      </div>--}}
+{{--    </div>--}}
+{{--  </div>--}}
   <div class="box box-primary">
     <div class="box-header with-border">
-      <h3 class="box-title">Thông Tin Khuyến Mãi</h3>
-      <div class="box-tools">
-        <!-- This will cause the box to collapse when clicked -->
-        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-      </div>
-    </div>
-    <div class="box-body">
-      <div id="product-promotions"></div>
-      <div class="text-center">
-        <button class="add-promotion btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i> Thêm Khuyến Mãi</button>
-      </div>
-    </div>
-  </div>
-  <div class="box box-primary">
-    <div class="box-header with-border">
-      <h3 class="box-title">Thông Tin Mầu Sắc Và Giá Sản Phẩm</h3>
+      <h3 class="box-title">Biến thể theo màu</h3>
       <div class="box-tools">
         <!-- This will cause the box to collapse when clicked -->
         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>

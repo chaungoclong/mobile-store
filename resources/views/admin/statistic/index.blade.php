@@ -340,7 +340,7 @@
     };
 
     var quantityData = [
-      @foreach($data['producer'] as $key => $producer)
+      @foreach($data['producer']  ?? [] as $key => $producer)
         { label: '{{ $key }}', data: {{ $producer['quantity'] }} },
       @endforeach
     ];
@@ -348,7 +348,7 @@
     var quantityChart = $.plot('#quantityChart', quantityData, options);
 
     var revenueData = [
-      @foreach($data['producer'] as $key => $producer)
+      @foreach($data['producer']  ?? [] as $key => $producer)
         { label: '{{ $key }}', data: {{ $producer['quantity'] }} },
       @endforeach
     ];
@@ -356,7 +356,7 @@
     var revenueChart = $.plot('#revenueChart', revenueData, options);
 
     var profitData = [
-      @foreach($data['producer'] as $key => $producer)
+      @foreach($data['producer']  ?? [] as $key => $producer)
         { label: '{{ $key }}', data: {{ $producer['profit'] }} },
       @endforeach
     ];
