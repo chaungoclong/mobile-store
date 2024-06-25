@@ -98,6 +98,7 @@
                             <th data-orderable="false">Email</th>
                             <th data-orderable="false" data-width="70px">Điện Thoại</th>
                             <th data-orderable="false">Phương Thức Thanh Toán</th>
+                            <th data-orderable="false">Trạng Thái Thanh Toán</th>
                             <th data-width="60px" data-type="date-euro">Ngày Tạo</th>
                             <th data-width="66px">Trạng Thái</th>
                             <th data-orderable="false" data-width="130px">Tác Vụ</th>
@@ -117,6 +118,7 @@
                                 <td>{{ $order->email }}</td>
                                 <td>{{ $order->phone }}</td>
                                 <td>{{ $order->payment_method->name }}</td>
+                                <td>{{ $order->payment_status == 1 ? 'Đã thanh toán' : 'Chưa thanh toán' }}</td>
                                 <td> {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y')}}</td>
                                 <td>
 

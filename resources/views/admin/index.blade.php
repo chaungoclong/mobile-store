@@ -69,7 +69,7 @@
         <div class="inner">
           <h3>{{ $count['order'] }}</h3>
 
-          <p>Đơn Hàng</p>
+          <p>Đơn Hàng đang chờ xác nhận</p>
         </div>
         <div class="icon">
           <i class="fa fa-list-alt"></i>

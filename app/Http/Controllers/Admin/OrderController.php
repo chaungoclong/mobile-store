@@ -20,6 +20,7 @@ class OrderController extends Controller
             'name',
             'email',
             'phone',
+            'payment_status',
             'created_at'
         )->where('status', '<>', 0)->with([
             'user' => function ($query) {

@@ -16,7 +16,7 @@ class Order extends Model
   public function order_details() {
     return $this->hasMany('App\Models\OrderDetail');
   }
-  protected $guarded = [''];
+  protected $guarded = ['id'];
 
   protected $status = [
     '1' => [
@@ -44,5 +44,5 @@ class Order extends Model
   public function getStatus(){
     return Arr::get($this->status,"[N\A]");
   }
-  
+
 }

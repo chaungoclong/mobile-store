@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\OrderStatus;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,7 +21,7 @@ class DashboardController extends Controller
     $count['product'] = Product::whereHas('product_details', function (Builder $query) {
       $query->where('quantity', '>', 0);
     })->count();
-    $count['order'] = Order::where('status', true)->count();
+    $count['order'] = Order::where('status', OrderStatus::Pending->value)->count();
     return view('admin.index')->with(['count' => $count]);
   }
 }
