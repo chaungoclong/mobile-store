@@ -24,7 +24,7 @@
         <div class="inner">
           <h3>{{ $count['user'] }}</h3>
 
-          <p>Người Dùng</p>
+          <p>Khách hàng</p>
         </div>
         <div class="icon">
           <i class="ion ion-person"></i>

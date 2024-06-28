@@ -2,6 +2,7 @@
 
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardStatisticController;
 use App\Http\Controllers\Admin\ProducerController;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ Route::get('active/{token}', 'Auth\RegisterController@activation')->name('active
 */
 Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
     ->group(function () {
-        Route::get('dashboard', 'DashboardController@index')->name('dashboard');
+        Route::get('dashboard', [DashboardStatisticController::class, 'index'])->name('dashboard');
 
         Route::get('users', 'UserController@index')->name('users');
         Route::post('user/new', 'UserController@new')->name('user_new');

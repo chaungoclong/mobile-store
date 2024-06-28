@@ -46,7 +46,7 @@
                     <select class="form-control change-statistic" name="month">
                       <option value="">-- Chọn Tháng --</option>
                       @for ($i = 0; $i < 12; $i++)
-                        <option value="{{ $i + 1 }}">Tháng {{ $i + 1 }}</option>
+                        <option value="{{ $i + 1 }}" @if($i + 1 == date('m')) selected @endif>Tháng {{ $i + 1 }}</option>
                       @endfor
                     </select>
                   </div>
@@ -54,7 +54,7 @@
                     <select class="form-control change-statistic" name="year">
                       <option value="">-- Chọn Năm --</option>
                       @for ($i = 0; $i < 5; $i++)
-                        <option value="{{ date('Y') - $i }}">Năm {{ date('Y') - $i }}</option>
+                        <option value="{{ date('Y') - $i }}" @if((date('Y') - $i) == date('Y')) selected @endif>Năm {{ date('Y') - $i }}</option>
                       @endfor
                     </select>
                   </div>
