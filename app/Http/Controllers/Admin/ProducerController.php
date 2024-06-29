@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DataTables\ProducersDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Producer;
 use Illuminate\Contracts\View\View;
@@ -16,11 +17,13 @@ use Throwable;
 
 class ProducerController extends Controller
 {
-    public function index(): View
+    /**
+     * @param ProducersDataTable $dataTable
+     * @return mixed
+     */
+    public function index(ProducersDataTable $dataTable)
     {
-        $producers = Producer::query()->latest()->get();
-
-        return view('admin.producers.index', ['producers' => $producers]);
+        return $dataTable->render('admin.producers.index');
     }
 
     public function create(): View
@@ -126,19 +129,17 @@ class ProducerController extends Controller
     public function destroy(Producer $producer): JsonResponse
     {
         if ($producer->products()->count() > 0) {
-            $data['type'] = 'error';
-            $data['title'] = 'Thất Bại';
-            $data['content'] = 'Bạn không thể xóa hãng sản xuất đã có sản phẩm!';
-
-            return response()->json($data, Response::HTTP_BAD_REQUEST);
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xóa hãng sản xuất đã có sản phẩm'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $producer->delete();
 
-        $data['type'] = 'success';
-        $data['title'] = 'Thành công';
-        $data['content'] = 'Xóa hãng sản xuất thành công';
-
-        return response()->json($data, Response::HTTP_OK);
+        return response()->json([
+            'success' => true,
+            'message' => 'Xóa hãng sản xuất thành công'
+        ], Response::HTTP_OK);
     }
 }

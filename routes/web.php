@@ -76,7 +76,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::get('producers', [ProducerController::class, 'index'])->name('producers.index');
         Route::get('producers/create', [ProducerController::class, 'create'])->name('producers.create');
         Route::post('producers/store', [ProducerController::class, 'store'])->name('producers.store');
-        Route::delete('producers/destroy{producer}', [ProducerController::class, 'destroy'])->name('producers.destroy');
+        Route::delete('producers/destroy/{producer}', [ProducerController::class, 'destroy'])->name('producers.destroy');
         Route::get('producers/edit/{producer}', [ProducerController::class, 'edit'])->name('producers.edit');
         Route::put('producers/update/{producer}', [ProducerController::class, 'update'])->name('producers.update');
 
@@ -84,8 +84,8 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
         Route::post('categories/store', [CategoryController::class, 'store'])->name('categories.store');
         Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-        Route::get('categories/edit{category}', [CategoryController::class, 'store'])->name('categories.edit');
-        Route::put('categories/update/{category}', [CategoryController::class, 'destroy'])->name('categories.update');
+        Route::get('categories/edit/{category}', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('categories/update/{category}', [CategoryController::class, 'update'])->name('categories.update');
     });
 
 Route::namespace('Pages')->group(function () {

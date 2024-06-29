@@ -16,4 +16,9 @@ class Category extends Model
     {
         return $this->hasMany(Product::class, 'category_id', 'id');
     }
+
+    public function getLogoUrlLinkAttribute(): string
+    {
+        return asset('storage/' . $this->getAttribute('image') ?? '');
+    }
 }

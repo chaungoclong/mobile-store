@@ -2,57 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DataTables\CategoriesDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
-use Yajra\DataTables\Facades\DataTables;
 
 class CategoryController extends Controller
 {
-    public function index(Request $request): View|JsonResponse
+    public function index(CategoriesDataTable $dataTable): View|JsonResponse
     {
-        if ($request->ajax()) {
-            $query = Category::query();
-
-            $query->when($request->has('name'), function (Builder $query) use ($request) {
-                $query->where('name', 'like', '%' . $request->get('status') . '%');
-            });
-
-            $query->when($request->boolean('status'), function (Builder $query) use ($request) {
-                $query->where('status', $request->boolean('status'));
-            });
-
-            return DataTables::eloquent($query)
-                ->filter(function ($query) use ($request) {
-                    if ($request->has('status')) {
-                        $query->where('status', $request->get('status'));
-                    }
-
-                    if ($request->has('name')) {
-                        $query->where('name', 'like', '%' . $request->get('status') . '%');
-                    }
-                })
-                ->addColumn('action', function ($category) {
-                    return '<a href="' . route('admin.categories.edit', $category->id) . '" class="btn btn-warning">Edit</a>
-                        <form action="' . route('admin.categories.destroy', $category->id) . '" method="POST" style="display:inline;">
-                            ' . csrf_field() . '
-                            ' . method_field('delete') . '
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>';
-                })
-                ->rawColumns(['action'])
-                ->toJson();
-        }
-
-        return view('admin.categories.index');
+        return $dataTable->render('admin.categories.index');
     }
 
     public function show(Category $category): View
@@ -72,16 +39,13 @@ class CategoryController extends Controller
             'slug' => ['nullable', 'string', 'unique:categories,slug'],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif', 'max:1024'],
-            'status' => ['required', 'string', 'in:active,inactive'],
         ]);
 
         try {
             $createData = [
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
-                'slug' => Str::slug($request->input('slug', $request->input('name'))),
-                'status' => $request->input('status'),
-                'is_featured' => $request->has('is_featured'),
+                'slug' => Str::slug($request->input('slug') ?? $request->input('name')),
             ];
 
             if ($request->hasFile('image')) {
@@ -110,18 +74,16 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string'],
-            'slug' => ['required', 'string', 'unique:categories,slug,' . $category->getKey()],
+            'slug' => ['string', 'unique:categories,slug,' . $category->getKey()],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif', 'max:1024'],
-            'status' => ['required', 'string', 'in:active,inactive'],
         ]);
 
         try {
             $updateData = [
+                'name' => $request->input('name'),
                 'description' => $request->input('description'),
-                'slug' => Str::slug($request->input('slug', $request->input('name'))),
-                'status' => $request->input('status'),
-                'is_featured' => $request->has('is_featured'),
+                'slug' => Str::slug($request->input('slug') ?? $request->input('name')),
             ];
 
             if ($request->hasFile('image')) {
@@ -144,20 +106,29 @@ class CategoryController extends Controller
         }
     }
 
-    public function destroy(Category $category): RedirectResponse
+    public function destroy(Category $category): JsonResponse
     {
         try {
             if ($category->products()->count() > 0) {
-                return redirect()->back()->with('error', 'Không thể xóa danh mục đã có sản phẩm');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể xóa Danh mục đã có sản phẩm'
+                ], Response::HTTP_BAD_REQUEST);
             }
 
             $category->delete();
 
-            return redirect()->back()->with('success', 'Xóa danh mục thành công');
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa Danh mục thành công'
+            ], Response::HTTP_OK);
         } catch (Throwable $throwable) {
             Log::error(__METHOD__ . ':' . __LINE__ . ':' . $throwable->getMessage());
 
-            return redirect()->back()->with('success', 'Xóa danh mục không thành công');
+            return response()->json([
+                'success' => false,
+                'message' => 'Xóa Danh mục không thành công'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

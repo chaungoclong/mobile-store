@@ -20,9 +20,9 @@
             <li class="{{ Helper::check_active(['admin.product.index', 'admin.product.new', 'admin.product.edit']) }}">
                 <a href="{{ route('admin.product.index') }}"><i class="fa fa-product-hunt" aria-hidden="true"></i>
                     <span>Quản Lý Sản Phẩm</span></a></li>
-{{--            <li class="{{ Helper::check_active(['admin.categories.index', 'admin.categories.create', 'admin.categories.edit']) }}">--}}
-{{--                <a href="{{ route('admin.categories.index') }}"><i class="fa fa-product-hunt" aria-hidden="true"></i>--}}
-{{--                    <span>Quản Lý Danh mục</span></a></li>--}}
+            <li class="{{ Helper::check_active(['admin.categories.index', 'admin.categories.create', 'admin.categories.edit']) }}">
+                <a href="{{ route('admin.categories.index') }}"><i class="fa fa-product-hunt" aria-hidden="true"></i>
+                    <span>Quản Lý Danh mục</span></a></li>
             <li class="{{ Helper::check_active(['admin.producers.index', 'admin.producers.create', 'admin.producers.edit']) }}">
                 <a href="{{ route('admin.producers.index') }}"><i class="fa fa-product-hunt" aria-hidden="true"></i>
                     <span>Quản Lý Hãng sản xuất</span></a></li>

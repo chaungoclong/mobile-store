@@ -33,7 +33,7 @@
           <div class="row">
             <div class="col-md-4 col-md-offset-4">
               <div class="cart-empty">
-                <img src="{{ asset('images/empty-cart.png') }}" alt="Giỏ Hàng Trống">
+                <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" alt="Giỏ Hàng Trống">
                 <div class="btn-cart-empty">
                   <a href="{{ route('products_page') }}" title="Tiếp tục mua sắm">Tiếp Tục Mua Sắm</a>
                 </div>

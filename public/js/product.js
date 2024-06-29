@@ -49,8 +49,14 @@ $(document).ready(function(){
 
   $(".rating-product").rate();
 
-  if($('.color-product .color-inner.active').attr('can-buy') == 0)
-    $('.form-payment .row>div>button').prop('disabled', true);
+  if($('.color-product .color-inner.active').attr('can-buy') == 0) {
+      $('.btn-checkout').prop('disabled', true);
+      $('#stockStatus').text('Hết hàng');
+  } else {
+      const quantity = $('.color-product .color-inner.active').data('qty');
+      $('#stockStatus').text(`${quantity} sản phẩm có sẵn`);
+  }
+
 
   $('.select-color .color-inner').click(function() {
     var key = $(this).attr('data-key');
@@ -67,15 +73,21 @@ $(document).ready(function(){
     var can_by = $(this).attr('can-buy');
     $('#qty').val(can_by);
     if(can_by == 0)
-      $('.form-payment .row>div>button').prop('disabled', true);
+      $('.btn-checkout').prop('disabled', true);
     else
-      $('.form-payment .row>div>button').prop('disabled', false);
+      $('.btn-checkout').prop('disabled', false);
     var qty = $(this).attr('data-qty');
     $('#qty').attr('max', qty);
+
+    if(can_by == 0) {
+        $('#stockStatus').text('Hết hàng');
+    } else  {
+        $('#stockStatus').text(`${qty} sản phẩm có sẵn`);
+    }
   });
   $('button.add_to_cart').click(function() {
     var product_id = $('.color-product .color-inner.active').attr('product-id');
-    var qty = $('.form-payment input.qty').val();
+    var qty = $('#formCheckout input#qty').val();
     var data = {
       id: product_id,
       qty: qty
@@ -149,7 +161,7 @@ function minusInput() {
   if(!isNaN(qty) & qty > min )
     result.value--;
   if(result.value == 0)
-    $('.form-payment .row>div>button').prop('disabled', true);
+    $('.btn-checkout').prop('disabled', true);
   return false;
 }
 function plusInput() {
@@ -159,18 +171,18 @@ function plusInput() {
   if(!isNaN(qty) & qty < max)
     result.value++;
   if(result.value > 0)
-    $('.form-payment .row>div>button').prop('disabled', false);
+    $('.btn-checkout').prop('disabled', false);
   return false;
 }
 $(document).ready(function(){
-  $('.form-payment button[type="submit"]').click(function () {
+  $('#btnBuyNow').click(function () {
     var qty = $('#qty').val();
     var id = $('.select-color .color-inner.active').attr('product-id');
     var input_1 = $("<input>").attr("type", "hidden").attr("name", "type").val('buy_now');
     var input_2 = $("<input>").attr("type", "hidden").attr("name", "id").val(id);
     var input_3 = $("<input>").attr("type", "hidden").attr("name", "qty").val(qty);
-    $('.form-payment>form').append(input_1);
-    $('.form-payment>form').append(input_2);
-    $('.form-payment>form').append(input_3);
+    $('#formCheckout').append(input_1);
+    $('#formCheckout').append(input_2);
+    $('#formCheckout').append(input_3);
   });
 });

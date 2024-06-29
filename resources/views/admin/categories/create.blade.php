@@ -1,147 +1,180 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Thêm Danh Mục Mới')
+@section('title', 'Tạo Danh mục mới')
 
 @section('embed-css')
-    <!-- include Bootstrap File Input -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.6/css/fileinput.min.css"
-          rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.6/themes/explorer-fa/theme.css"
-          rel="stylesheet">
-    <!-- daterange picker -->
-    <link rel="stylesheet"
-          href="{{ asset('AdminLTE/bower_components/bootstrap-daterangepicker/daterangepicker.css') }}">
+
 @endsection
 
 @section('custom-css')
-    <style>
-        span.error {
-            display: block;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            color: red;
-        }
 
-        input.error,
-        select.error {
-            border-color: #9fda58;
-            box-shadow: none;
-        }
-    </style>
 @endsection
 
 @section('breadcrumb')
     <ol class="breadcrumb">
         <li><a href="{{ route('admin.dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="{{ route('admin.product.index') }}"><i class="fa fa-product-hunt" aria-hidden="true"></i> Quản Lý
-                Sản Phẩm</a></li>
-        <li class="active">Thêm Danh Mục Mới</li>
+        <li><a href="{{ route('admin.producers.index') }}"><i class="fa fa-newspaper-o" aria-hidden="true"></i> Quản Lý
+                Danh mục</a></li>
+        <li class="active">Tạo Danh mục Mới</li>
     </ol>
 @endsection
 
 @section('content')
-    <div class="content">
-        <div class="card bg-white">
-            <!-- /.card-header -->
-            <div class="card-body">
-                <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="form-group">
-                        <label for="name">Tên</label>
-                        <input type="text" id="name" name="name"
-                               class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
-                               required>
-                        @error('name')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
 
-                    <div class="form-group">
-                        <label for="slug">Slug</label>
-                        <input type="text" id="slug" name="slug"
-                               class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}">
-                        @error('slug')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
+    @if ($errors->any())
+        <div class="callout callout-danger">
+            <h4>Warning!</h4>
+            <ul style="margin-bottom: 0;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-                    <div class="form-group">
-                        <label for="description">Mô tả</label>
-                        <textarea id="description" name="description"
-                                  class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
-                        @error('description')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
+    <form action="{{ route('admin.categories.store') }}" method="POST" accept-charset="utf-8"
+          enctype="multipart/form-data">
+        @csrf
+        <div class="row">
+            <div class="col-md-9">
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="title">Tên <span class="text-red">*</span></label>
+                            <input type="text" name="name" class="form-control" id="name"
+                                   placeholder="Tên danh mục" required value="{{ old('name') }}"
+                                   autocomplete="off">
+                            @error('name')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="title">Slug</label>
+                            <input type="text" name="slug" class="form-control" id="slug"
+                                   placeholder="Slug"  value="{{ old('slug') }}"
+                                   autocomplete="off">
 
-                    <div class="form-group">
-                        <label for="logo">Logo</label>
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input @error('logo') is-invalid @enderror" id="logo"
-                                   name="logo">
-                            @error('logo')
-                            <span class="invalid-feedback">{{ $message }}</span>
+                            @error('slug')
+                            <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="status">Trạng thái</label>
-                        <select id="status" name="status" class="form-control @error('status') is-invalid @enderror"
-                                required>
-                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active
-                            </option>
-                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive
-                            </option>
-                        </select>
-                        @error('status')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="is_featured">Danh mục nổi bật</label>
-                        <div class="custom-control custom-switch">
-                            <input type="radio" class="custom-control-input" id="is_featured"
-                                   name="is_featured" {{ old('is_featured') ? 'checked' : '' }}>
-                            <label class="custom-control-label" for="is_featured"></label>
-                        </div>
-                        @error('is_featured')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Lưu</button>
-                        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Hủy</a>
-                    </div>
-                </form>
+                    <!-- /.box-body -->
+                </div>
             </div>
-            <!-- /.card-body -->
+            <div class="col-md-3">
+                <div class="box box-primary">
+                    <div class="box-header with-border"><b>Logo</b></div>
+                    <div class="box-body">
+                        <div class="upload-image text-center">
+                            <div title="Image Preview" class="image-preview"
+                                 style="background-image: url('{{ Helper::get_image_post_url() }}'); padding-top: 50%; background-size: contain; background-repeat: no-repeat; background-position: center; margin-bottom: 5px; border: 1px solid #f4f4f4;"></div>
+                            <label for="upload" title="Upload Image" class="btn btn-primary btn-sm"><i
+                                    class="fa fa-folder-open"></i>Chọn Hình Ảnh</label>
+                            <input type="file" accept="image/*" id="upload" style="display:none" name="image">
+                            @error('image')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <a href="{{ route('admin.post.index') }}" class="btn btn-danger btn-flat">
+                            <i class="fa fa-ban"
+                               aria-hidden="true"></i>
+                            Hủy</a>
+                        <button type="submit" class="btn btn-success btn-flat pull-right"><i class="fa fa-floppy-o"
+                                                                                             aria-hidden="true"></i> Lưu
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.card -->
-    </div>
+    </form>
 @endsection
 
 @section('embed-js')
+
     <!-- include tinymce js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.0.15/tinymce.min.js"></script>
-    <!-- include jquery.repeater -->
-    <script src="{{ asset('AdminLTE/bower_components/jquery.repeatable.js') }}"></script>
-    <!-- include Bootstrap File Input -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.6/js/fileinput.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.6/themes/explorer-fa/theme.js"></script>
-    <!-- date-range-picker -->
-    <script src="{{ asset('AdminLTE/bower_components/moment/min/moment.min.js') }}"></script>
-    <script src="{{ asset('AdminLTE/bower_components/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-    <!-- autoNumeric -->
-    <script src="{{ asset('AdminLTE/bower_components/autoNumeric.js') }}"></script>
-    <!-- Jquery Validate -->
-    <script src="{{ asset('AdminLTE/bower_components/jquery-validate/jquery.validate.js') }}"></script>
 @endsection
 
 @section('custom-js')
     <script>
+        tinymce.init({
+            selector: 'textarea#post-content',
+            plugins: 'media image code table link lists preview fullscreen',
+            toolbar: 'undo redo | formatselect | fontsizeselect | bold italic underline forecolor | alignleft aligncenter alignright alignjustify | numlist bullist | outdent indent | link image media table | code preview fullscreen',
+            toolbar_drawer: 'sliding',
+            entity_encoding: "raw",
+            branding: false,
+            /* enable title field in the Image dialog*/
+            image_title: true,
+            height: 400,
+            min_height: 300,
+            /* Link Custom */
+            link_assume_external_targets: 'http',
+            /* disable media advanced tab */
+            media_alt_source: false,
+            media_poster: false,
+            /* enable automatic uploads of images represented by blob or data URIs*/
+            automatic_uploads: true,
+            /*
+              URL of our upload handler (for more details check: https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_url)
+              images_upload_url: 'postAcceptor.php',
+              here we add custom filepicker only to Image dialog
+            */
+            file_picker_types: 'image',
+            /* and here's our custom image picker*/
+            file_picker_callback: function (cb, value, meta) {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
 
+                /*
+                  Note: In modern browsers input[type="file"] is functional without
+                  even adding it to the DOM, but that might not be the case in some older
+                  or quirky browsers like IE, so you might want to add it to the DOM
+                  just in case, and visually hide it. And do not forget do remove it
+                  once you do not need it anymore.
+                */
+
+                input.onchange = function () {
+                    var file = this.files[0];
+
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        /*
+                          Note: Now we need to register the blob in TinyMCEs image blob
+                          registry. In the next release this part hopefully won't be
+                          necessary, as we are looking to handle it internally.
+                        */
+                        var id = 'blobid' + (new Date()).getTime();
+                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                        var base64 = reader.result.split(',')[1];
+                        var blobInfo = blobCache.create(id, file, base64);
+                        blobCache.add(blobInfo);
+
+                        /* call the callback and populate the Title field with the file name */
+                        cb(blobInfo.blobUri(), {title: file.name});
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                input.click();
+            }
+        });
+
+        $(document).ready(function () {
+            $("#upload").change(function () {
+                $('.upload-image .image-preview').css('background-image', 'url("' + getImageURL(this) + '")');
+            });
+        });
+
+        function getImageURL(input) {
+            return URL.createObjectURL(input.files[0]);
+        };
     </script>
 @endsection

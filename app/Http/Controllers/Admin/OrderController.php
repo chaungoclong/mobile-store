@@ -10,26 +10,31 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::select(
-            'id',
-            'user_id',
-            'status',
-            'payment_method_id',
-            'status',
-            'order_code',
-            'name',
-            'email',
-            'phone',
-            'payment_status',
-            'created_at'
-        )->where('status', '<>', 0)->with([
-            'user' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'payment_method' => function ($query) {
-                $query->select('id', 'name');
-            }
-        ])->latest()->get();
+        $orders = Order::query()
+            ->select(
+                'id',
+                'user_id',
+                'status',
+                'payment_method_id',
+                'status',
+                'order_code',
+                'name',
+                'email',
+                'phone',
+                'payment_status',
+                'created_at'
+            )
+            ->where('status', '<>', 0)->with([
+                'user' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'payment_method' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->orderBy('status')
+            ->orderBy('created_at', 'desc')
+            ->get();
         return view('admin.order.index')->with('orders', $orders);
     }
 

@@ -24,7 +24,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{ asset('AdminLTE/bower_components/Ionicons/css/ionicons.min.css') }}">
     <!-- Sweet Alert 2 -->
-    <link rel="stylesheet" href="{{ asset('common/css/sweetalert2.min.css') }}">
     <!-- Embed CSS -->
     @yield('embed-css')
     <!-- Theme style -->
@@ -44,6 +43,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Google Font -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
+    <style>
+        .swal2-popup {
+            font-size: 14px !important;
+        }
+    </style>
 </head>
 
 <body class="hold-transition skin-red sidebar-mini">
@@ -86,22 +91,64 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- Bootstrap 3.3.7 -->
 <script src="{{ asset('AdminLTE/bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 <!-- Sweet Alert 2 -->
-<script src="{{ asset('common/js/sweetalert2.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Embed JS -->
 @yield('embed-js')
 <!-- AdminLTE App -->
 <script src="{{ asset('AdminLTE/dist/js/adminlte.min.js') }}"></script>
 <!-- Custom JS -->
 <script>
-    $(document).ready(function () {
-        @if(session('alert'))
-        Swal.fire(
-            '{{ session('alert')['title'] }}',
-            '{{ session('alert')['content'] }}',
-            '{{ session('alert')['type'] }}'
-        )
-        @endif
+    function debounce(func, wait) {
+        return function (...args) {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+
+    function showToast(
+        responseOrXhr,
+        type = 'success',
+        callback = undefined,
+        fieldMessage = 'message'
+    ) {
+        let title = '';
+
+        if (responseOrXhr.responseJSON !== undefined) {
+            title = responseOrXhr.responseJSON[fieldMessage];
+        } else {
+            title = responseOrXhr[fieldMessage];
+        }
+
+        if (title === '') {
+            title = (type === 'error') ? 'Đã có lỗi xảy ra' : 'Thành công';
+        }
+
+        // init toast
+        let toast = Toast.fire({
+            title: title,
+            icon: type.toLowerCase().trim(),
+            showCloseButton: true
+        });
+
+        // Execute callback if callback is function
+        if (typeof callback === 'function') {
+            toast.then(callback);
+        }
+    }
+
+    $(document).ready(function () {
         $('#logout').click(function () {
             Swal.fire({
                 title: 'Đăng Xuất',
@@ -171,11 +218,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
     });
 </script>
 
-@foreach (['error', 'success'] as $messageStatus)
+@foreach (['error', 'success', 'warning'] as $messageStatus)
     @if(session($messageStatus))
         <script>
             $(function () {
-                alert('{{ session($messageStatus) }}');
+                Toast.fire(
+                    {
+                        'title': `{{ session($messageStatus )}}`,
+                        'icon': `{{ $messageStatus }}`
+                    }
+                );
             });
         </script>
     @endif

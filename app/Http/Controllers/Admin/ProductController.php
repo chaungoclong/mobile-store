@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\OrderDetail;
 use App\Models\Producer;
 use App\Models\Product;
@@ -100,7 +101,11 @@ class ProductController extends Controller
     public function new(Request $request)
     {
         $producers = Producer::select('id', 'name')->orderBy('name', 'asc')->get();
-        return view('admin.product.new')->with('producers', $producers);
+        $categories = Category::select('id', 'name')->orderBy('name', 'asc')->get();
+        return view('admin.product.new', [
+            'producers' => $producers,
+            'categories' => $categories
+        ]);
     }
 
     public function save(Request $request)
@@ -198,6 +203,7 @@ class ProductController extends Controller
 
         $product->name = $request->name;
         $product->producer_id = $request->producer_id;
+        $product->category_id = $request->category_id;
         $product->sku_code = $request->sku_code;
         $product->monitor = $request->monitor;
         $product->front_camera = $request->front_camera;
@@ -219,27 +225,27 @@ class ProductController extends Controller
 
         $product->save();
 
-        if ($request->has('product_promotions')) {
-            foreach ($request->product_promotions as $product_promotion) {
-                $promotion = new Promotion;
-                $promotion->product_id = $product->id;
-                $promotion->content = $product_promotion['content'];
-
-                //Xử lý ngày bắt đầu, ngày kết thúc
-                list($start_date, $end_date) = explode(' - ', $product_promotion['promotion_date']);
-
-                $start_date = str_replace('/', '-', $start_date);
-                $start_date = date('Y-m-d', strtotime($start_date));
-
-                $end_date = str_replace('/', '-', $end_date);
-                $end_date = date('Y-m-d', strtotime($end_date));
-
-                $promotion->start_date = $start_date;
-                $promotion->end_date = $end_date;
-
-                $promotion->save();
-            }
-        }
+//        if ($request->has('product_promotions')) {
+//            foreach ($request->product_promotions as $product_promotion) {
+//                $promotion = new Promotion;
+//                $promotion->product_id = $product->id;
+//                $promotion->content = $product_promotion['content'];
+//
+//                //Xử lý ngày bắt đầu, ngày kết thúc
+//                list($start_date, $end_date) = explode(' - ', $product_promotion['promotion_date']);
+//
+//                $start_date = str_replace('/', '-', $start_date);
+//                $start_date = date('Y-m-d', strtotime($start_date));
+//
+//                $end_date = str_replace('/', '-', $end_date);
+//                $end_date = date('Y-m-d', strtotime($end_date));
+//
+//                $promotion->start_date = $start_date;
+//                $promotion->end_date = $end_date;
+//
+//                $promotion->save();
+//            }
+//        }
 
         if ($request->has('product_details')) {
             foreach ($request->product_details as $key => $product_detail) {
@@ -282,21 +288,18 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('admin.product.index')->with([
-            'alert' => [
-                'type' => 'success',
-                'title' => 'Thành Công',
-                'content' => 'Thêm sản phẩm thành công.'
-            ]
-        ]);
+        return redirect()
+            ->route('admin.product.index')->with(['success' => 'Thêm sản phẩm thành công.']);
     }
 
     public function edit($id)
     {
         $producers = Producer::select('id', 'name')->orderBy('name', 'asc')->get();
+        $categories = Category::select('id', 'name')->orderBy('name', 'asc')->get();
         $product = Product::select(
             'id',
             'producer_id',
+            'category_id',
             'name',
             'image',
             'sku_code',
@@ -313,23 +316,24 @@ class ProductController extends Controller
             'product_introduction'
         )
             ->whereHas('product_details', function (Builder $query) {
-                $query->where('import_quantity', '>', 0);
-            })->where('id', $id)->with([
-                'promotions' => function ($query) {
-                    $query->select('id', 'product_id', 'content', 'start_date', 'end_date');
-                },
+                $query->where('quantity', '>', 0);
+            })
+            ->where('id', $id)
+            ->with([
                 'product_details' => function ($query) {
-                    $query->select(
-                        'id',
-                        'product_id',
-                        'color',
-                        'import_quantity',
-                        'import_price',
-                        'sale_price',
-                        'promotion_price',
-                        'promotion_start_date',
-                        'promotion_end_date'
-                    )->where('import_quantity', '>', 0)
+                    $query
+                        ->select(
+                            'id',
+                            'product_id',
+                            'color',
+                            'import_quantity',
+                            'import_price',
+                            'sale_price',
+                            'promotion_price',
+                            'promotion_start_date',
+                            'promotion_end_date'
+                        )
+                        ->where('quantity', '>', 0)
                         ->with([
                             'product_images' => function ($query) {
                                 $query->select('id', 'product_detail_id', 'image_name');
@@ -343,7 +347,13 @@ class ProductController extends Controller
         if (!$product) {
             abort(404);
         }
-        return view('admin.product.edit')->with(['product' => $product, 'producers' => $producers]);
+        return view('admin.product.edit')->with(
+            [
+                'product' => $product,
+                'producers' => $producers,
+                'categories' => $categories,
+            ]
+        );
     }
 
     public function update(Request $request, $id)
