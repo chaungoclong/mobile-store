@@ -117,7 +117,7 @@
                                                                     && $product->promotion_start_date <= date('Y-m-d')
                                                                     && $product->promotion_end_date >= date('Y-m-d'))
                                                                     <div
-                                                                        style="display: inline-flex; background: #fafafa; padding: 2px; border-radius: 5px; width: 100%; align-items: center;">
+                                                                        style="display: flex; background: #fafafa; padding: 2px; border-radius: 5px; width: 100%; align-items: center; flex-wrap: wrap;">
                                                                         <div
                                                                             class="sale-price">{{ App\Helpers\Helpers::formatVietnameseCurrency($product->promotion_price) }}
                                                                         </div>
