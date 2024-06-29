@@ -328,15 +328,27 @@ class ProductsController extends Controller
     public function addVote(Request $request): RedirectResponse
     {
         $productId = $request->input('product_id');
-        ProductVote::query()->updateOrCreate(
+
+        $alreadyVote = ProductVote::query()
+            ->where('user_id', $request->input('user_id'))
+            ->where('product_id', $productId)
+            ->exists();
+
+        if ($alreadyVote) {
+            return back()->with(['vote_alert' => [
+                'type' => 'warning',
+                'title' => 'Bạn đã đánh giá rồi',
+                'content' => ''
+            ]]);
+        }
+
+        ProductVote::query()->create(
             [
                 'user_id' => $request->input('user_id'),
-                'product_id' => $productId
-            ],
-            [
+                'product_id' => $productId,
                 'content' => $request->input('content'),
                 'rate' => $request->input('rate')
-            ]
+            ],
         );
 
         $rate = ProductVote::query()->where('product_id', $productId)->avg('rate');

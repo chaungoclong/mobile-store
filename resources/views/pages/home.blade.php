@@ -91,91 +91,47 @@
       <div class="section-content">
         <div class="row">
           @foreach($data['products'] as $key => $product)
-            @if($key == 0)
-              <div class="col-md-2 col-md-40">
-                <div class="item-product">
-                  <a href="{{ route('product_page', ['id' => $product->id]) }}" title="{{ $product->name }}">
-                    <div class="row">
-                      <div class="col-md-6 col-sm-6 col-xs-6">
-                        <div class="image-product" style="background-image: url('{{ Helper::get_image_product_url($product->image) }}');padding-top: 100%;">
-                          {!! Helper::get_promotion_percent($product->product_detail->sale_price, $product->product_detail->promotion_price, $product->product_detail->promotion_start_date, $product->product_detail->promotion_end_date) !!}
-                        </div>
-                        <div class="content-product">
-                          <h3 class="title">{{ $product->name }}</h3>
-                          <div class="start-vote">
-                            {!! Helper::get_start_vote($product->rate) !!}
-                          </div>
-                          <div class="price">
-                            {!! Helper::get_real_price($product->product_detail->sale_price, $product->product_detail->promotion_price, $product->product_detail->promotion_start_date, $product->product_detail->promotion_end_date) !!}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 col-sm-6 col-xs-6" style="display: flex;">
-                        <div class="product-details">
-                          <p><strong><i class="fas fa-tv"></i> Màn Hình: </strong>{{ $product->monitor }}</p>
-                          <p><strong><i class="fas fa-camera-retro"></i> Camera Trước: </strong>{{ $product->front_camera }}</p>
-                          <p><strong><i class="fas fa-camera-retro"></i> Camera sau: </strong>{{ $product->rear_camera }}</p>
-                          <p><strong><i class="fas fa-microchip"></i> CPU: </strong>{{ $product->CPU }}</p>
-                          <p><strong><i class="fas fa-microchip"></i>GPU: </strong>{{ $product->GPU }}</p>
-                          <p><strong><i class="fas fa-hdd"></i> RAM: </strong>{{ $product->RAM }}GB</p>
-                          <p><strong><i class="fas fa-hdd"></i> Bộ Nhớ Trong: </strong>{{ $product->ROM }}GB</p>
-                          @if(Str::is('*Android*', $product->OS_version))
-                            <p><strong><i class="fab fa-android"></i> HĐH: </strong>{{ $product->OS_version }}</p>
-                          @elseif(Str::is('*IOS*', $product->OS_version))
-                            <p><strong><i class="fab fa-apple"></i> HĐH: </strong>{{ $product->OS_version }}</p>
-                          @elseif(Str::is('*Windows*', $product->OS_version))
-                            <p><strong><i class="fab fa-windows"></i> HĐH: </strong>{{ $product->OS_version }}</p>
-                          @endif
-                          <p><strong><i class="fas fa-battery-full"></i> Dung Lượng PIN: </strong>{{ $product->pin }}</p>
-                        </div>
-                      </div>
+                <div class="col-md-2 col-md-20">
+                    <div class="item-product">
+                        <a href="{{ route('product_page', ['id' => $product->id]) }}" title="{{ $product->name }}">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="image-product" style="background-image: url('{{ Helper::get_image_product_url($product->image) }}');padding-top: 100%;">
+                                        {!! Helper::get_promotion_percent($product->product_detail->sale_price, $product->product_detail->promotion_price, $product->product_detail->promotion_start_date, $product->product_detail->promotion_end_date) !!}
+                                    </div>
+                                    <div class="content-product">
+                                        <h3 class="title">{{ $product->name }}</h3>
+                                        <div class="start-vote">
+                                            {!! Helper::get_start_vote($product->rate) !!}
+                                        </div>
+                                        <div class="price">
+                                            {!! Helper::get_real_price($product->product_detail->sale_price, $product->product_detail->promotion_price, $product->product_detail->promotion_start_date, $product->product_detail->promotion_end_date) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-sm-12 col-xs-12 animate">
+                                    <div class="product-details">
+                                        <p><strong><i class="fas fa-tv"></i> Màn Hình: </strong>{{ $product->monitor }}</p>
+                                        <p><strong><i class="fas fa-camera-retro"></i> Camera Trước: </strong>{{ $product->front_camera }}</p>
+                                        <p><strong><i class="fas fa-camera-retro"></i> Camera sau: </strong>{{ $product->rear_camera }}</p>
+                                        <p><strong><i class="fas fa-microchip"></i> CPU: </strong>{{ $product->CPU }}</p>
+                                        <p><strong><i class="fas fa-microchip"></i>GPU: </strong>{{ $product->GPU }}</p>
+                                        <p><strong><i class="fas fa-hdd"></i> RAM: </strong>{{ $product->RAM }}GB</p>
+                                        <p><strong><i class="fas fa-hdd"></i> Bộ Nhớ Trong: </strong>{{ $product->ROM }}GB</p>
+                                        @if(Str::is('*Android*', $product->OS_version))
+                                            <p><strong><i class="fab fa-android"></i> HĐH: </strong>{{ $product->OS_version }}</p>
+                                        @elseif(Str::is('*IOS*', $product->OS_version))
+                                            <p><strong><i class="fab fa-apple"></i> HĐH: </strong>{{ $product->OS_version }}</p>
+                                        @elseif(Str::is('*Windows*', $product->OS_version))
+                                            <p><strong><i class="fab fa-windows"></i> HĐH: </strong>{{ $product->OS_version }}</p>
+                                        @endif
+                                        <p><strong><i class="fas fa-battery-full"></i> Dung Lượng PIN: </strong>{{ $product->pin }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                  </a>
                 </div>
-              </div>
-            @else
-              <div class="col-md-2 col-md-20">
-                <div class="item-product">
-                  <a href="{{ route('product_page', ['id' => $product->id]) }}" title="{{ $product->name }}">
-                    <div class="row">
-                      <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="image-product" style="background-image: url('{{ Helper::get_image_product_url($product->image) }}');padding-top: 100%;">
-                          {!! Helper::get_promotion_percent($product->product_detail->sale_price, $product->product_detail->promotion_price, $product->product_detail->promotion_start_date, $product->product_detail->promotion_end_date) !!}
-                        </div>
-                        <div class="content-product">
-                          <h3 class="title">{{ $product->name }}</h3>
-                          <div class="start-vote">
-                            {!! Helper::get_start_vote($product->rate) !!}
-                          </div>
-                          <div class="price">
-                            {!! Helper::get_real_price($product->product_detail->sale_price, $product->product_detail->promotion_price, $product->product_detail->promotion_start_date, $product->product_detail->promotion_end_date) !!}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-12 col-sm-12 col-xs-12 animate">
-                        <div class="product-details">
-                          <p><strong><i class="fas fa-tv"></i> Màn Hình: </strong>{{ $product->monitor }}</p>
-                          <p><strong><i class="fas fa-camera-retro"></i> Camera Trước: </strong>{{ $product->front_camera }}</p>
-                          <p><strong><i class="fas fa-camera-retro"></i> Camera sau: </strong>{{ $product->rear_camera }}</p>
-                          <p><strong><i class="fas fa-microchip"></i> CPU: </strong>{{ $product->CPU }}</p>
-                          <p><strong><i class="fas fa-microchip"></i>GPU: </strong>{{ $product->GPU }}</p>
-                          <p><strong><i class="fas fa-hdd"></i> RAM: </strong>{{ $product->RAM }}GB</p>
-                          <p><strong><i class="fas fa-hdd"></i> Bộ Nhớ Trong: </strong>{{ $product->ROM }}GB</p>
-                          @if(Str::is('*Android*', $product->OS_version))
-                            <p><strong><i class="fab fa-android"></i> HĐH: </strong>{{ $product->OS_version }}</p>
-                          @elseif(Str::is('*IOS*', $product->OS_version))
-                            <p><strong><i class="fab fa-apple"></i> HĐH: </strong>{{ $product->OS_version }}</p>
-                          @elseif(Str::is('*Windows*', $product->OS_version))
-                            <p><strong><i class="fab fa-windows"></i> HĐH: </strong>{{ $product->OS_version }}</p>
-                          @endif
-                          <p><strong><i class="fas fa-battery-full"></i> Dung Lượng PIN: </strong>{{ $product->pin }}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            @endif
           @endforeach
         </div>
       </div>
