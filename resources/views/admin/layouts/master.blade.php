@@ -98,6 +98,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{{ asset('AdminLTE/dist/js/adminlte.min.js') }}"></script>
 <!-- Custom JS -->
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     function debounce(func, wait) {
         return function (...args) {
             clearTimeout(debounceTimeout);
