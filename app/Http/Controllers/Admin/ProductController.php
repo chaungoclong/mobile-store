@@ -466,6 +466,7 @@ class ProductController extends Controller
         $product->ROM = $request->ROM;
         $product->OS = $request->OS;
         $product->pin = $request->pin;
+        $product->category_id = $request->category_id;
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');

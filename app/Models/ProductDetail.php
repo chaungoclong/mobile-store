@@ -3,19 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductDetail extends Model
 {
-    protected $appends = ['discount_percent'];
+    protected $appends = ['discount_percent', 'product_image_urls', 'product_name'];
 
-    public function product()
+    public function product(): BelongsTo
     {
-        return $this->belongsTo('App\Models\Product');
+        return $this->belongsTo(Product::class);
     }
 
-    public function product_images()
+    public function product_images(): HasMany
     {
-        return $this->hasMany('App\Models\ProductImage');
+        return $this->hasMany(ProductImage::class);
     }
 
     public function order_details()
@@ -43,5 +45,20 @@ class ProductDetail extends Model
         }
 
         return false;
+    }
+
+    public function getProductImageUrlsAttribute(): array
+    {
+        return $this->product_images()
+            ->get()
+            ->map(function (ProductImage $image) {
+                return asset('storage/images/products/' . $image->getAttribute('image_name'));
+            })
+            ->toArray();
+    }
+
+    public function getProductNameAttribute(): string
+    {
+        return $this->product()->first()?->name ?? '';
     }
 }

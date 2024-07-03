@@ -227,8 +227,18 @@ class DashboardStatisticController extends Controller
             ->get();
     }
 
-//    private function getTopSellingProducts(): Collection
-//    {
-//
-//    }
+    private function getTopSellerProducts(): Collection
+    {
+        return OrderDetail::query()
+            ->selectRaw(
+                'order_details.product_detail_id, SUM(order_details.quantity) as total_quantity, SUM(order_details.quantity * order_details.price) as total_money_sale'
+            )
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->where('orders.status', 3)
+            ->groupBy('order_details.product_detail_id')
+            ->orderByDesc('total_quantity')
+            ->with(['productDetail.product'])
+            ->take(10) // You can adjust this number to get more or fewer top products
+            ->get();
+    }
 }
