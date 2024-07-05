@@ -370,7 +370,7 @@
       var data = $(this).closest('form').serialize();
       $.ajax({
         url: url,
-        type: 'POST',
+        type: 'get',
         data: data,
         dataType: 'JSON',
         success: function(data) {

@@ -73,7 +73,7 @@
                             </div>
                             <label for="upload" title="Upload Image" class="btn btn-primary btn-sm"><i
                                     class="fa fa-folder-open"></i>Chọn Hình Ảnh</label>
-                            <input type="file" accept="image/*" id="upload" style="display:none" name="logo">
+                            <input type="file" accept="image/*" id="upload" style="display:none" name="image">
                             @error('image')
                             <div class="text-danger">{{ $message }}</div>
                             @enderror

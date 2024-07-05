@@ -3,14 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ProductDetail;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderDetail extends Model
 {
-    public function order()
+    public function order(): BelongsTo
     {
-        return $this->belongsTo('App\Models\Order');
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
     public function product_detail()
@@ -20,6 +19,6 @@ class OrderDetail extends Model
 
     public function productDetail(): BelongsTo
     {
-        return $this->belongsTo(ProductDetail::class);
+        return $this->belongsTo(ProductDetail::class, 'product_detail_id', 'id');
     }
 }

@@ -46,7 +46,7 @@ class HomePage extends Controller
       ['start_date', '<=', date('Y-m-d')],
       ['end_date', '>=', date('Y-m-d')],
       ['at_home_page', '=', true]
-    ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+    ])->latest()->limit(5)->get(['title', 'image']);
 
     $posts = Post::select('id', 'title', 'image', 'created_at')->latest()->limit(4)->get();
 

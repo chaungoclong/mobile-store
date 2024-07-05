@@ -1,446 +1,394 @@
-@extends('admin.layouts.master')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Product Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+</head>
+<body class="bg-gray-100 flex">
 
-@section('title', 'Thống Kê')
+<!-- Sidebar -->
+<div class="w-64 bg-gray-800 text-white min-h-screen">
+    <div class="p-4">
+        <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+    </div>
+    <nav class="mt-10">
+        <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Dashboard</a>
+        <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Products</a>
+        <a href="#"
+           class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Users</a>
+        <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Settings</a>
+    </nav>
+</div>
 
-@section('content')
-    <nav class="flex mb-4" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-            <li class="inline-flex items-center">
-                <a href="#" class="text-gray-700 hover:text-gray-900 inline-flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M10 3.172l7.071 7.071a1 1 0 01-1.414 1.414L11 7.414V17a1 1 0 11-2 0V7.414L4.343 11.657a1 1 0 11-1.414-1.414L10 3.172z"></path>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-800 leading-tight">Dashboard</h2>
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="flex items-center focus:outline-none">
+                    <img src="https://via.placeholder.com/40" alt="Avatar" class="rounded-full mr-2">
+                    <span>John Doe</span>
+                    <svg class="ml-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                              d="M5.23 7.21a.75.75 0 011.04-.02l3.73 3.59 3.73-3.59a.75.75 0 111.02 1.1l-4.23 4.06a.75.75 0 01-1.04 0L5.25 8.3a.75.75 0 01-.02-1.08z"
+                              clip-rule="evenodd"/>
                     </svg>
-                    Home
-                </a>
-            </li>
-            <li>
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 18l-6-6 6-6v12zm6 0V6l6 6-6 6z"/>
-                    </svg>
-                    <a href="#" class="ml-1 text-gray-700 hover:text-gray-900 md:ml-2">Dashboard</a>
+                </button>
+                <div x-show="open" @click.away="open = false" x-transition
+                     class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2">
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Logout</a>
                 </div>
-            </li>
-            <li aria-current="page">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 18l-6-6 6-6v12zm6 0V6l6 6-6 6z"/>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumbs -->
+    <nav class="bg-gray border-b border-gray-200">
+        <div class="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
+            <ol class="flex items-center space-x-4">
+                <li>
+                    <a href="#" class="text-gray-500 hover:text-gray-700">Home</a>
+                </li>
+                <li>
+                    <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
-                    <span class="ml-1 text-gray-500 md:ml-2">Sales</span>
-                </div>
-            </li>
-        </ol>
+                </li>
+                <li>
+                    <a href="#" class="text-gray-500 hover:text-gray-700">Products</a>
+                </li>
+            </ol>
+        </div>
     </nav>
 
-    <div class="container mx-auto py-10">
-        <!-- Date Filter Form -->
-        <form id="filterForm" class="mb-6">
-
-        </form>
-
-        <!-- Widgets -->
-        <div id="widgets" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <!-- Widgets will be dynamically updated -->
-        </div>
-
-        <!-- Charts -->
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <div class="flex justify-between">
-                <h2 class="text-3xl font-bold mb-4">Doanh thu</h2>
-                <div class="flex items-center space-x-3 mb-5 justify-end">
-                    <select id="dateRange"
-                            class="block h-11 appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8
-                        rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                        flex items-center justify-center"
-                            name="date_range_type">
-                        <option value="today">Hôm nay</option>
-                        <option value="this_week">Tuần này</option>
-                        <option value="this_month">Tháng này</option>
-                        <option value="this_year">Năm này</option>
-                        <option value="custom">Khoảng thời gian</option>
-                    </select>
-
-                    <div class="flex items-center space-x-2 hidden" id="customRange">
-                        <input id="customRangeInput"
-                               class="form-input border-gray-300 rounded-md h-11 flex items-center justify-center"
-                               name="date_range">
-                    </div>
-
-                    <button type="button" onclick="fetchData()"
-                            class="bg-blue-500 text-white px-4 py-2 rounded-md h-11 flex items-center justify-center">
-                        Lọc
+    <!-- Main Section -->
+    <main class="flex-1 bg-gray-100" x-data="dashboard()" x-init="init()">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <!-- Time Range Filter -->
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <div class="flex space-x-4 mb-4">
+                    <button @click="filter = 'today'; customRange = false"
+                            :class="{ 'bg-blue-600 text-white': filter === 'today', 'bg-gray-200 text-gray-800': filter !== 'today' }"
+                            class="p-2 rounded">Today
+                    </button>
+                    <button @click="filter = 'this_week'; customRange = false"
+                            :class="{ 'bg-blue-600 text-white': filter === 'thisWeek', 'bg-gray-200 text-gray-800': filter !== 'thisWeek' }"
+                            class="p-2 rounded">This Week
+                    </button>
+                    <button @click="filter = 'this_month'; customRange = false"
+                            :class="{ 'bg-blue-600 text-white': filter === 'thisMonth', 'bg-gray-200 text-gray-800': filter !== 'thisMonth' }"
+                            class="p-2 rounded">This Month
+                    </button>
+                    <button @click="filter = 'custom'; customRange = true"
+                            :class="{ 'bg-blue-600 text-white': filter === 'custom', 'bg-gray-200 text-gray-800': filter !== 'custom' }"
+                            class="p-2 rounded">Custom Range
                     </button>
                 </div>
+                <div class="grid-cols-2">
+                    <div x-text="startDate"></div>
+                    <div x-text="endDate"></div>
+                </div>
+                <div x-show="customRange" class="flex space-x-4">
+                    <input x-ref="datepicker" class="p-2 bg-gray-200 rounded" placeholder="select date">
+                </div>
             </div>
-            <canvas id="salesChart" class="h-80"></canvas>
-        </div>
 
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <h2 class="text-3xl font-bold mb-4">Doanh Thu theo Danh mục và Hãng sản xuất</h2>
+            <!-- Sales Overview -->
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <h2 class="text-xl font-semibold mb-2">Sales Overview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-4 bg-green-100 rounded">
+                        <div class="text-sm">Total Sales Today</div>
+                        <div class="text-2xl font-bold" x-text="totalSales.today"></div>
+                    </div>
+                    <div class="p-4 bg-blue-100 rounded">
+                        <div class="text-sm">Total Sales This Week</div>
+                        <div class="text-2xl font-bold" x-text="totalSales.week"></div>
+                    </div>
+                    <div class="p-4 bg-yellow-100 rounded">
+                        <div class="text-sm">Total Sales This Month</div>
+                        <div class="text-2xl font-bold" x-text="totalSales.month"></div>
+                    </div>
+                    <div class="p-4 bg-red-100 rounded">
+                        <div class="text-sm">Total Sales This Year</div>
+                        <div class="text-2xl font-bold" x-text="totalSales.year"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Chart -->
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <h2 class="text-xl font-semibold mb-2">Sales Chart</h2>
+                <canvas id="salesChart" width="400" height="200"></canvas>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-gray-50 p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-4">Theo Danh mục</h3>
-                    <canvas id="salesByCategoryChart"></canvas>
+                <!-- Sales by Category Chart -->
+                <div class="bg-white p-4 rounded shadow mb-4">
+                    <h2 class="text-xl font-semibold mb-2">Sales by Category</h2>
+                    <canvas id="categoryChart" width="400" height="200"></canvas>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-4">Theo Hãng sản xuất</h3>
-                    <canvas id="salesByProducersChart"></canvas>
+
+                <!-- Sales by Brand Chart -->
+                <div class="bg-white p-4 rounded shadow mb-4">
+                    <h2 class="text-xl font-semibold mb-2">Sales by Brand</h2>
+                    <canvas id="brandChart" width="400" height="200"></canvas>
                 </div>
             </div>
+
+            <!-- Recent Orders -->
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <h2 class="text-xl font-semibold mb-2">Recent Orders</h2>
+                <ul>
+                    <template x-for="order in recentOrders" :key="order.id">
+                        <li class="border-b py-2">
+                            <span x-text="order.name"></span> - <span x-text="order.status"></span>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+            <!-- Top Selling Products -->
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <h2 class="text-xl font-semibold mb-2">Top Selling Products</h2>
+                <ul>
+                    <template x-for="product in topProducts" :key="product.id">
+                        <li class="border-b py-2">
+                            <span x-text="product.name"></span> - <span x-text="product.total_sales"></span>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+            <!-- Inventory -->
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <h2 class="text-xl font-semibold mb-2">Inventory</h2>
+                <ul>
+                    <template x-for="(product, index) in inventory" :key="index">
+                        <li class="border-b py-2">
+                            <span x-text="product.name || 'Unknown Product'"></span> -
+                            <span x-text="product.quantity || '0'"></span>
+                        </li>
+                    </template>
+                </ul>
+            </div>
         </div>
+    </main>
 
-        <!-- Tables -->
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <h2 class="text-3xl font-bold mb-4">Sản phẩm bán chạy</h2>
-            <table id="topSellerTable" class="min-w-full bg-white">
-                <thead class="bg-gray-100">
-                <tr>
-                    <th class="py-2">ID</th>
-                    <th class="py-2">Tên</th>
-                    <th class="py-2">Số lượng đã bán</th>
-                    <th class="py-2">Tổng doanh thu</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- Data will be dynamically inserted -->
-                </tbody>
-            </table>
+    <!-- Footer -->
+    <footer class="bg-white shadow mt-auto">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <p class="text-gray-600 text-center">&copy; 2024 Your Company. All rights reserved.</p>
         </div>
+    </footer>
+</div>
 
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <h2 class="text-3xl font-bold mb-4">Sản phẩm được đánh giá cao</h2>
-            <table id="topRatedTable" class="min-w-full bg-white">
-                <thead class="bg-gray-100">
-                <tr>
-                    <th class="py-2">ID</th>
-                    <th class="py-2">Tên</th>
-                    <th class="py-2">Đánh giá</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- Data will be dynamically inserted -->
-                </tbody>
-            </table>
-        </div>
+<script>
+    function dashboard() {
+        return {
+            filter: 'today',
+            customRange: false,
+            startDate: '',
+            endDate: '',
+            selectedDate: '',
+            totalSales: {
+                today: '',
+                week: '',
+                month: '',
+                year: '',
+            },
+            recentOrders: [],
+            topProducts: [],
+            inventory: [],
+            salesChartData: {
+                labels: [],
+                revenue: [],
+                cost: [],
+                profit: []
+            },
+            categoryChartData: {
+                labels: [],
+                data: []
+            },
+            brandChartData: {
+                labels: [],
+                data: []
+            },
+            salesChart: null,
+            categoryChart: null,
+            brandChart: null,
+            timeRange: 'month',
+            init() {
+                this.fetchDashboardData();
+                this.initFlatpickr();
+            },
+            fetchDashboardData() {
+                fetch(`{{ route('admin.dashboardData') }}?timeRange=${this.timeRange}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.totalSales.today = `$${data.totalSales.today}`;
+                        this.totalSales.week = `$${data.totalSales.week}`;
+                        this.totalSales.month = `$${data.totalSales.month}`;
+                        this.totalSales.year = `$${data.totalSales.year}`;
 
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <h2 class="text-3xl font-bold mb-4">Đơn hàng mới</h2>
-            <table id="recentOrdersTable" class="min-w-full bg-white">
-                <thead class="bg-gray-100">
-                <tr>
-                    <th class="py-2">ID</th>
-                    <th class="py-2">Order Code</th>
-                    <th class="py-2">Customer Name</th>
-                    <th class="py-2">Amount</th>
-                    <th class="py-2">Status</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- Data will be dynamically inserted -->
-                </tbody>
-            </table>
-        </div>
+                        this.recentOrders = data.recentOrders;
+                        this.topProducts = data.topProducts;
+                        this.inventory = data.inventory;
 
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <h2 class="text-3xl font-bold mb-4">Sản phẩm sắp hết hàng</h2>
-            <table id="lowStockTable" class="min-w-full bg-white">
-                <thead class="bg-gray-100">
-                <tr>
-                    <th class="py-2">ID</th>
-                    <th class="py-2">Ảnh</th>
-                    <th class="py-2">Tên</th>
-                    <th class="py-2">Màu</th>
-                    <th class="py-2">Số lượng</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- Data will be dynamically inserted -->
-                </tbody>
-            </table>
-        </div>
+                        this.salesChartData.labels = data.salesChartData.labels;
+                        this.salesChartData.revenue = data.salesChartData.revenue;
+                        this.salesChartData.cost = data.salesChartData.cost;
+                        this.salesChartData.profit = data.salesChartData.profit;
 
-    </div>
-@endsection
+                        this.categoryChartData.labels = data.salesByCategory.labels;
+                        this.categoryChartData.data = data.salesByCategory.data;
 
-@section('embed-js')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-@endsection
+                        this.brandChartData.labels = data.salesByBrand.labels;
+                        this.brandChartData.data = data.salesByBrand.data;
 
-@section('custom-js')
-    <script>
-        let saleChart;
-        let saleByCategoryChart;
-        let saleByProducerChart;
+                        this.updateSalesChart();
+                        this.updateCategoryChart();
+                        this.updateBrandChart();
+                    });
+            },
+            updateSalesChart() {
+                const ctx = document.getElementById('salesChart').getContext('2d');
 
-        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-        const today = new Date();
-        let startDate = flatpickr.formatDate(startOfMonth, 'Y-m-d');
-        let endDate = flatpickr.formatDate(today, 'Y-m-d');
-        const dateRange = document.getElementById('dateRange').value;
+                if (this.salesChart) {
+                    this.salesChart.destroy();
+                }
 
-        async function fetchData() {
-            if (saleChart) {
-                saleChart.destroy();
-            }
-
-            if (saleByCategoryChart) {
-                saleByCategoryChart.destroy();
-            }
-
-            if (saleByProducerChart) {
-                saleByProducerChart.destroy();
-            }
-
-            const dateRangeType = $('#dateRangeType').val();
-            let queryParams = {date_range: dateRange};
-            if (dateRangeType === 'custom') {
-                queryParams = {...queryParams, start_date: startDate, end_date: endDate};
-            }
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            const urlParams = new URLSearchParams(queryParams).toString();
-            const url = `{{ route('admin.dashboard') }}?${urlParams}`;
-
-            const response = await fetch(url, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'X-CSRF-Token': csrfToken
-                },
-                method: 'GET',
-            });
-
-            if (response.ok) {
-                {
-                    const data = await response.json();
-
-                    // Update Widgets
-                    document.getElementById('widgets').innerHTML = `
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h3 class="text-lg font-semibold mb-2">Sản phẩm</h3>
-                            <p class="text-2xl">${data.totalProducts}</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h3 class="text-lg font-semibold mb-2">Khách hàng</h3>
-                            <p class="text-2xl">${data.totalCustomers}</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h3 class="text-lg font-semibold mb-2">Đơn hàng chờ xử lý</h3>
-                            <p class="text-2xl">${data.totalPendingOrders}</p>
-                        </div>
-                    `;
-
-                    // Update Sales Chart
-                    const salesCtx = document.getElementById('salesChart').getContext('2d');
-                    saleChart = new Chart(salesCtx, {
-                        type: 'line',
-                        data: {
-                            labels: data.salesData.map(item => item.date),
-                            datasets: [{
-                                label: 'Total Sales',
-                                data: data.salesData.map(item => item.total_sales),
-                                borderColor: 'rgba(75, 192, 192, 1)',
+                this.salesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: this.salesChartData.labels,
+                        datasets: [
+                            {
+                                label: 'Revenue',
+                                data: this.salesChartData.revenue,
                                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
                                 borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'top',
-                                },
+                            },
+                            {
+                                label: 'Cost',
+                                data: this.salesChartData.cost,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Profit',
+                                data: this.salesChartData.profit,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1,
+                                type: 'line'
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
                             }
                         }
-                    });
-
-                    // Update Sales by Category Chart
-                    const salesByCategoryCtx = document.getElementById('salesByCategoryChart').getContext('2d');
-                    saleByCategoryChart = new Chart(salesByCategoryCtx, {
-                        type: 'pie',
-                        data: {
-                            labels: data.salesByCategory.map(item => item.category_name),
-                            datasets: [{
-                                label: 'Sales by Category',
-                                data: data.salesByCategory.map(item => item.total_sales),
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(255, 206, 86, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)'
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'top',
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            let label = context.label || '';
-                                            if (label) {
-                                                label += ': ';
-                                            }
-                                            if (context.parsed !== null) {
-                                                label += context.parsed + ' units';
-                                            }
-                                            return label;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    // Update Sales by Producers Chart
-                    const salesByProducersCtx = document.getElementById('salesByProducersChart').getContext('2d');
-                    saleByProducerChart = new Chart(salesByProducersCtx, {
-                        type: 'pie',
-                        data: {
-                            labels: data.salesByProducers.map(item => item.producer_name),
-                            datasets: [{
-                                label: 'Sales by Producer',
-                                data: data.salesByProducers.map(item => item.total_sales),
-                                backgroundColor: [
-                                    'rgba(255, 159, 64, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)',
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)'
-                                ],
-                                borderColor: [
-                                    'rgba(255, 159, 64, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(75, 192, 192, 1)'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'top',
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            let label = context.label || '';
-                                            if (label) {
-                                                label += ': ';
-                                            }
-                                            if (context.parsed !== null) {
-                                                label += context.parsed + ' ₫';
-                                            }
-                                            return label;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    // Update Top Seller Products Table
-                    const topSellerTable = document.getElementById('topSellerTable').getElementsByTagName('tbody')[0];
-                    topSellerTable.innerHTML = data?.topSellerProducts.map(product => `
-                        <tr>
-                            <td class="py-2">${product.product_id}</td>
-                            <td class="py-2">${product?.product_name}</td>
-                            <td class="py-2">${product?.total_quantity}</td>
-                            <td class="py-2">${product?.total_money_sale.toLocaleString('vi', {
-                        style: 'currency',
-                        currency: 'VND'
-                    })}</td>
-                        </tr>
-                    `).join('');
-
-                    // Update Top Rated Products Table
-                    const topRatedTable = document.getElementById('topRatedTable').getElementsByTagName('tbody')[0];
-                    topRatedTable.innerHTML = data.topRatedProducts.map(product => `
-                        <tr>
-                            <td class="py-2">${product.id}</td>
-                            <td class="py-2">${product.name}</td>
-                            <td class="py-2">${product.rate}</td>
-                        </tr>
-                    `).join('');
-
-                    // Update Recent Orders Table
-                    const recentOrdersTable = document.getElementById('recentOrdersTable').getElementsByTagName('tbody')[0];
-                    recentOrdersTable.innerHTML = data.recentOrders.map(order => `
-                        <tr>
-                            <td class="py-2">${order.id}</td>
-                            <td class="py-2">${order.order_code}</td>
-                            <td class="py-2">${order.name}</td>
-                            <td class="py-2">${order.amount.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD'
-                    })}</td>
-                            <td class="py-2">${order.status == 0 ? 'Pending' : 'Completed'}</td>
-                        </tr>
-                    `).join('');
-
-                    // Update Low Stock Products Table
-                    const lowStockTable = document.getElementById('lowStockTable').getElementsByTagName('tbody')[0];
-                    lowStockTable.innerHTML = data.lowStockProducts.map(product => `
-                        <tr>
-                            <td class="py-2">${product.id}</td>
-                            <td class="py-2 px-4 border-b">
-                            <img src="${product?.product_image_urls[0]}" alt="${product.name}" class="w-12 h-12 object-cover">
-                            </td>
-                            <td class="py-2">${product.product_name}</td>
-                            <td class="py-2">${product.color}</td>
-                            <td class="py-2">${product.quantity}</td>
-                        </tr>
-                    `).join('');
-                }
-            }
-        }
-
-        // Fetch initial data on page load
-        fetchData();
-
-        $(function () {
-            const customRangeInput = flatpickr("#customRangeInput", {
-                locale: "vn",
-                mode: "range",
-                altInput: true,
-                conjunction: " - ",
-                maxDate: "today",
-                altFormat: "d/m/Y",
-                dateFormat: "Y-m-d",
-                defaultDate: [startOfMonth, 'today'],
-                onChange: function ([start, end]) {
-                    if (start && end) {
-                        startDate = flatpickr.formatDate(start, 'Y-m-d');
-                        endDate = flatpickr.formatDate(end, 'Y-m-d');
                     }
-                }
-            });
+                });
+            },
+            updateCategoryChart() {
+                const ctx = document.getElementById('categoryChart').getContext('2d');
 
-            $('#dateRange').on('change', function () {
-                const dateRangeType = $(this).val();
-                if (dateRangeType === 'custom') {
-                    $('#customRangeInput').closest('#customRange').removeClass('hidden');
-                } else {
-                    $('#customRangeInput').closest('#customRange').addClass('hidden');
+                if (this.categoryChart) {
+                    this.categoryChart.destroy();
                 }
-            })
-        })
-    </script>
-@endsection
+
+                this.categoryChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: this.categoryChartData.labels,
+                        datasets: [
+                            {
+                                label: 'Sales by Category',
+                                data: this.categoryChartData.data,
+                                backgroundColor: this.categoryChartData.labels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`),
+                                borderColor: this.categoryChartData.labels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            },
+            updateBrandChart() {
+                const ctx = document.getElementById('brandChart').getContext('2d');
+
+                if (this.brandChart) {
+                    this.brandChart.destroy();
+                }
+
+                this.brandChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: this.brandChartData.labels,
+                        datasets: [
+                            {
+                                label: 'Sales by Brand',
+                                data: this.brandChartData.data,
+                                backgroundColor: this.brandChartData.labels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`),
+                                borderColor: this.brandChartData.labels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            },
+            initFlatpickr() {
+                flatpickr(this.$refs.datepicker, {
+                    onChange: ([startDate, endDate]) => {
+                        if(startDate && endDate) {
+                            this.startDate = flatpickr.formatDate(startDate, 'Y-m-d');
+                            this.endDate = flatpickr.formatDate(endDate, 'Y-m-d');
+                        }
+                    },
+                    locale: "vn",
+                    mode: "range",
+                    altInput: true,
+                    conjunction: " - ",
+                    maxDate: "today",
+                    altFormat: "d/m/Y",
+                    dateFormat: "Y-m-d",
+                });
+            },
+        }
+    }
+
+
+</script>
+
+</body>
+</html>

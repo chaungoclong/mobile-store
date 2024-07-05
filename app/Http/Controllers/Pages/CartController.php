@@ -223,14 +223,15 @@ class CartController extends Controller
                 $order->amount = $amount;
                 $order->save();
 
+                $product = ProductDetail::find($request->product_id);
                 $order_details = new OrderDetail;
                 $order_details->order_id = $order->id;
                 $order_details->product_detail_id = $request->product_id;
                 $order_details->quantity = $request->totalQty;
                 $order_details->price = $request->price;
+                $order_details->import_price = $product->import_price;
                 $order_details->save();
 
-                $product = ProductDetail::find($request->product_id);
                 $product->quantity = $product->quantity - $request->totalQty;
                 $product->save();
 
@@ -257,14 +258,15 @@ class CartController extends Controller
                 $order->save();
 
                 foreach ($cart->items as $key => $item) {
+                    $product = ProductDetail::find($item['item']->id);
                     $order_details = new OrderDetail;
                     $order_details->order_id = $order->id;
                     $order_details->product_detail_id = $item['item']->id;
                     $order_details->quantity = $item['qty'];
                     $order_details->price = $item['price'];
+                    $order_details->import_price = $product->import_price;
                     $order_details->save();
 
-                    $product = ProductDetail::find($item['item']->id);
                     $product->quantity = $product->quantity - $item['qty'];
                     $product->save();
                 }
@@ -293,14 +295,16 @@ class CartController extends Controller
                 $order->amount = $amount;
                 $order->save();
 
+                $product = ProductDetail::find($request->product_id);
                 $order_details = new OrderDetail;
                 $order_details->order_id = $order->id;
                 $order_details->product_detail_id = $request->product_id;
                 $order_details->quantity = $request->totalQty;
                 $order_details->price = $request->price;
+                $order_details->import_price = $product->import_price;
+
                 $order_details->save();
 
-                $product = ProductDetail::find($request->product_id);
                 $product->quantity = $product->quantity - $request->totalQty;
                 $product->save();
 
@@ -363,14 +367,15 @@ class CartController extends Controller
                 $order->save();
 
                 foreach ($cart->items as $key => $item) {
+                    $product = ProductDetail::find($item['item']->id);
                     $order_details = new OrderDetail;
                     $order_details->order_id = $order->id;
                     $order_details->product_detail_id = $item['item']->id;
                     $order_details->quantity = $item['qty'];
                     $order_details->price = $item['price'];
+                    $order_details->import_price = $product->import_price;
                     $order_details->save();
 
-                    $product = ProductDetail::find($item['item']->id);
                     $product->quantity = $product->quantity - $item['qty'];
                     $product->save();
                 }

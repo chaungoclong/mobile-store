@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductDetail extends Model
 {
-    protected $appends = ['discount_percent', 'product_image_urls', 'product_name'];
+    protected $appends = [
+        'discount_percent',
+        'product_image_urls',
+        'product_name'
+    ];
 
     public function product(): BelongsTo
     {
@@ -20,9 +24,19 @@ class ProductDetail extends Model
         return $this->hasMany(ProductImage::class);
     }
 
-    public function order_details()
+    public function productImages(): HasMany
     {
-        return $this->hasMany('App\Models\OrderDetail');
+        return $this->hasMany(ProductImage::class, 'product_detail_id', 'id');
+    }
+
+    public function order_details(): HasMany
+    {
+        return $this->hasMany(OrderDetail::class);
+    }
+
+    public function orderDetails(): HasMany
+    {
+        return $this->hasMany(OrderDetail::class, 'product_detail_id', 'id');
     }
 
     public function getDiscountPercentAttribute(): int

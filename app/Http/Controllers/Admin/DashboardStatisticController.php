@@ -18,16 +18,21 @@ use Illuminate\Support\Carbon;
 class DashboardStatisticController extends Controller
 {
     /**
-     * @return View
+     * @param Request $request
+     * @return View|JsonResponse
      */
-    public function index(): View
+    public function index(Request $request): View|JsonResponse
     {
+        if ($request->ajax()) {
+            $data = $this->getStatistics($request->year, $request->month);
+            return response()->json($data);
+        }
         $carbon = new Carbon('first day of this month');
         $data = $this->getStatistics($carbon->year, $carbon->month);
         return view('admin.statistic.index', ['data' => $data]);
     }
 
-    private function getStatistics($year, $month = null): array
+    public function getStatistics($year, $month = null): array
     {
         $data = [
             'count_products' => 0,

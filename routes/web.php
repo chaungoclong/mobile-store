@@ -2,7 +2,7 @@
 
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\Dashboard2Controller;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DashboardStatisticController;
 use App\Http\Controllers\Admin\ProducerController;
 use App\Models\Order;
@@ -31,7 +31,9 @@ Route::get('active/{token}', 'Auth\RegisterController@activation')->name('active
 */
 Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
     ->group(function () {
-        Route::get('dashboard', [Dashboard2Controller::class, 'index'])->name('dashboard');
+//        Route::get('dashboard', [Dashboard2Controller::class, 'index'])->name('dashboard');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboardData');
 
         Route::get('users', 'UserController@index')->name('users');
         Route::post('user/new', 'UserController@new')->name('user_new');
@@ -69,7 +71,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::get('active/{action}/{id}', 'OrderController@actionTransaction')->name('orderTransaction');
 
         Route::get('statistic', 'StatisticController@index')->name('statistic');
-        Route::post('statistic/change', 'StatisticController@edit')->name('statistic.edit');
+        Route::get('statistic/change', [DashboardStatisticController::class, 'index'])->name('statistic.edit');
 
         route::get('warehouse', 'WarehouseController@index')->name('warehouse');
         route::get('orderDetails', 'WarehouseController@orderDetails')->name('orderDetails');
@@ -77,7 +79,9 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::get('producers', [ProducerController::class, 'index'])->name('producers.index');
         Route::get('producers/create', [ProducerController::class, 'create'])->name('producers.create');
         Route::post('producers/store', [ProducerController::class, 'store'])->name('producers.store');
-        Route::delete('producers/destroy/{producer}', [ProducerController::class, 'destroy'])->name('producers.destroy');
+        Route::delete('producers/destroy/{producer}', [ProducerController::class, 'destroy'])->name(
+            'producers.destroy'
+        );
         Route::get('producers/edit/{producer}', [ProducerController::class, 'edit'])->name('producers.edit');
         Route::put('producers/update/{producer}', [ProducerController::class, 'update'])->name('producers.update');
 
@@ -228,3 +232,5 @@ Route::namespace('Pages')->group(function () {
         }
     });
 });
+
+Route::get('/test', [DashboardController::class, 'getDashboardData']);
