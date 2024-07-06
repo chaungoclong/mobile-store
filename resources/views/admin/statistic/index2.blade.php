@@ -78,26 +78,26 @@
             <!-- Time Range Filter -->
             <div class="bg-white p-4 rounded shadow mb-4">
                 <div class="flex space-x-4 mb-4">
-                    <button @click="filter = 'today'; customRange = false"
-                            :class="{ 'bg-blue-600 text-white': filter === 'today', 'bg-gray-200 text-gray-800': filter !== 'today' }"
+                    <button @click="timeRange = 'today'; customRange = false"
+                            :class="{ 'bg-blue-600 text-white': timeRange === 'today', 'bg-gray-200 text-gray-800': timeRange !== 'today' }"
                             class="p-2 rounded">Today
                     </button>
-                    <button @click="filter = 'this_week'; customRange = false"
-                            :class="{ 'bg-blue-600 text-white': filter === 'thisWeek', 'bg-gray-200 text-gray-800': filter !== 'thisWeek' }"
+                    <button @click="timeRange = 'thisWeek'; customRange = false"
+                            :class="{ 'bg-blue-600 text-white': timeRange === 'thisWeek', 'bg-gray-200 text-gray-800': timeRange !== 'thisWeek' }"
                             class="p-2 rounded">This Week
                     </button>
-                    <button @click="filter = 'this_month'; customRange = false"
-                            :class="{ 'bg-blue-600 text-white': filter === 'thisMonth', 'bg-gray-200 text-gray-800': filter !== 'thisMonth' }"
+                    <button @click="timeRange = 'thisMonth'; customRange = false"
+                            :class="{ 'bg-blue-600 text-white': timeRange === 'thisMonth', 'bg-gray-200 text-gray-800': timeRange !== 'thisMonth' }"
                             class="p-2 rounded">This Month
                     </button>
-                    <button @click="filter = 'custom'; customRange = true"
-                            :class="{ 'bg-blue-600 text-white': filter === 'custom', 'bg-gray-200 text-gray-800': filter !== 'custom' }"
+                    <button @click="timeRange = 'thisYear'; customRange = false"
+                            :class="{ 'bg-blue-600 text-white': timeRange === 'thisYear', 'bg-gray-200 text-gray-800': timeRange !== 'thisYear' }"
+                            class="p-2 rounded">This Year
+                    </button>
+                    <button @click="timeRange = 'custom'; customRange = true"
+                            :class="{ 'bg-blue-600 text-white': timeRange === 'custom', 'bg-gray-200 text-gray-800': timeRange !== 'custom' }"
                             class="p-2 rounded">Custom Range
                     </button>
-                </div>
-                <div class="grid-cols-2">
-                    <div x-text="startDate"></div>
-                    <div x-text="endDate"></div>
                 </div>
                 <div x-show="customRange" class="flex space-x-4">
                     <input x-ref="datepicker" class="p-2 bg-gray-200 rounded" placeholder="select date">
@@ -197,7 +197,6 @@
 <script>
     function dashboard() {
         return {
-            filter: 'today',
             customRange: false,
             startDate: '',
             endDate: '',
@@ -228,13 +227,29 @@
             salesChart: null,
             categoryChart: null,
             brandChart: null,
-            timeRange: 'month',
+            timeRange: 'thisMonth',
             init() {
                 this.fetchDashboardData();
                 this.initFlatpickr();
+                this.$watch('timeRange', (value) => {
+                    if (value !== 'custom') {
+                        this.fetchDashboardData();
+                    }
+                });
+                this.$watch('startDate', () => {
+                    if (this.customRange && this.startDate && this.endDate) {
+                        this.fetchDashboardData();
+                    }
+                });
+                this.$watch('endDate', () => {
+                    if (this.customRange && this.startDate && this.endDate) {
+                        this.fetchDashboardData();
+                    }
+                });
             },
             fetchDashboardData() {
-                fetch(`{{ route('admin.dashboardData') }}?timeRange=${this.timeRange}`)
+                const url = `{{ route('admin.dashboardData') }}?timeRange=${this.timeRange}&startDate=${this.startDate}&endDate=${this.endDate}`;
+                fetch(url, {headers: {'Accept': 'application/json'}})
                     .then(response => response.json())
                     .then(data => {
                         this.totalSales.today = `$${data.totalSales.today}`;
@@ -370,7 +385,7 @@
             initFlatpickr() {
                 flatpickr(this.$refs.datepicker, {
                     onChange: ([startDate, endDate]) => {
-                        if(startDate && endDate) {
+                        if (startDate && endDate) {
                             this.startDate = flatpickr.formatDate(startDate, 'Y-m-d');
                             this.endDate = flatpickr.formatDate(endDate, 'Y-m-d');
                         }

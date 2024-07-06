@@ -3,59 +3,155 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\OrderStatus;
+use App\Enums\TimeInterval;
+use App\Enums\TimeRange;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         return view('admin.statistic.index2');
     }
 
     public function getDashboardData(Request $request): JsonResponse
     {
-        $period = $request->input('timeRange', 'month');
-        $currentPeriod = $this->getPeriodRange($period);
-        $startDate = $currentPeriod['start'];
-        $endDate = $currentPeriod['end'];
+        $this->validateRequest($request);
 
-        // Tổng doanh thu
-        $today = Order::query()
-            ->whereDate('created_at', Carbon::today())
+        $period = $request->input('timeRange', TimeRange::ThisMonth->value);
+        $startDateInput = $request->input('startDate');
+        $endDateInput = $request->input('endDate');
+        $periodRange = $this->getPeriodRange($period, $startDateInput, $endDateInput);
+        $startDate = $periodRange['start'];
+        $endDate = $periodRange['end'];
+
+        $today = $this->getSalesAmount(Carbon::today(), Carbon::today()->endOfDay());
+        $week = $this->getSalesAmount(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek());
+        $month = $this->getSalesAmount(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
+        $year = $this->getSalesAmount(Carbon::now()->startOfYear(), Carbon::now()->endOfYear());
+
+        $recentOrders = $this->getRecentOrders($startDate, $endDate);
+        $topProducts = $this->getTopProducts($startDate, $endDate);
+        $inventory = $this->getInventory();
+        $salesData = $this->getSalesData($periodRange);
+        $salesByCategory = $this->getSalesByCategory($startDate, $endDate);
+        $salesByBrand = $this->getSalesByBrand($startDate, $endDate);
+
+        return response()->json([
+            'totalSales' => compact('today', 'week', 'month', 'year'),
+            'recentOrders' => $recentOrders,
+            'topProducts' => $topProducts,
+            'inventory' => $inventory,
+            'salesChartData' => $salesData['chart'],
+            'salesByCategory' => $salesByCategory,
+            'salesByBrand' => $salesByBrand,
+            'totalRevenue' => $salesData['total_revenue'],
+            'totalCost' => $salesData['total_cost'],
+            'totalProfit' => $salesData['total_profit'],
+        ]);
+    }
+
+    private function validateRequest(Request $request): void
+    {
+        $request->validate([
+            'timeRange' => ['required', Rule::in(TimeRange::values())],
+            'startDate' => ['required_if:timeRange,' . TimeRange::Custom->value, 'nullable', 'date_format:Y-m-d'],
+            'endDate' => ['required_if:timeRange,' . TimeRange::Custom->value, 'nullable', 'date_format:Y-m-d'],
+        ]);
+    }
+
+    private function getPeriodRange(string $period, string $startDate = null, string $endDate = null): array
+    {
+        $now = Carbon::now();
+
+        switch ($period) {
+            case TimeRange::ToDay->value:
+                $start = $now->startOfDay();
+                $end = $now->copy()->endOfDay();
+                break;
+            case TimeRange::ThisWeek->value:
+                $start = $now->startOfWeek();
+                $end = $now->copy()->endOfWeek();
+                break;
+            case TimeRange::ThisMonth->value:
+                $start = $now->startOfMonth();
+                $end = $now->copy()->endOfMonth();
+                break;
+            case TimeRange::ThisYear->value:
+                $start = $now->startOfYear();
+                $end = $now->copy()->endOfYear();
+                break;
+            case TimeRange::Custom->value:
+                $start = Carbon::createFromFormat('Y-m-d', $startDate);
+                $end = Carbon::createFromFormat('Y-m-d', $endDate);
+                break;
+            default:
+                throw new InvalidArgumentException('Invalid period specified.');
+        }
+
+        $interval = $this->determineInterval($start, $end);
+
+        if (in_array($period, TimeRange::PresentTimeRanges(), true) && $end->greaterThan(now())) {
+            $end = now();
+        }
+
+        return [
+            'start' => $start->toDateTimeString(),
+            'end' => $end->toDateTimeString(),
+            'interval' => $interval,
+            'period' => $period,
+        ];
+    }
+
+    private function determineInterval(Carbon $start, Carbon $end): string
+    {
+        $diffInDays = $end->diffInDays($start);
+
+        if ($diffInDays <= 1) {
+            return TimeInterval::Hour->value;
+        } elseif ($diffInDays <= 31) {
+            return TimeInterval::Day->value;
+        } elseif ($diffInDays <= 366) {
+            return TimeInterval::Month->value;
+        }
+
+        return TimeInterval::Year->value;
+    }
+
+    private function getSalesAmount(Carbon $startDate, ?Carbon $endDate = null): int
+    {
+        $query = Order::query()
             ->where('status', OrderStatus::Done->value)
-            ->sum('amount');
+            ->whereDate('created_at', '>=', $startDate);
 
-        $week = Order::query()
-            ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->where('status', OrderStatus::Done->value)
-            ->sum('amount');
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
 
-        $month = Order::query()
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->where('status', OrderStatus::Done->value)
-            ->sum('amount');
+        return $query->sum('amount');
+    }
 
-        $year = Order::query()
-            ->whereYear('created_at', Carbon::now()->year)
-            ->where('status', OrderStatus::Done->value)
-            ->sum('amount');
-
-        // Đơn hàng gần đây
-        $recentOrders = Order::query()
+    private function getRecentOrders(string $startDate, string $endDate): Collection
+    {
+        return Order::query()
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
+    }
 
-        // Sản phẩm bán chạy nhất
-        $topProducts = DB::table('order_details')
+    private function getTopProducts(string $startDate, string $endDate): Collection
+    {
+        return DB::table('order_details')
             ->join('orders', 'order_details.order_id', '=', 'orders.id')
             ->join('product_details', 'order_details.product_detail_id', '=', 'product_details.id')
             ->join('products', 'product_details.product_id', '=', 'products.id')
@@ -65,163 +161,57 @@ class DashboardController extends Controller
             ->orderBy('total_sales', 'desc')
             ->take(10)
             ->get();
+    }
 
-        // Kho hàng
-        $inventory = DB::table('product_details')
+    private function getInventory(): Collection
+    {
+        return DB::table('product_details')
             ->join('products', 'product_details.product_id', '=', 'products.id')
             ->select('products.name', 'product_details.quantity', 'product_details.color')
             ->get();
-
-        // Dữ liệu doanh số
-        $salesData = $this->getSalesData($period);
-
-        // Doanh số theo danh mục
-        $salesByCategory = DB::table('order_details')
-            ->join('product_details', 'order_details.product_detail_id', '=', 'product_details.id')
-            ->join('products', 'product_details.product_id', '=', 'products.id')
-            ->join('categories', 'products.category_id', '=', 'categories.id')
-            ->select(
-                'categories.name as category',
-                DB::raw('SUM(order_details.price * order_details.quantity) as total_sales')
-            )
-            ->whereBetween('order_details.created_at', [$startDate, $endDate])
-            ->groupBy('categories.name')
-            ->get();
-
-        $categoryLabels = $salesByCategory->pluck('category');
-        $categorySalesData = $salesByCategory->pluck('total_sales');
-
-        // Doanh số theo thương hiệu
-        $salesByBrand = DB::table('order_details')
-            ->join('product_details', 'order_details.product_detail_id', '=', 'product_details.id')
-            ->join('products', 'product_details.product_id', '=', 'products.id')
-            ->join('producers', 'products.producer_id', '=', 'producers.id')
-            ->select(
-                'producers.name as brand',
-                DB::raw('SUM(order_details.price * order_details.quantity) as total_sales')
-            )
-            ->whereBetween('order_details.created_at', [$startDate, $endDate])
-            ->groupBy('producers.name')
-            ->get();
-
-        $brandLabels = $salesByBrand->pluck('brand');
-        $brandSalesData = $salesByBrand->pluck('total_sales');
-
-        return response()->json([
-            'totalSales' => [
-                'today' => $today,
-                'week' => $week,
-                'month' => $month,
-                'year' => $year,
-            ],
-            'recentOrders' => $recentOrders,
-            'topProducts' => $topProducts,
-            'inventory' => $inventory,
-            'salesChartData' => $salesData['chart'],
-            'salesByCategory' => [
-                'labels' => $categoryLabels,
-                'data' => $categorySalesData,
-            ],
-            'salesByBrand' => [
-                'labels' => $brandLabels,
-                'data' => $brandSalesData,
-            ],
-            'totalRevenue' => $salesData['total_revenue'],
-            'totalCost' => $salesData['total_cost'],
-            'totalProfit' => $salesData['total_profit'],
-        ]);
     }
 
-    public function getSalesData($period): array
+    public function getSalesData(array $periodRange): array
     {
-        $currentPeriod = $this->getPeriodRange($period);
-        $currentData = $this->getAggregatedData(
-            $currentPeriod['start'],
-            $currentPeriod['end'],
-            $currentPeriod['interval']
-        );
-        $labels = $this->generateLabels($currentPeriod['start'], $currentPeriod['end'], $period);
-        $currentData = $this->mergeWithFullRange($currentData, $labels, $period);
+        [
+            'start' => $startDate,
+            'end' => $endDate,
+            'interval' => $interval,
+        ] = $periodRange;
+
+        $data = $this->getAggregatedData($startDate, $endDate, $interval);
+        $fullTimeRange = $this->generateFullTimeRange($startDate, $endDate, $interval);
+        $data = $this->mergeWithFullTimeRange($data, $fullTimeRange, $interval);
 
         return [
             'chart' => [
-                'labels' => $labels,
-                'revenue' => $currentData->pluck('revenue')->toArray(),
-                'cost' => $currentData->pluck('cost')->toArray(),
-                'profit' => $currentData->pluck('profit')->toArray(),
+                'labels' => $data->pluck('label')->toArray(),
+                'revenue' => $data->pluck('revenue')->toArray(),
+                'cost' => $data->pluck('cost')->toArray(),
+                'profit' => $data->pluck('profit')->toArray(),
             ],
-            'total_revenue' => $currentData->sum('revenue'),
-            'total_cost' => $currentData->sum('cost'),
-            'total_profit' => $currentData->sum('profit'),
+            'total_revenue' => $data->sum('revenue'),
+            'total_cost' => $data->sum('cost'),
+            'total_profit' => $data->sum('profit'),
         ];
     }
 
-    private function getPeriodRange($period): array
+    private function getAggregatedData(string $start, string $end, string $interval): Collection
     {
-        $now = Carbon::now();
-
-        $result = match ($period) {
-            'week' => [
-                'start' => $now->startOfWeek(),
-                'end' => $now->copy()->endOfWeek(),
-                'interval' => 'day'
-            ],
-            'month' => [
-                'start' => $now->startOfMonth(),
-                'end' => $now->copy()->endOfMonth(),
-                'interval' => 'day'
-            ],
-            'year' => [
-                'start' => $now->startOfYear(),
-                'end' => $now->copy()->endOfYear(),
-                'interval' => 'month'
-            ],
-            default => throw new InvalidArgumentException('Invalid period specified.'),
+        $selectPeriod = match ($interval) {
+            TimeInterval::Hour->value => 'DATE_FORMAT(orders.created_at, "%Y-%m-%d %H") as period',
+            TimeInterval::Day->value => 'DATE(orders.created_at) as period',
+            TimeInterval::Month->value => 'DATE_FORMAT(orders.created_at, "%Y-%m") as period',
+            TimeInterval::Year->value => 'DATE_FORMAT(orders.created_at, "%Y") as period',
+            default => throw new InvalidArgumentException('Invalid interval specified for date format ' . $interval)
         };
-
-        if ($result['end']->greaterThan(now())) {
-            $result['end'] = now();
-        }
-
-        return $result;
-    }
-
-    private function getPreviousPeriodRange($period): array
-    {
-        $currentPeriod = $this->getPeriodRange($period);
-
-        return match ($period) {
-            'week' => [
-                'start' => $currentPeriod['start']->copy()->subWeek(),
-                'end' => $currentPeriod['end']->copy()->subWeek(),
-                'interval' => 'day'
-            ],
-            'month' => [
-                'start' => $currentPeriod['start']->copy()->subMonth(),
-                'end' => $currentPeriod['end']->copy()->subMonth(),
-                'interval' => 'day'
-            ],
-            'year' => [
-                'start' => $currentPeriod['start']->copy()->subYear(),
-                'end' => $currentPeriod['end']->copy()->subYear(),
-                'interval' => 'month'
-            ],
-            default => throw new InvalidArgumentException('Invalid period specified.'),
-        };
-    }
-
-    public function getAggregatedData($start, $end, $interval)
-    {
-        $selectRaw = $interval === 'day'
-            ? 'DATE(orders.created_at) as period'
-            : 'DATE_FORMAT(orders.created_at, "%Y-%m") as period';
 
         return DB::table('order_details')
             ->join('orders', 'order_details.order_id', '=', 'orders.id')
             ->where('orders.status', OrderStatus::Done->value)
             ->whereBetween('orders.created_at', [$start, $end])
             ->select(
-                DB::raw($selectRaw),
+                DB::raw($selectPeriod),
                 DB::raw('SUM(order_details.price * order_details.quantity) as revenue'),
                 DB::raw('SUM(order_details.import_price * order_details.quantity) as cost')
             )
@@ -234,66 +224,134 @@ class DashboardController extends Controller
             });
     }
 
-    /**
-     * @param Carbon $start
-     * @param Carbon $end
-     * @param string $period
-     * @return array
-     */
-    private function generateLabels(Carbon $start, Carbon $end, string $period): array
+    private function generateFullTimeRange(string $start, string $end, string $interval): array
     {
-        return $period === 'year' ? $this->generateMonthRange($start, $end) : $this->generateDayRange($start, $end);
+        return match ($interval) {
+            TimeInterval::Hour->value => $this->generateHourRange($start, $end),
+            TimeInterval::Day->value => $this->generateDayRange($start, $end),
+            TimeInterval::Month->value => $this->generateMonthRange($start, $end),
+            TimeInterval::Year->value => $this->generateYearRange($start, $end)
+        };
     }
 
-    /**
-     * @param Carbon $start
-     * @param Carbon $end
-     * @return array
-     */
-    public function generateMonthRange(Carbon $start, Carbon $end): array
+    private function generateMonthRange(string $start, string $end): array
     {
+        $startDate = Carbon::createFromFormat('Y-m-d H:i:s', $start);
+        $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $end);
         $months = [];
-        for ($date = $start; $date->lte($end); $date->addMonth()) {
+
+        for ($date = $startDate; $date->lte($endDate); $date->addMonth()) {
             $months[] = $date->copy()->format('Y-m');
         }
 
         return $months;
     }
 
-    /**
-     * @param Carbon $start
-     * @param Carbon $end
-     * @return array
-     */
-    public function generateDayRange(Carbon $start, Carbon $end): array
+    private function generateHourRange(string $start, string $end): array
     {
+        $startDate = Carbon::createFromFormat('Y-m-d H:i:s', $start);
+        $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $end);
         $dates = [];
-        for ($date = $start; $date->lte($end); $date->addDay()) {
+
+        for ($date = $startDate; $date->lte($endDate); $date->addHour()) {
+            $dates[] = $date->copy()->format('Y-m-d H');
+        }
+        return $dates;
+    }
+
+    private function generateDayRange(string $start, string $end): array
+    {
+        $startDate = Carbon::createFromFormat('Y-m-d H:i:s', $start);
+        $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $end);
+        $dates = [];
+
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
             $dates[] = $date->copy()->format('Y-m-d');
         }
         return $dates;
     }
 
-    public function mergeWithFullRange($data, $fullRange, $period): Collection
+    private function generateYearRange(string $start, string $end): array
+    {
+        $startDate = Carbon::createFromFormat('Y-m-d H:i:s', $start);
+        $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $end);
+        $dates = [];
+
+        for ($date = $startDate; $date->lte($endDate); $date->addYear()) {
+            $dates[] = $date->copy()->format('Y');
+        }
+        return $dates;
+    }
+
+    private function mergeWithFullTimeRange(Collection $data, array $fullRange, string $interval): Collection
     {
         $dataMap = $data->keyBy('period');
 
         return collect($fullRange)
-            ->map(function ($date) use ($period, $dataMap) {
+            ->map(function ($date) use ($interval, $dataMap) {
                 $defaultValues = [
                     'revenue' => 0,
                     'cost' => 0,
                     'profit' => 0,
                 ];
                 $item = $dataMap->get($date, (object)$defaultValues);
-                $item->period = $date;
-                if ($period === 'year') {
-                    $item->period = Carbon::createFromFormat('Y-m', $date)
-                        ->locale('vi')
-                        ->isoFormat('MMMM');
-                }
+                $item->label = $this->formatLabel($date, $interval);
 
                 return $item;
             });
+    }
+
+    private function formatLabel(string $date, string $interval): string
+    {
+        return match ($interval) {
+            TimeInterval::Hour->value => Carbon::createFromFormat('Y-m-d H', $date)->format('H'),
+            TimeInterval::Day->value => Carbon::createFromFormat('Y-m-d', $date)->format('d/m/Y'),
+            TimeInterval::Month->value => Carbon::createFromFormat('Y-m', $date)->locale('vi')->isoFormat('MMMM'),
+            TimeInterval::Year->value => Carbon::createFromFormat('Y', $date)->format('Y'),
+        };
+    }
+
+    private function getSalesByCategory(string $startDate, string $endDate): array
+    {
+        $salesByCategory = DB::table('order_details')
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->join('product_details', 'order_details.product_detail_id', '=', 'product_details.id')
+            ->join('products', 'product_details.product_id', '=', 'products.id')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->select(
+                'categories.name as category',
+                DB::raw('SUM(order_details.price * order_details.quantity) as total_sales')
+            )
+            ->whereBetween('order_details.created_at', [$startDate, $endDate])
+            ->where('orders.status', OrderStatus::Done->value)
+            ->groupBy('categories.name')
+            ->get();
+
+        return [
+            'labels' => $salesByCategory->pluck('category'),
+            'data' => $salesByCategory->pluck('total_sales'),
+        ];
+    }
+
+    private function getSalesByBrand(string $startDate, string $endDate): array
+    {
+        $salesByBrand = DB::table('order_details')
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->join('product_details', 'order_details.product_detail_id', '=', 'product_details.id')
+            ->join('products', 'product_details.product_id', '=', 'products.id')
+            ->join('producers', 'products.producer_id', '=', 'producers.id')
+            ->select(
+                'producers.name as brand',
+                DB::raw('SUM(order_details.price * order_details.quantity) as total_sales')
+            )
+            ->whereBetween('order_details.created_at', [$startDate, $endDate])
+            ->where('orders.status', OrderStatus::Done->value)
+            ->groupBy('producers.name')
+            ->get();
+
+        return [
+            'labels' => $salesByBrand->pluck('brand'),
+            'data' => $salesByBrand->pluck('total_sales'),
+        ];
     }
 }

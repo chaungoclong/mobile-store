@@ -8,6 +8,7 @@ use App\Models\Producer;
 use App\Models\Product;
 use App\Models\ProductDetail;
 use App\Models\ProductVote;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,34 +16,39 @@ use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         if ($request->has('type') && $request->input('type') == 'promotion') {
-            $query_products = Product::whereHas('product_detail', function (Builder $query) {
-                $query->where([
-                    ['quantity', '>', 0],
-                    ['promotion_price', '>', 0],
-                    ['promotion_start_date', '<=', date('Y-m-d')],
-                    ['promotion_end_date', '>=', date('Y-m-d')]
-                ]);
-            });
+            $query_products = Product::query()
+                ->whereHas('product_detail', function (Builder $query) {
+                    $query->where([
+                        ['quantity', '>', 0],
+                        ['promotion_price', '>', 0],
+                        ['promotion_start_date', '<=', date('Y-m-d')],
+                        ['promotion_end_date', '>=', date('Y-m-d')]
+                    ]);
+                });
         } else {
-            $query_products = Product::whereHas('product_detail', function (Builder $query) {
-                $query->where('quantity', '>', 0);
-            });
+            $query_products = Product::query()
+                ->whereHas('product_detail', function (Builder $query) {
+                    $query->where('quantity', '>', 0);
+                });
         }
 
         $query_products->with([
             'product_detail' => function ($query) {
-                $query->select(
-                    'id',
-                    'product_id',
-                    'quantity',
-                    'sale_price',
-                    'promotion_price',
-                    'promotion_start_date',
-                    'promotion_end_date'
-                )->where('quantity', '>', 0)->orderBy('sale_price', 'ASC');
+                $query
+                    ->select(
+                        'id',
+                        'product_id',
+                        'quantity',
+                        'sale_price',
+                        'promotion_price',
+                        'promotion_start_date',
+                        'promotion_end_date'
+                    )
+                    ->where('quantity', '>', 0)
+                    ->orderBy('sale_price', 'ASC');
             }
         ]);
 
@@ -223,13 +229,17 @@ class ProductsController extends Controller
         );
     }
 
-    public function getProduct($id)
+    public function getProduct($id): View
     {
-        $advertises = Advertise::where([
-            ['start_date', '<=', date('Y-m-d')],
-            ['end_date', '>=', date('Y-m-d')],
-            ['at_home_page', '=', false]
-        ])->latest()->limit(5)->get(['title', 'image']);
+        $advertises = Advertise::query()
+            ->where([
+                ['start_date', '<=', date('Y-m-d')],
+                ['end_date', '>=', date('Y-m-d')],
+                ['at_home_page', '=', false]
+            ])
+            ->latest()
+            ->limit(5)
+            ->get(['title', 'image']);
 
         $product = Product::query()
             ->select(
@@ -250,9 +260,7 @@ class ProductsController extends Controller
                 'information_details',
                 'product_introduction',
             )
-            ->whereHas('product_details', function (Builder $query) {
-                $query->where('quantity', '>', 0);
-            })
+            ->whereHas('productDetails')
             ->where('id', $id)
             ->with([
                 'producer' => function ($query) {
@@ -267,11 +275,16 @@ class ProductsController extends Controller
         }
 
         $product_details = ProductDetail::query()
-            ->where([['product_id', $id], ['import_quantity', '>', 0]])->with([
+            ->where([
+                ['product_id', $id],
+                ['import_quantity', '>', 0]
+            ])
+            ->with([
                 'product_images' => function ($query) {
                     $query->select('id', 'product_detail_id', 'image_name');
                 }
-            ])->select(
+            ])
+            ->select(
                 'id',
                 'color',
                 'quantity',
@@ -279,14 +292,20 @@ class ProductsController extends Controller
                 'promotion_price',
                 'promotion_start_date',
                 'promotion_end_date'
-            )->get();
+            )
+            ->get();
 
         $suggest_products = Product::query()
             ->select('id', 'name', 'image', 'rate')
             ->whereHas('product_detail', function (Builder $query) {
                 $query->where('quantity', '>', 0);
             })
-            ->where([['producer_id', $product->producer_id], ['id', '<>', $id]])
+            ->where(
+                [
+                    ['producer_id', $product->producer_id],
+                    ['id', '<>', $id]
+                ]
+            )
             ->with([
                 'product_detail' => function ($query) {
                     $query->select(
@@ -304,13 +323,16 @@ class ProductsController extends Controller
             ->limit(3)
             ->get();
 
-        $product_votes = ProductVote::whereHas('user', function (Builder $query) {
-            $query->where([['active', true], ['admin', false]]);
-        })->where('product_id', $id)->with([
-            'user' => function ($query) {
-                $query->select('id', 'name', 'avatar_image');
-            }
-        ])->latest()->get();
+        $product_votes = ProductVote::query()
+            ->whereHas('user')
+            ->where('product_id', $id)
+            ->with([
+                'user' => function ($query) {
+                    $query->select('id', 'name', 'avatar_image');
+                }
+            ])
+            ->latest()
+            ->get();
 
         return view('pages.product')->with(
             [
@@ -335,11 +357,13 @@ class ProductsController extends Controller
             ->exists();
 
         if ($alreadyVote) {
-            return back()->with(['vote_alert' => [
-                'type' => 'warning',
-                'title' => 'Bạn đã đánh giá rồi',
-                'content' => ''
-            ]]);
+            return back()->with([
+                'vote_alert' => [
+                    'type' => 'warning',
+                    'title' => 'Bạn đã đánh giá rồi',
+                    'content' => ''
+                ]
+            ]);
         }
 
         ProductVote::query()->create(
