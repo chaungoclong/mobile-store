@@ -3,12 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ActiveAccountNotification;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Notifications\ResetPasswordNotification;
-use App\Notifications\ActiveAccountNotification;
 
 class User extends Authenticatable
 {
@@ -20,7 +21,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'email', 'phone', 'password', 'active_token','active',
+        'name',
+        'email',
+        'phone',
+        'password',
+        'active_token',
+        'active',
     ];
 
     /**
@@ -29,7 +35,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password', 'remember_token', 'active_token',
+        'password',
+        'remember_token',
+        'active_token',
     ];
 
     /**
@@ -41,29 +49,43 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function comments() {
-        return $this->hasMany('App\Models\Comment');
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
-    public function notices() {
-        return $this->hasMany('App\Models\Notice');
+
+    public function notices(): HasMany
+    {
+        return $this->hasMany(Notice::class);
     }
-    public function orders() {
-        return $this->hasMany('App\Models\Order');
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'user_id', 'id');
     }
-    public function posts() {
-        return $this->hasMany('App\Models\Post');
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
     }
-    public function product_votes() {
-        return $this->hasMany('App\Models\ProductVote');
+
+    public function product_votes(): HasMany
+    {
+        return $this->hasMany(ProductVote::class);
+    }
+
+    public function productVotes(): HasMany
+    {
+        return $this->hasMany(ProductVote::class);
     }
 
     /**
      * Send the password reset notification.
      *
-     * @param  string  $token
+     * @param string $token
      * @return void
      */
-    public function sendPasswordResetNotification($token)
+    public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordNotification($token));
     }
@@ -71,11 +93,16 @@ class User extends Authenticatable
     /**
      * Send the active account notification.
      *
-     * @param  string  $token
+     * @param string $token
      * @return void
      */
-    public function sendActiveAccountNotification($token)
+    public function sendActiveAccountNotification($token): void
     {
         $this->notify(new ActiveAccountNotification($token));
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        return asset('storage/images/avatars/' . $this->getAttribute('avatar_image'));
     }
 }

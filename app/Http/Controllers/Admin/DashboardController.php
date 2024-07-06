@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\OrderStatus;
 use App\Enums\TimeInterval;
 use App\Enums\TimeRange;
+use App\Helpers\Helpers;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Carbon\Carbon;
@@ -34,11 +35,6 @@ class DashboardController extends Controller
         $startDate = $periodRange['start'];
         $endDate = $periodRange['end'];
 
-        $today = $this->getSalesAmount(Carbon::today(), Carbon::today()->endOfDay());
-        $week = $this->getSalesAmount(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek());
-        $month = $this->getSalesAmount(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
-        $year = $this->getSalesAmount(Carbon::now()->startOfYear(), Carbon::now()->endOfYear());
-
         $recentOrders = $this->getRecentOrders($startDate, $endDate);
         $topProducts = $this->getTopProducts($startDate, $endDate);
         $inventory = $this->getInventory();
@@ -47,16 +43,17 @@ class DashboardController extends Controller
         $salesByBrand = $this->getSalesByBrand($startDate, $endDate);
 
         return response()->json([
-            'totalSales' => compact('today', 'week', 'month', 'year'),
+            'totalSales' => [
+                'revenue' => Helpers::formatVietnameseCurrency($salesData['total_revenue']),
+                'cost' => Helpers::formatVietnameseCurrency($salesData['total_cost']),
+                'profit' => Helpers::formatVietnameseCurrency($salesData['total_profit']),
+            ],
             'recentOrders' => $recentOrders,
             'topProducts' => $topProducts,
             'inventory' => $inventory,
             'salesChartData' => $salesData['chart'],
             'salesByCategory' => $salesByCategory,
             'salesByBrand' => $salesByBrand,
-            'totalRevenue' => $salesData['total_revenue'],
-            'totalCost' => $salesData['total_cost'],
-            'totalProfit' => $salesData['total_profit'],
         ]);
     }
 
@@ -143,6 +140,7 @@ class DashboardController extends Controller
     private function getRecentOrders(string $startDate, string $endDate): Collection
     {
         return Order::query()
+            ->with('customer')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->take(10)
