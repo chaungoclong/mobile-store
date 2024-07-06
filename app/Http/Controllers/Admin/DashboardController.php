@@ -8,6 +8,7 @@ use App\Enums\TimeRange;
 use App\Helpers\Helpers;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\ProductDetail;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -37,10 +38,11 @@ class DashboardController extends Controller
 
         $recentOrders = $this->getRecentOrders($startDate, $endDate);
         $topProducts = $this->getTopProducts($startDate, $endDate);
-        $inventory = $this->getInventory();
+        $lowStockProducts = $this->getLowStockProduct();
         $salesData = $this->getSalesData($periodRange);
         $salesByCategory = $this->getSalesByCategory($startDate, $endDate);
         $salesByBrand = $this->getSalesByBrand($startDate, $endDate);
+        $orderByStatus = $this->getOrderByStatus($startDate, $endDate);
 
         return response()->json([
             'totalSales' => [
@@ -50,10 +52,11 @@ class DashboardController extends Controller
             ],
             'recentOrders' => $recentOrders,
             'topProducts' => $topProducts,
-            'inventory' => $inventory,
+            'lowStockProducts' => $lowStockProducts,
             'salesChartData' => $salesData['chart'],
             'salesByCategory' => $salesByCategory,
             'salesByBrand' => $salesByBrand,
+            'orderByStatus' => $orderByStatus
         ]);
     }
 
@@ -115,9 +118,13 @@ class DashboardController extends Controller
 
         if ($diffInDays <= 1) {
             return TimeInterval::Hour->value;
-        } elseif ($diffInDays <= 31) {
+        }
+
+        if ($diffInDays <= 31) {
             return TimeInterval::Day->value;
-        } elseif ($diffInDays <= 366) {
+        }
+
+        if ($diffInDays <= 366) {
             return TimeInterval::Month->value;
         }
 
@@ -140,14 +147,29 @@ class DashboardController extends Controller
     private function getRecentOrders(string $startDate, string $endDate): Collection
     {
         return Order::query()
-            ->with('customer')
+            ->with([
+                'customer' => function ($query) {
+                    $query->select(['name', 'id']);
+                }
+            ])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
+            ->take(5)
+            ->get()
+            ->map(function (Order $order) {
+                return $order
+                    ->setAttribute('url', route('admin.order.show', ['id' => $order->getKey()]))
+                    ->setAttribute('status', OrderStatus::getOrderStatusTitle((int)$order->getAttribute('status')))
+                    ->setAttribute('amount', Helpers::formatVietnameseCurrency((int)$order->getAttribute('amount')))
+                    ->setAttribute(
+                        'formatted_created_at',
+                        Carbon::createFromFormat('Y-m-d H:i:s', $order->getAttribute('created_at'))
+                            ->format('d/m/Y H:i:s')
+                    );
+            });
     }
 
-    private function getTopProducts(string $startDate, string $endDate): Collection
+    private function getTopProducts(): Collection
     {
         return DB::table('order_details')
             ->join('orders', 'order_details.order_id', '=', 'orders.id')
@@ -157,16 +179,23 @@ class DashboardController extends Controller
             ->select('products.id', 'products.name', DB::raw('SUM(order_details.quantity) as total_sales'))
             ->groupBy('products.id', 'products.name')
             ->orderBy('total_sales', 'desc')
-            ->take(10)
+            ->take(5)
             ->get();
     }
 
-    private function getInventory(): Collection
+    private function getLowStockProduct(): Collection
     {
-        return DB::table('product_details')
-            ->join('products', 'product_details.product_id', '=', 'products.id')
-            ->select('products.name', 'product_details.quantity', 'product_details.color')
-            ->get();
+        return ProductDetail::query()
+            ->select(['product_id', 'quantity', 'color', 'id'])
+            ->where('quantity', '<', 10)
+            ->get()
+            ->map(function (ProductDetail $product) {
+                return $product
+                    ->setAttribute(
+                        'url',
+                        route('admin.product.edit', ['id' => $product->getAttribute('product_id')])
+                    );
+            });
     }
 
     public function getSalesData(array $periodRange): array
@@ -351,5 +380,23 @@ class DashboardController extends Controller
             'labels' => $salesByBrand->pluck('brand'),
             'data' => $salesByBrand->pluck('total_sales'),
         ];
+    }
+
+    private function getOrderByStatus(string $startDate, string $endDate): Collection
+    {
+        return DB::table('orders')
+            ->select(
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(amount) as revenue'),
+                'status'
+            )
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->groupBy('status')
+            ->get()
+            ->map(function ($item) {
+                $item->status = OrderStatus::getOrderStatusTitle($item->status);
+                $item->revenue = Helpers::formatVietnameseCurrency($item->revenue);
+                return $item;
+            });
     }
 }

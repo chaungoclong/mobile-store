@@ -112,38 +112,93 @@
         <!-- Recent Orders -->
         <div class="bg-white p-4 rounded shadow mb-4">
             <h2 class="text-xl font-semibold mb-2">Đơn Hàng Gần Đây</h2>
-            <ul>
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr>
+                    <th class="p-2 border-b">Mã Đơn Hàng</th>
+                    <th class="p-2 border-b">Khách Hàng</th>
+                    <th class="p-2 border-b">Trạng Thái</th>
+                    <th class="p-2 border-b">Ngày Đặt</th>
+                    <th class="p-2 border-b">Tổng tiền</th>
+                </tr>
+                </thead>
+                <tbody>
                 <template x-for="order in recentOrders" :key="order.id">
-                    <li class="border-b py-2">
-                        <span x-text="order.name"></span> - <span x-text="order.status"></span>
-                    </li>
+                    <tr>
+                        <td class="p-2 border-b">
+                            <a :href="order?.url" x-text="order?.order_code" class="text-blue-600"></a>
+                        </td>
+                        <td class="p-2 border-b" x-text="order?.customer.name"></td>
+                        <td class="p-2 border-b" x-text="order?.status"></td>
+                        <td class="p-2 border-b" x-text="order?.formatted_created_at"></td>
+                        <td class="p-2 border-b" x-text="order?.amount"></td>
+                    </tr>
                 </template>
-            </ul>
+                </tbody>
+            </table>
         </div>
 
-        <!-- Top Selling Products -->
-        <div class="bg-white p-4 rounded shadow mb-4">
-            <h2 class="text-xl font-semibold mb-2">Top Sản Phẩm Bán Chạy</h2>
-            <ul>
-                <template x-for="product in topProducts" :key="product.id">
-                    <li class="border-b py-2">
-                        <span x-text="product.name"></span> - <span x-text="product.total_sales"></span>
-                    </li>
-                </template>
-            </ul>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Top Selling Products -->
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <h2 class="text-xl font-semibold mb-2">Top Sản Phẩm Bán Chạy</h2>
+                <ul>
+                    <template x-for="product in topProducts" :key="product.id">
+                        <li class="border-b py-2">
+                            <span x-text="product.name"></span> - <span x-text="product.total_sales"></span>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+            <!-- Inventory -->
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <h2 class="text-xl font-semibold mb-2">Sản Phẩm Sắp Hết Hàng</h2>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr>
+                        <th class="p-2 border-b">Tên Sản Phẩm</th>
+                        <th class="p-2 border-b">Màu Sắc</th>
+                        <th class="p-2 border-b">Số Lượng Còn Lại</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <template x-for="product in lowStockProducts" :key="product.id">
+                        <tr>
+                            <td class="p-2 border-b">
+                                <a :href="product?.url" x-text="product?.product_name" class="text-blue-600"></a>
+                            </td>
+                            <td class="p-2 border-b" x-text="product?.color"></td>
+                            <td class="p-2 border-b" x-text="product?.quantity"></td>
+                        </tr>
+                    </template>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- Inventory -->
-        <div class="bg-white p-4 rounded shadow mb-4">
-            <h2 class="text-xl font-semibold mb-2">Sản Phẩm Sắp Hết Hàng</h2>
-            <ul>
-                <template x-for="(product, index) in inventory" :key="index">
-                    <li class="border-b py-2">
-                        <span x-text="product.name || 'Unknown Product'"></span> -
-                        <span x-text="product.quantity || '0'"></span>
-                    </li>
-                </template>
-            </ul>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <h2 class="text-xl font-semibold mb-2">Trạng thái đơn hàng</h2>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr>
+                        <th class="p-2 border-b">Trạng Thái</th>
+                        <th class="p-2 border-b">Số Đơn</th>
+                        <th class="p-2 border-b">Tổng Doanh Thu</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <template x-for="(groupStatus, index) in orderByStatus" :key="index">
+                        <tr>
+                            <td class="p-2 border-b" x-text="groupStatus?.status"></td>
+                            <td class="p-2 border-b" x-text="groupStatus?.count"></td>
+                            <td class="p-2 border-b" x-text="groupStatus?.revenue"></td>
+                        </tr>
+                    </template>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 @endsection
@@ -177,7 +232,7 @@
                 },
                 recentOrders: [],
                 topProducts: [],
-                inventory: [],
+                lowStockProducts: [],
                 salesChartData: {
                     labels: [],
                     revenue: [],
@@ -197,6 +252,7 @@
                 brandChart: null,
                 timeRange: 'today',
                 timeRangePicker: null,
+                orderByStatus: [],
                 init() {
                     this.fetchDashboardData();
                     this.initFlatpickr();
@@ -234,7 +290,8 @@
 
                             this.recentOrders = data.recentOrders;
                             this.topProducts = data.topProducts;
-                            this.inventory = data.inventory;
+                            this.lowStockProducts = data.lowStockProducts;
+                            this.orderByStatus = data.orderByStatus;
 
                             this.salesChartData.labels = data.salesChartData.labels;
                             this.salesChartData.revenue = data.salesChartData.revenue;
@@ -317,7 +374,7 @@
                             labels: this.categoryChartData.labels,
                             datasets: [
                                 {
-                                    label: 'Sales by Category',
+                                    label: 'Doanh thu',
                                     data: this.categoryChartData.data,
                                     backgroundColor: this.categoryChartData.labels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`),
                                     borderColor: this.categoryChartData.labels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
@@ -349,7 +406,7 @@
                             labels: this.brandChartData.labels,
                             datasets: [
                                 {
-                                    label: 'Sales by Brand',
+                                    label: 'Doanh thu',
                                     data: this.brandChartData.data,
                                     backgroundColor: this.brandChartData.labels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`),
                                     borderColor: this.brandChartData.labels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
