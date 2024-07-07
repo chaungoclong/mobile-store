@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('styles')
+@section('vendor-styles')
     <link rel="stylesheet" href="{{ asset('plugins/flatpickr/flatpickr.min.css') }}">
 @endsection
 
@@ -203,11 +203,13 @@
     </div>
 @endsection
 
-@section('scripts')
+@section('vendor-scripts')
     <script src="{{ asset('plugins/chartjs/chart.js') }}"></script>
     <script src="{{ asset('plugins/flatpickr/flatpickr.min.js') }}"></script>
     <script src="{{ asset('plugins/flatpickr/lang/vn.js') }}"></script>
+@endsection
 
+@section('custom-scripts')
     <script>
         function formatTooltip(tooltipItem) {
             let value = tooltipItem.raw;

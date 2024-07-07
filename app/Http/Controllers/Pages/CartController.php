@@ -126,7 +126,7 @@ class CartController extends Controller
             ['start_date', '<=', date('Y-m-d')],
             ['end_date', '>=', date('Y-m-d')],
             ['at_home_page', '=', false]
-        ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+        ])->latest()->limit(5)->get(['title', 'image']);
 
         $oldCart = Session::has('cart') ? Session::get('cart') : null;
         $cart = new Cart($oldCart);

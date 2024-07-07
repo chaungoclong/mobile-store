@@ -1,4 +1,4 @@
-<div class="w-64 bg-gray-800 text-white min-h-screen"
+<aside class="w-64 bg-gray-800 text-white min-h-screen fixed flex flex-col"
      x-data="{ activeMenu: '{{ Route::currentRouteName() }}', openSubMenu: '' }">
     <div class="p-4">
         <h1 class="text-2xl font-bold">Admin Dashboard</h1>
@@ -8,4 +8,4 @@
             @include('admin.layouts.includes.sidebar-menu-item', ['menu' => $menu, 'activeMenu' => Route::currentRouteName(), 'openSubMenu' => ''])
         @endforeach
     </nav>
-</div>
+</aside>

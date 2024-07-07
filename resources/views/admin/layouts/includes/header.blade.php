@@ -3,7 +3,7 @@
         <h2 class="text-xl font-semibold text-gray-800 leading-tight">Dashboard</h2>
         <div x-data="{ open: false }" class="relative">
             <button @click="open = !open" class="flex items-center focus:outline-none">
-                <img src="{{ auth()->user()?->avatar_url ?? '' }}" alt="Avatar" class="w-8 h-8 rounded-full mr-2">
+                <img src="{{ auth()->user()?->avatar_url ?? '' }}" alt="Avatar" class="size-10 rounded-full object-cover mr-2">
                 <span>{{ auth()->user()?->name ?? '' }}</span>
                 <svg class="ml-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"

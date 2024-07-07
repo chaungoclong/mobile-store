@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>Admin Dashboard - Product Management</title>
-{{--    <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/AdminLTE.min.css') }}">--}}
+    {{--    <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/AdminLTE.min.css') }}">--}}
     <script src="{{ asset('plugins/tailwindcss/tailwindcss.min.css') }}"></script>
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome/css/all.min.css') }}"/>
     <script src="{{ asset('plugins/alpinejs/alpine.min.js') }}" defer></script>
 
-    @yield('styles')
+    @yield('vendor-styles')
+
+    @yield('custom-styles')
 </head>
-<body class="bg-gray-100 flex">
+<body class="bg-gray-100">
 
 <!-- Sidebar -->
 @include('admin.layouts.includes.sidebar')
@@ -42,6 +44,9 @@
     @include('admin.layouts.includes.footer')
 </div>
 <script src="{{ asset('plugins/htmx/htmx.js') }}"></script>
-@yield('scripts')
+
+@yield('vendor-scripts')
+
+@yield('custom-scripts')
 </body>
 </html>
