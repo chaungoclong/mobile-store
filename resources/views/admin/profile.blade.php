@@ -4,42 +4,49 @@
     <!-- Profile Section -->
     <div class="">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Profile</h2>
-        <form action="/upload-avatar" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.profile.update') }}" method="post" class="space-y-6">
+            @csrf
+            @method('put')
             <div>
                 <label for="avatar" class="block text-sm font-medium text-gray-700">Upload Avatar</label>
                 <div class="flex items-center space-x-4 mt-1">
-                    <img id="avatar-preview" class="w-20 h-20 rounded-full" src="https://via.placeholder.com/40"
-                         alt="Avatar Preview">
-                    <input type="file" id="avatar" name="avatar" class="hidden" onchange="previewImage(event)">
+                    <div id="preview">
+                        <img class="size-14 rounded-full object-cover"
+                             src="{{ $user?->avatar_image ?? '' }}"
+                             alt="Rounded avatar">
+                    </div>
+
+                    <input type="text" id="avatar" name="avatar_image"
+                           value="{{ old('avatar_image', $user?->avatar_image ?? '') }}"
+                           class="hidden" data-input>
                     <button type="button"
-                            class="px-2 py-2 bg-indigo-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            onclick="document.getElementById('avatar').click()">
+                            data-input="avatar"
+                            data-preview="preview"
+                            id="chooseAvatar"
+                            class="px-2 py-2 bg-indigo-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                              fill="currentColor">
                             <path
                                 d="M17.414 2.586a2 2 0 00-2.828 0l-1.586 1.586-2-2L9.586 1H6a2 2 0 00-2 2v5.586L3.293 8.293a1 1 0 00-1.414 1.414L6 13.414a1 1 0 001.414 0L9 11.828V17a2 2 0 002 2h5a2 2 0 002-2v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3V5.414l1.586-1.586a2 2 0 000-2.828zM15 14h-4v-2h4v2zM13.414 7L9 11.414 4.586 7H13.414z"/>
                         </svg>
                     </button>
-                    <button type="button"
-                            class="px-2 py-2 bg-red-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                            onclick="removeImage()">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                             fill="currentColor">
-                            <path fill-rule="evenodd"
-                                  d="M8 2a1 1 0 00-.883.993L7 3v1H4a1 1 0 00-.117 1.993L4 6h12a1 1 0 00.117-1.993L16 4h-3V3a1 1 0 00-.883-.993L12 2H8zm6 4H6v9a2 2 0 001.85 1.995L8 17h4a2 2 0 001.995-1.85L14 15V6zM8 8a1 1 0 011 .883L9 9v5a1 1 0 01-1.993.117L7 14V9a1 1 0 011-1zm4 0a1 1 0 011 .883L13 9v5a1 1 0 01-1.993.117L11 14V9a1 1 0 011-1z"
-                                  clip-rule="evenodd"/>
-                        </svg>
-                    </button>
+
+                    @error('avatar_image')
+                    <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                <input type="text" id="name" name="name" value="Admin Name" required
+                <input type="text" id="name" name="name" value="{{ old('name', $user?->name ?? '') }}" required
                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                @error('name')
+                <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="email" name="email" value="admin@example.com" required
+                <input type="text" value="{{ $user?->email ?? '' }}" disabled
                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
             <div>
@@ -52,25 +59,39 @@
     </div>
 
     <!-- Change Password Section -->
-    <div class="bg-white shadow rounded-lg p-6 mt-6">
+    <div class="bg-white mt-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Change Password</h2>
-        <form action="#" method="POST" class="space-y-6">
+        <form action="{{ route('admin.profile.changePassword') }}" method="post" class="space-y-6">
+            @csrf
+            @method('put')
             <div>
                 <label for="current-password" class="block text-sm font-medium text-gray-700">Current
                     Password</label>
-                <input type="password" id="current-password" name="current-password" required
+                <input type="password" id="current-password" name="current_password"
+                       value="{{ old('current_password') }}" required
                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                @error('current_password')
+                <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
-                <input type="password" id="new-password" name="new-password" required
+                <input type="password" id="new-password" name="new_password" value="{{ old('new_password') }}" required
                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                @error('new_password')
+                <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New
                     Password</label>
-                <input type="password" id="confirm-password" name="confirm-password" required
+                <input type="password" id="confirm-password" name="new_password_confirmation"
+                       value="{{ old('new_password_confirmation') }}" required
                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+
+                @error('new_password_confirmation')
+                <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <button type="submit"
@@ -80,6 +101,10 @@
             </div>
         </form>
     </div>
+@endsection
+
+@section('vendor-scripts')
+
 @endsection
 
 @section('custom-scripts')
@@ -99,5 +124,42 @@
             output.src = "https://via.placeholder.com/40";
             fileInput.value = null;
         }
+
+        const lfm = function (id, options) {
+            let button = document.getElementById(id);
+
+            button.addEventListener('click', function () {
+                const route_prefix = (options && options.prefix) ? options.prefix : '/laravel-filemanager';
+                const target_input = document.getElementById(button.getAttribute('data-input'));
+                const target_preview = document.getElementById(button.getAttribute('data-preview'));
+
+                window.open(route_prefix + '?type=' + options.type || 'file', 'FileManager', 'width=1000,height=800');
+                window.SetUrl = function (items) {
+                    // set the value of the desired input to image url
+                    target_input.value = items[0]?.url;
+                    target_input.dispatchEvent(new Event('change'));
+
+                    // clear previous preview
+                    target_preview.innerHtml = '';
+
+                    // set or change the preview image src
+                    target_preview.innerHTML = '';
+                    let img = document.createElement('img')
+                    img.setAttribute('class', 'size-14 rounded-full object-cover')
+                    img.setAttribute('src', items[0]?.thumb_url)
+                    target_preview.appendChild(img);
+
+                    // trigger change event
+                    target_preview.dispatchEvent(new Event('change'));
+                };
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            lfm('chooseAvatar', {
+                type: 'file',
+                prefix: 'laravel-filemanager'
+            });
+        })
     </script>
 @endsection

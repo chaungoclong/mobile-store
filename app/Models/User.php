@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'password',
         'active_token',
         'active',
+        'avatar_image',
     ];
 
     /**
@@ -104,5 +106,10 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         return asset('storage/images/avatars/' . $this->getAttribute('avatar_image'));
+    }
+
+    public function setPasswordAttribute($value): void
+    {
+        $this->attributes['password'] = Hash::make($value);
     }
 }

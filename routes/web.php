@@ -38,7 +38,10 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboardData');
 
-        Route::get('profile', [ProfileController::class, 'index'])->name('profile');
+        Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+        Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('profile/change-password', [ProfileController::class, 'changePassword'])
+            ->name('profile.changePassword');
 
         Route::get('users', 'UserController@index')->name('users');
         Route::post('user/new', 'UserController@new')->name('user_new');

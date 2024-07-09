@@ -26,9 +26,10 @@
     <!-- Main content -->
     <main class="flex-1 pt-6 px-20 ml-64">
         <!-- Breadcrumbs -->
-        @include('admin.layouts.partials.breadcrumbs')
+
         <!-- Product Management -->
         <div class="bg-white p-6 rounded-lg shadow min-h-[calc(100vh-200px)] max-w-7xl mx-auto">
+            @include('admin.layouts.partials.breadcrumbs')
             @yield('content')
         </div>
 
@@ -37,6 +38,37 @@
     </main>
 </div>
 
+<script src="{{ asset('plugins/htmx/htmx.js') }}"></script>
+<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+</script>
+
+@foreach (['error', 'success', 'warning'] as $messageStatus)
+    @if(session($messageStatus))
+        <script>
+           document.addEventListener('DOMContentLoaded', function() {
+               Toast.fire(
+                   {
+                       'title': `{{ session($messageStatus )}}`,
+                       'icon': `{{ $messageStatus }}`
+                   }
+               );
+           })
+        </script>
+    @endif
+@endforeach
 @yield('vendor-scripts')
 
 @yield('custom-scripts')

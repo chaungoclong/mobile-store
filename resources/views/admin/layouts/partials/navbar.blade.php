@@ -5,9 +5,9 @@
     </div>
     <div x-data="{ open: false }" class="relative">
         <div class="flex gap-2 items-center">
-            <span>Admin</span>
-            <img @click="open = !open" src="https://via.placeholder.com/40" alt="Profile"
-                 class="w-10 h-10 rounded-full cursor-pointer">
+            <span>{{ auth()->user()?->name ?? '' }}</span>
+            <img @click="open = !open" src="{{ auth()->user()?->avatar_image ?? '' }}" alt="Profile"
+                 class="size-12 rounded-full object-cover cursor-pointer">
         </div>
         <div x-show="open" @click.outside="open = false"
              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
