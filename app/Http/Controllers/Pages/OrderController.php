@@ -18,7 +18,7 @@ class OrderController extends Controller
         ['start_date', '<=', date('Y-m-d')],
         ['end_date', '>=', date('Y-m-d')],
         ['at_home_page', '=', false]
-      ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+      ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
       $orders = Order::where('user_id', Auth::user()->id)->with([
         'payment_method' => function ($query) {
@@ -59,7 +59,7 @@ class OrderController extends Controller
         ['start_date', '<=', date('Y-m-d')],
         ['end_date', '>=', date('Y-m-d')],
         ['at_home_page', '=', false]
-      ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+      ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
       $order = Order::where('id', $id)->with([
         'payment_method' => function($query) {

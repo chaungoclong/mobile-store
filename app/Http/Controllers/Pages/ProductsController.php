@@ -112,7 +112,7 @@ class ProductsController extends Controller
             ['start_date', '<=', date('Y-m-d')],
             ['end_date', '>=', date('Y-m-d')],
             ['at_home_page', '=', false]
-        ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+        ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
         $producers = Producer::select('id', 'name')->get();
 
@@ -212,7 +212,7 @@ class ProductsController extends Controller
             ['start_date', '<=', date('Y-m-d')],
             ['end_date', '>=', date('Y-m-d')],
             ['at_home_page', '=', false]
-        ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+        ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
         $producers = Producer::where('id', '<>', $id)->select('id', 'name')->get();
         $producer = Producer::select('id', 'name')->find($id);

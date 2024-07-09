@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('admin.layouts.app2')
 
 @section('vendor-styles')
     <link rel="stylesheet" href="{{ asset('plugins/flatpickr/flatpickr.min.css') }}">
@@ -11,7 +11,7 @@
 @endsection
 
 @section('content')
-    <div x-data="dashboard()" x-init="init()">
+    <div x-data="dashboard()">
         <!-- Time Range Filter -->
         <div class="bg-white p-4 rounded shadow mb-4">
             <div class="flex space-x-4 mb-4">
@@ -348,6 +348,7 @@
                             ]
                         },
                         options: {
+                            animation: false,
                             scales: {
                                 y: {
                                     beginAtZero: true
@@ -385,6 +386,7 @@
                             ]
                         },
                         options: {
+                            animation: false,
                             plugins: {
                                 tooltip: {
                                     callbacks: {
@@ -417,6 +419,7 @@
                             ]
                         },
                         options: {
+                            animation: false,
                             plugins: {
                                 tooltip: {
                                     callbacks: {

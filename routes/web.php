@@ -5,10 +5,12 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DashboardStatisticController;
 use App\Http\Controllers\Admin\ProducerController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use UniSharp\LaravelFilemanager\Lfm;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +24,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Auth::routes();
+
+
 Route::get('active/{token}', 'Auth\RegisterController@activation')->name('active_account');
 
 /*
@@ -31,9 +35,10 @@ Route::get('active/{token}', 'Auth\RegisterController@activation')->name('active
 */
 Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
     ->group(function () {
-//        Route::get('dashboard', [Dashboard2Controller::class, 'index'])->name('dashboard');
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboardData');
+
+        Route::get('profile', [ProfileController::class, 'index'])->name('profile');
 
         Route::get('users', 'UserController@index')->name('users');
         Route::post('user/new', 'UserController@new')->name('user_new');
@@ -91,6 +96,10 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
         Route::get('categories/edit/{category}', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::put('categories/update/{category}', [CategoryController::class, 'update'])->name('categories.update');
+
+        Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web']], static function () {
+            Lfm::routes();
+        });
     });
 
 Route::namespace('Pages')->group(function () {

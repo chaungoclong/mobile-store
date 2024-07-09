@@ -27,7 +27,7 @@ class UserController extends Controller
           ['start_date', '<=', date('Y-m-d')],
           ['end_date', '>=', date('Y-m-d')],
           ['at_home_page', '=', false]
-        ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+        ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
         $user = User::select('id', 'name', 'email', 'phone', 'address', 'avatar_image')
           ->where('id', Auth::user()->id)->first();
@@ -57,7 +57,7 @@ class UserController extends Controller
           ['start_date', '<=', date('Y-m-d')],
           ['end_date', '>=', date('Y-m-d')],
           ['at_home_page', '=', false]
-        ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+        ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
         $user = User::select('id', 'name', 'email', 'phone', 'address', 'avatar_image')
           ->where('id', Auth::user()->id)->first();

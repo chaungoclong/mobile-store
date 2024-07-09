@@ -14,36 +14,28 @@
 
     @yield('custom-styles')
 </head>
-<body class="bg-gray-100">
 
-<!-- Sidebar -->
-@include('admin.layouts.includes.sidebar')
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+<!-- Navbar -->
+@include('admin.layouts.partials.navbar')
 
-<!-- Main Content -->
-<div class="flex-1 flex flex-col">
-    <!-- Navbar -->
-    @include('admin.layouts.includes.header')
+<div class="flex flex-1 pt-16">
+    <!-- Sidebar -->
+    @include('admin.layouts.partials.sidebar')
 
-    <!-- Breadcrumbs -->
-    <nav class="bg-gray border-b border-gray-200">
-        <div class="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
-            <ol class="flex items-center space-x-4">
-                @yield('breadcrumbs')
-            </ol>
-        </div>
-    </nav>
-
-    <!-- Main Section -->
-    <main class="flex-1 bg-gray-100">
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Main content -->
+    <main class="flex-1 pt-6 px-20 ml-64">
+        <!-- Breadcrumbs -->
+        @include('admin.layouts.partials.breadcrumbs')
+        <!-- Product Management -->
+        <div class="bg-white p-6 rounded-lg shadow min-h-[calc(100vh-200px)] max-w-7xl mx-auto">
             @yield('content')
         </div>
-    </main>
 
-    <!-- Footer -->
-    @include('admin.layouts.includes.footer')
+        <!-- Footer -->
+        @include('admin.layouts.partials.footer')
+    </main>
 </div>
-<script src="{{ asset('plugins/htmx/htmx.js') }}"></script>
 
 @yield('vendor-scripts')
 

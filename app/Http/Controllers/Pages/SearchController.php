@@ -25,7 +25,7 @@ class SearchController extends Controller
               ['start_date', '<=', date('Y-m-d')],
               ['end_date', '>=', date('Y-m-d')],
               ['at_home_page', '=', false]
-            ])->latest()->limit(5)->get(['product_id', 'title', 'image']);
+            ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
             $products = Product::select('id','name', 'image', 'monitor', 'front_camera', 'rear_camera', 'CPU', 'GPU', 'RAM', 'ROM', 'OS', 'pin', 'rate')
             ->where('name', 'LIKE', '%' . $request->search_key . '%')
