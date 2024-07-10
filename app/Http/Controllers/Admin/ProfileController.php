@@ -87,7 +87,7 @@ class ProfileController extends Controller
                 return back()->withErrors($validator)->withInput();
             }
 
-            $user->password = $request->input('new_password');
+            $user->setAttribute('password', Hash::make($request->input('new_password')));
             $user->save();
 
             return back()->with('success', 'Update Password Success');
