@@ -30,10 +30,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/AdminLTE.min.css') }}">
     <!-- AdminLTE Skins -->
     <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/skins/skin-red.min.css') }}">
-    <script src="{{ asset('js/plugins/tailwindcss/tailwindcss.min.css') }}"></script>
+    <script src="{{ asset('plugins/tailwindcss/tailwindcss.min.css') }}"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+    <script src="{{ asset('plugins/alpinejs/alpine3.min.js') }}" defer></script>
 
     <!-- Custom CSS -->
     @yield('custom-css')
@@ -70,13 +71,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <section class="content-header">
             <h1>
                 @yield('title')
-                <small>Control panel</small>
             </h1>
             @yield('breadcrumb')
         </section>
 
         <!-- Main content -->
-        <section class="content container-fluid">
+        <section class="content container" style="padding: 20px 100px 20px 100px;">
             @yield('content')
         </section>
         <!-- /.content -->

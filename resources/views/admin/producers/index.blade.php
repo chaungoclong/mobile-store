@@ -4,7 +4,7 @@
 @section('title', 'Quản Lý Hãng sản xuất')
 
 @section('embed-css')
-    <link href="{{ asset('js/plugins/datatables/datatables.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/datatables/datatables.min.css') }}" rel="stylesheet">
 @endsection
 
 @section('custom-css')
@@ -101,7 +101,7 @@
 
 @section('embed-js')
     <!-- DataTables -->
-    <script src="{{ asset('js/plugins/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
     <!-- SlimScroll -->
     <script src="{{ asset('AdminLTE/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
     <!-- FastClick -->

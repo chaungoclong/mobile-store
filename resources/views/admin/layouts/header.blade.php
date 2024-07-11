@@ -98,10 +98,10 @@
             <!-- Menu Footer-->
             <li class="user-footer">
               <div class="pull-left">
-                <a href="#" class="btn btn-default btn-flat">Profile</a>
+                <a href="{{ route('admin.profile.show') }}" class="btn btn-default btn-flat">Profile</a>
               </div>
               <div class="pull-right">
-                <a id="logout" href="#" class="btn btn-default btn-flat">Sign out</a>
+                <a id="logout" href="#" class="btn btn-default btn-flat">Đăng xuất</a>
               </div>
             </li>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

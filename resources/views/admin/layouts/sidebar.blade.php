@@ -31,11 +31,11 @@
             </li>
             <li class="{{ Helper::check_active(['admin.warehouse']) }}"><a href="{{route('admin.warehouse')}}"><i
                         class="fa fa-archive" aria-hidden="true"></i><span>Kho Hàng</span></a></li>
-            <li class="{{ Helper::check_active(['admin.orderDetails']) }}"><a
-                    href="{{route('admin.orderDetails')}}"><i class="fa fa-archive" aria-hidden="true"></i><span>Thống Kê Đơn Hàng</span></a>
-            </li>
-            <li class="{{ Helper::check_active(['admin.statistic']) }}"><a href="{{ route('admin.statistic') }}"><i
-                        class="fa fa-line-chart" aria-hidden="true"></i> <span>Thống Kê Doanh Thu</span></a></li>
+{{--            <li class="{{ Helper::check_active(['admin.orderDetails']) }}"><a--}}
+{{--                    href="{{route('admin.orderDetails')}}"><i class="fa fa-archive" aria-hidden="true"></i><span>Thống Kê Đơn Hàng</span></a>--}}
+{{--            </li>--}}
+{{--            <li class="{{ Helper::check_active(['admin.statistic']) }}"><a href="{{ route('admin.statistic') }}"><i--}}
+{{--                        class="fa fa-line-chart" aria-hidden="true"></i> <span>Thống Kê Doanh Thu</span></a></li>--}}
         </ul>
         <!-- /.sidebar-menu -->
     </section>

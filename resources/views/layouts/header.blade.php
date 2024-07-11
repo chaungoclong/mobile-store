@@ -68,11 +68,11 @@
                                 {{ __('Bài viết') }}</a>
                         </li>
 
-                        <li class="nav-item {{ Helper::check_active(['contact_page']) }}"><a
-                                href="{{ route('contact_page') }}" title="{{ __('Liên Hệ') }}">
-                                <span class="fas fa-id-card"></span>
-                                {{ __('Liên Hệ') }}</a>
-                        </li>
+{{--                        <li class="nav-item {{ Helper::check_active(['contact_page']) }}"><a--}}
+{{--                                href="{{ route('contact_page') }}" title="{{ __('Liên Hệ') }}">--}}
+{{--                                <span class="fas fa-id-card"></span>--}}
+{{--                                {{ __('Liên Hệ') }}</a>--}}
+{{--                        </li>--}}
                     </ul>
                 </div>
                 <div class="accout-menu">

@@ -1,3 +1,4 @@
+@php use App\Enums\PaymentStatus;use App\Helpers\Helpers; @endphp
 @extends('admin.layouts.master')
 
 @section('title', 'Đơn Hàng: #'.$order->order_code)
@@ -9,203 +10,177 @@
 @endsection
 
 @section('breadcrumb')
-<ol class="breadcrumb">
-  <li><a href="{{ route('admin.dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-  <li><a href="{{ route('admin.order.index') }}"><i class="fa fa-list-alt" aria-hidden="true"></i> Quản Lý Đơn Hàng</a></li>
-  <li class="active">{{ 'Đơn Hàng: #'.$order->order_code }}</li>
-</ol>
+    <ol class="breadcrumb flex space-x-2 text-gray-500">
+        <li><a href="{{ route('admin.dashboard') }}" class="hover:text-gray-700"><i class="fa fa-dashboard"></i>
+                Home</a></li>
+        <li><a href="{{ route('admin.order.index') }}" class="hover:text-gray-700"><i class="fa fa-list-alt"
+                                                                                      aria-hidden="true"></i> Quản Lý
+                Đơn Hàng</a></li>
+        <li class="active">{{ 'Đơn Hàng: #'.$order->order_code }}</li>
+    </ol>
 @endsection
 
 @section('content')
-  <!-- Main content -->
-  <section class="invoice" style="margin: 0;">
-    <div id="print-invoice">
-      <!-- title row -->
-      <div class="row">
-        <div class="col-xs-12">
-          <h2 class="page-header">
-            <div style="display: inline-flex; align-items: center;">
-              <div style="width: 30px; margin-right: 5px;">
-{{--                <img src="{{ asset('images/favicon.png') }}" alt="PhoneStore Logo" style="width: 100%; height: auto; object-fit: cover;">--}}
-              </div>
-              <div style="color: #f33;">{{ config('app.name') }}</div>
+    <section class="invoice mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <div id="print-invoice">
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+                <div class="flex items-center">
+                    <div class="w-10 mr-3">
+                        {{-- <img src="{{ asset('images/favicon.png') }}" alt="PhoneStore Logo" class="w-full h-auto object-cover"> --}}
+                    </div>
+                    <div class="text-2xl text-red-600 font-bold">{{ config('app.name') }}</div>
+                </div>
+                <div class="text-xl text-gray-500">
+                    <p>Ngày: {{ date("d/m/Y") }}</p>
+                    <p>Order #: {{ $order->order_code }}</p>
+                </div>
             </div>
-            <small class="pull-right">Date: {{ date("d/m/Y") }}</small>
-          </h2>
-        </div>
-        <!-- /.col -->
-      </div>
-      <!-- info row -->
-      <div class="invoice-info">
-        <div class="row">
-          <div class="col-md-3 col-sm-3 col-xs-3">
-            From: <br>
-            <br>
-            <address>
-              <b>Admin {{config('app.name')}}</b><br>
-              Phone: (+84) 343 754 517<br>
-              Email: thanhtrung@gmail.com<br>
-              Address: Đinh Bộ Lĩnh - P 25 - Bình Thạnh.
-            </address>
-          </div>
-          <div class="col-md-3 col-sm-3 col-xs-3">
-            To: <br>
-            <br>
-            <address>
-              <b>{{ $order->name }}</b><br>
-              Phone: {{ $order->phone }}<br>
-              Email: {{ $order->email }}<br>
-              Address: {{ $order->address }}
-            </address>
-          </div>
-          <div class="col-md-3 col-sm-3 col-xs-3">
-            Thông Tin Tài Khoản<br>
-            <br>
-            <address>
-              <b>{{ $order->user->name }}</b><br>
-              Phone: {{ $order->user->phone }}<br>
-              Email: {{ $order->user->email }}<br>
-              Address: {{ $order->user->address }}
-            </address>
-          </div>
-          <div class="col-md-3 col-sm-3 col-xs-3">
-            Thông Tin Đơn Hàng<br>
-            <br>
-            <address>
-              <b>Đơn Hàng #{{ $order->order_code }}</b><br>
-              <b>Ngày Tạo:</b> {{ date_format($order->created_at, 'd/m/Y') }}<br>
-              <b>Thanh Toán:</b> {{ $order->payment_method->name }}
-            </address>
-          </div>
-        </div>
-      </div>
-      <!-- /.row -->
 
-      <!-- Table row -->
-      <div class="row">
-        <div class="col-xs-12 table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th style="text-align: center;">STT</th>
-                <th>Mã Sản Phẩm</th>
-                <th>Tên Sản Phẩm</th>
-                <th>Mầu Sắc</th>
-                <th style="text-align: center;">Số Lượng</th>
-                <th>Đơn Giá</th>
-                <th>Tổng Tiền</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php $price = 0; ?>
-              @foreach($order->order_details as $key => $order_detail)
-                <?php $price = $price + $order_detail->price * $order_detail->quantity; ?>
-                <tr>
-                  <td style="text-align: center;">{{ $key + 1 }}</td>
-                  <td>{{ '#'.$order_detail->product_detail->product->sku_code }}</td>
-                  <td>{{ $order_detail->product_detail->product->name }}</td>
-                  <td>{{ $order_detail->product_detail->color }}</td>
-                  <td style="text-align: center;">{{ $order_detail->quantity }}</td>
-                  <td><span style="color: #9fda58;">{{ number_format($order_detail->price,0,',','.') }} VNĐ</span></td>
-                  <td><span style="color: #9fda58;">{{ number_format($order_detail->price * $order_detail->quantity,0,',','.') }} VNĐ</span></td>
-                </tr>
-              @endforeach
-              <tr>
-                  <td colspan="7" style="text-align: right;"><b>Tổng = <span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></b></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <!-- /.col -->
-      </div>
-      <!-- /.row -->
-
-      <div class="row">
-        <!-- accepted payments column -->
-        <div class="col-xs-6">
-          <p class="lead">Phương Thức Thanh Toán:</p>
-          @if(Str::contains($order->payment_method->name, 'Online Payment'))
-            <div style="width: fit-content; padding: 5px; border: 1px solid #e3e3e3; border-radius: 5px; box-shadow: 0px 0px 5px #e3e3e3;">
-              <img style="width: 150px; height: 50px; object-fit: cover;" src="{{ asset('images/nganluong.png') }}" alt="Ngân Lượng">
+            <div class="grid grid-cols-3 gap-6 mb-6">
+                <div>
+                    <h3 class="text-lg font-semibold">Thông tin người nhận</h3>
+                    <address class="text-gray-700">
+                        <b>{{ $order->name }}</b><br>
+                        SĐT: {{ $order->phone }}<br>
+                        Email: {{ $order->email }}<br>
+                        Địa chỉ: {{ $order->address }}
+                    </address>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold">Thông tin người đặt</h3>
+                    <address class="text-gray-700">
+                        <b>{{ $order->user->name }}</b><br>
+                        SĐT: {{ $order->user->phone }}<br>
+                        Email: {{ $order->user->email }}<br>
+                        Địa chỉ: {{ $order->user->address }}
+                    </address>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold">Thông tin đơn hàng</h3>
+                    <address class="text-gray-700">
+                        <b>Đơn Hàng #{{ $order->order_code }}</b><br>
+                        <b>Ngày Tạo:</b> {{ date_format($order->created_at, 'd/m/Y') }}<br>
+                        <b>Thanh Toán:</b> {{ $order->payment_method->name }}
+                    </address>
+                </div>
             </div>
-          @else
-            <div style="width: fit-content; padding: 5px; border: 1px solid #e3e3e3; border-radius: 5px; box-shadow: 0px 0px 5px #e3e3e3;">
-              <img style="width: 150px; height: 60px; object-fit: cover;" src="{{ asset('images/cod.png') }}" alt="COD">
+
+            <div class="table-responsive mb-6">
+                <table class="table-auto w-full border-collapse border border-gray-200 text-gray-700">
+                    <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-200 p-2 text-center">STT</th>
+                        <th class="border border-gray-200 p-2">Mã Sản Phẩm</th>
+                        <th class="border border-gray-200 p-2">Tên Sản Phẩm</th>
+                        <th class="border border-gray-200 p-2">Màu Sắc</th>
+                        <th class="border border-gray-200 p-2 text-center">Số Lượng</th>
+                        <th class="border border-gray-200 p-2">Đơn Giá</th>
+                        <th class="border border-gray-200 p-2">Tổng Tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @php $price = 0; @endphp
+                    @foreach($order->order_details as $key => $order_detail)
+                        @php $price += $order_detail->price * $order_detail->quantity; @endphp
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-200 p-2 text-center">{{ $key + 1 }}</td>
+                            <td class="border border-gray-200 p-2">{{ '#'.$order_detail->product_detail->product->sku_code }}</td>
+                            <td class="border border-gray-200 p-2 flex items-center space-x-2">
+                                <a href="{{ route('admin.product.edit', $order_detail->product_detail->product) }}"
+                                   class="text-blue-500 hover:underline">{{ $order_detail->product_detail->product->name }}</a>
+                                <img class="w-10 h-10 rounded-md object-cover"
+                                     src="{{ $order_detail->product_detail->product_image_urls[0] ?? '' }}"
+                                     alt="Product image">
+                            </td>
+                            <td class="border border-gray-200 p-2">{{ $order_detail->product_detail->color }}</td>
+                            <td class="border border-gray-200 p-2 text-center">{{ $order_detail->quantity }}</td>
+                            <td class="border border-gray-200 p-2 text-green-500">{{ number_format($order_detail->price,0,',','.') }}
+                                VNĐ
+                            </td>
+                            <td class="border border-gray-200 p-2 text-green-500">{{ number_format($order_detail->price * $order_detail->quantity,0,',','.') }}
+                                VNĐ
+                            </td>
+                        </tr>
+                    @endforeach
+                    <tr class="bg-gray-100">
+                        <td colspan="6" class="border border-gray-200 p-2 text-right font-semibold">Tổng</td>
+                        <td class="border border-gray-200 p-2 text-green-500">{{ number_format($price,0,',','.') }}
+                            VNĐ
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-          @endif
 
-          <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-            <b>{{ $order->payment_method->name.':' }}</b><br>
-            <span style="margin-left: 15px;">{{ $order->payment_method->describe }}</span>
-          </p>
+            <div class="flex justify-between">
+                <div class="w-1/2">
+                    <h3 class="text-lg font-semibold">Phương thức thanh toán</h3>
+                    <p class="text-gray-700 bg-gray-100 p-4 rounded">
+                        <b>{{ $order->payment_method->name }}:</b><br>
+                        <span class="ml-4">{{ $order->payment_method->describe }}</span>
+                    </p>
+                </div>
+                <div class="w-1/2">
+                    <h3 class="text-lg font-semibold">Chi tiết thanh toán</h3>
+                    <div class="table-responsive">
+                        <table class="table-auto w-full text-gray-700">
+                            <tr>
+                                <th class="p-2 text-left">Tổng Tiền:</th>
+                                <td class="p-2 text-green-500"> {{ Helpers::formatVietnameseCurrency($price) }}</td>
+                            </tr>
+{{--                            <tr>--}}
+{{--                                <th class="p-2 text-left">Đã Thanh Toán:</th>--}}
+{{--                                <td class="p-2 text-green-500">--}}
+{{--                                    @if((int)($order?->payment_status ?? null) !== PaymentStatus::Paid->value)--}}
+{{--                                        {{ Helpers::formatVietnameseCurrency(0) }}--}}
+{{--                                    @else--}}
+{{--                                        {{ Helpers::formatVietnameseCurrency($price) }}--}}
+{{--                                    @endif--}}
+{{--                                </td>--}}
+{{--                            </tr>--}}
+{{--                            <tr>--}}
+{{--                                <th class="p-2 text-left">Tổng số tiền phải thanh toán:</th>--}}
+{{--                                <td class="p-2 text-green-500">--}}
+{{--                                    @if((int)($order?->payment_status ?? null) === PaymentStatus::Paid->value)--}}
+{{--                                        {{ Helpers::formatVietnameseCurrency(0) }}--}}
+{{--                                    @else--}}
+{{--                                        {{ Helpers::formatVietnameseCurrency($price) }}--}}
+{{--                                    @endif--}}
+{{--                                </td>--}}
+{{--                            </tr>--}}
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.col -->
-        <div class="col-xs-6">
-          <p class="lead">Thanh Toán Chi Tiết</p>
 
-          <div class="table-responsive">
-            <table class="table">
-              <tr>
-                <th style="width:50%">Tổng Tiền:</th>
-                <td><span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
-              </tr>
-              <tr>
-                <th>Đã Thanh Toán:</th>
-                @if(Str::contains($order->payment_method->name, 'Online Payment'))
-                <td><span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
-                @else
-                <td><span style="color: #9fda58;">0 VNĐ</span></td>
-                @endif
-              </tr>
-              <tr>
-                <th>Phí Vận Chuyển:</th>
-                <td><span style="color: #9fda58;">0 VNĐ</span></td>
-              </tr>
-              <tr>
-                <th>Tổng Số Tiền Phải Thanh Toán:</th>
-                @if(Str::contains($order->payment_method->name, 'Online Payment'))
-                <td><span style="color: #9fda58;">0 VNĐ</span></td>
-                @else
-                <td><span style="color: #9fda58;">{{ number_format($price,0,',','.') }} VNĐ</span></td>
-                @endif
-              </tr>
-            </table>
-          </div>
+        <div class="no-print mt-6 text-right">
+            <button
+                class="btn btn-success btn-print bg-green-500 text-white py-2 px-4 rounded shadow hover:bg-green-600"><i
+                    class="fa fa-print"></i> In Hóa Đơn
+            </button>
         </div>
-        <!-- /.col -->
-      </div>
-      <!-- /.row -->
-    </div>
-    <!-- this row will not appear when printing -->
-    <div class="row no-print">
-      <div class="col-xs-12">
-        <button class="btn btn-success btn-print pull-right"><i class="fa fa-print"></i> In Hóa Đơn</button>
-      </div>
-    </div>
-  </section>
-  <!-- /.content -->
-  <div class="clearfix"></div>
+    </section>
 @endsection
 
 @section('embed-js')
-<!-- Print JS -->
-<script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
 @endsection
 
 @section('custom-js')
-<script>
-  $(document).ready(function() {
-    $('.btn-print').click(function(){
-      printJS({
-        printable: 'print-invoice',
-        type: 'html',
-        css: [
-          '{{ asset('AdminLTE/bower_components/bootstrap/dist/css/bootstrap.min.css') }}',
-          '{{ asset('AdminLTE/dist/css/AdminLTE.min.css') }}'
-        ],
-        style: 'img { filter: grayscale(100%); -webkit-filter: grayscale(100%); }'
-      });
-    });
-  });
-</script>
+    <script>
+        $(document).ready(function () {
+            $('.btn-print').click(function () {
+                printJS({
+                    printable: 'print-invoice',
+                    type: 'html',
+                    css: [
+                        'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css'
+                    ],
+                    style: 'img { filter: grayscale(100%); -webkit-filter: grayscale(100%); }',
+                    ignoreElements: []
+                });
+            });
+        });
+    </script>
 @endsection

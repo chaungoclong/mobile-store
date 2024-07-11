@@ -16,20 +16,12 @@ class AdminAuthenticate
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        if(!Auth::check()) {
-            return redirect()->route('login')->with(['alert' => [
-                'type' => 'warning',
-                'title' => 'Từ chối truy cập!',
-                'content' => 'Bạn không có quyền truy cập. Hãy đăng nhập tài khoản Admin để truy cập trang này.'
-            ]]);
+        if (!Auth::check()) {
+            return redirect()->route('admin.login');
         }
 
-        if(!Auth::user()->admin) {
-            return redirect()->route('home_page')->with(['alert' => [
-                'type' => 'warning',
-                'title' => 'Từ chối truy cập!',
-                'content' => 'Tài khoản của bạn không có quyền truy cập. Trang này chỉ dành cho tài khoản Admin.'
-            ]]);
+        if (!Auth::user()->admin) {
+            abort(403);
         }
 
         return $next($request);

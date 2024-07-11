@@ -22,7 +22,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request): View
     {
-        return view('admin.statistic.index2');
+        return view('admin.index2');
     }
 
     public function getDashboardData(Request $request): JsonResponse

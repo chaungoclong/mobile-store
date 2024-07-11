@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
 
@@ -21,7 +22,7 @@ class ProfileController extends Controller
         try {
             $user = auth()->user();
 
-            return view('admin.profile', ['user' => $user]);
+            return view('admin.profile1', ['user' => $user]);
         } catch (Throwable) {
             abort(500);
         }
@@ -54,6 +55,48 @@ class ProfileController extends Controller
             Log::error(__METHOD__ . ':' . __LINE__ . ':' . $throwable->getMessage(), $request->all());
 
             return back()->with('error', 'Update Failed');
+        }
+    }
+
+
+    public function updateWithFile(Request $request): RedirectResponse
+    {
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'name' => ['required', 'string'],
+                    'avatar_image' => ['file']
+                ]
+            );
+
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
+
+            /**
+             * @var User $user ;
+             */
+            $user = auth()->user();
+            if($request->hasFile('avatar_image')) {
+                $image = $request->file('avatar_image');
+                $image_name = time().'_'.$image->getClientOriginalName();
+                $image->storeAs('images/avatars',$image_name,'public');
+
+                if($user->avatar_image !== null) {
+                    Storage::disk('public')->delete('images/avatars/'.$user->avatar_image);
+                }
+
+                $user->avatar_image = $image_name;
+            }
+            $user->name = $request->input('name');
+            $user->save();
+
+            return back()->with('success', 'Cập nhật thông tin thành công');
+        } catch (Throwable $throwable) {
+            Log::error(__METHOD__ . ':' . __LINE__ . ':' . $throwable->getMessage(), $request->all());
+
+            return back()->with('error', 'Cập nhật thông tin không thành công');
         }
     }
 

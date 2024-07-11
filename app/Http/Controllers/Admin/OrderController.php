@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -51,7 +52,8 @@ class OrderController extends Controller
             'email',
             'phone',
             'address',
-            'created_at'
+            'created_at',
+            'payment_status',
         )->where([['status', '<>', 0], ['id', $id]])->with([
             'user' => function ($query) {
                 $query->select('id', 'name', 'email', 'phone', 'address');
@@ -110,6 +112,7 @@ class OrderController extends Controller
                         );
                     }
                     $orderAction->status = OrderStatus::Done->value;
+                    $orderAction->payment_status = PaymentStatus::Paid->value;
                     break;
                 case 'cancel':
                     if ($orderAction->status == OrderStatus::Done->value) {

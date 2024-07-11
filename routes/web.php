@@ -33,6 +33,14 @@ Route::get('active/{token}', 'Auth\RegisterController@activation')->name('active
 | Admin Routes
 |--------------------------------------------------------------------------
 */
+Route::get('admin/login', static function () {
+    return view('admin.login');
+})->name('admin.login')->middleware('guest');
+
+//
+//Route::get('admin/test', static function () {
+//    return view('admin.index2');
+//})->name('admin.profile')->middleware('auth');
 Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
     ->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -40,6 +48,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
 
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('profile2', [ProfileController::class, 'updateWithFile'])->name('profile.update2');
         Route::put('profile/change-password', [ProfileController::class, 'changePassword'])
             ->name('profile.changePassword');
 
