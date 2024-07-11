@@ -19,10 +19,8 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::select('id', 'producer_id', 'name', 'image', 'sku_code', 'OS', 'rate', 'created_at')
-            ->whereHas('product_details', function (Builder $query) {
-                $query->where('import_quantity', '>', 0);
-            })
+        $products = Product::query()
+            ->select('id', 'producer_id', 'name', 'image', 'sku_code', 'OS', 'rate', 'created_at')
             ->with([
                 'producer' => function ($query) {
                     $query->select('id', 'name');
@@ -38,61 +36,38 @@ class ProductController extends Controller
 
     public function delete(Request $request)
     {
-        $product = Product::whereHas('product_details', function (Builder $query) {
-            $query->where('import_quantity', '>', 0);
-        })->where('id', $request->product_id)->first();
+        /**
+         * @var Product $product
+         */
+        $product = Product::query()->find($request->input('product_id'));
 
         if (!$product) {
             $data['type'] = 'error';
             $data['title'] = 'Thất Bại';
             $data['content'] = 'Bạn không thể xóa sản phẩm không tồn tại!';
         } else {
-            $can_delete = 1;
-            $product_details = $product->product_details;
-            foreach ($product_details as $product_detail) {
-                if ($product_detail->import_quantity == 0 || $product_detail->import_quantity != $product_detail->quantity) {
-                    $can_delete = 0;
-                    break;
-                }
-            }
-
-            if ($can_delete) {
-                foreach ($product_details as $product_detail) {
-                    foreach ($product_detail->product_images as $image) {
+            $hasOrders = $product->productDetails()->whereHas('orderDetails')->exists();
+            if ($hasOrders) {
+                $data['type'] = 'error';
+                $data['title'] = 'Thất Bại';
+                $data['content'] = 'Bạn không thể xóa sản phẩm đã có đơn hàng!';
+            } else {
+                $productDetails = $product->productDetails()->get();
+                foreach ($productDetails as $productDetail) {
+                    foreach ($productDetail->product_images as $image) {
                         Storage::disk('public')->delete('images/products/' . $image->image_name);
                         $image->delete();
                     }
-                    $product_detail->delete();
+                    $productDetail->delete();
                 }
-                foreach ($product->promotions as $promotion) {
-                    $promotion->delete();
-                }
-                foreach ($product->product_votes as $product_vote) {
-                    $product_vote->delete();
-                }
-                $product->delete();
-            } else {
-                foreach ($product_details as $product_detail) {
-                    if ($product_detail->import_quantity > 0 && $product_detail->import_quantity == $product_detail->quantity) {
-                        foreach ($product_detail->product_images as $image) {
-                            Storage::disk('public')->delete('images/products/' . $image->image_name);
-                            $image->delete();
-                        }
-                        $product_detail->delete();
-                    } else {
-                        $product_detail->import_quantity = 0;
-                        $product_detail->quantity = 0;
-                        $product_detail->save();
-                    }
-                }
-                foreach ($product->promotions as $promotion) {
-                    $promotion->delete();
-                }
-            }
 
-            $data['type'] = 'success';
-            $data['title'] = 'Thành Công';
-            $data['content'] = 'Xóa sản phẩm thành công!';
+                $product->votes()->delete();
+                $product->delete();
+
+                $data['type'] = 'success';
+                $data['title'] = 'Thành Công';
+                $data['content'] = 'Xóa sản phẩm thành công!';
+            }
         }
 
         return response()->json($data, 200);
@@ -315,9 +290,6 @@ class ProductController extends Controller
             'information_details',
             'product_introduction'
         )
-            ->whereHas('product_details', function (Builder $query) {
-                $query->where('quantity', '>', 0);
-            })
             ->where('id', $id)
             ->with([
                 'product_details' => function ($query) {
@@ -333,7 +305,6 @@ class ProductController extends Controller
                             'promotion_start_date',
                             'promotion_end_date'
                         )
-                        ->where('quantity', '>', 0)
                         ->with([
                             'product_images' => function ($query) {
                                 $query->select('id', 'product_detail_id', 'image_name');
@@ -358,9 +329,7 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $product = Product::whereHas('product_details', function (Builder $query) {
-            $query->where('import_quantity', '>', 0);
-        })->where('id', $id)->first();
+        $product = Product::where('id', $id)->first();
         if (!$product) {
             abort(404);
         }
@@ -478,52 +447,52 @@ class ProductController extends Controller
 
         $product->save();
 
-        if ($request->has('old_product_promotions')) {
-            foreach ($request->old_product_promotions as $key => $old_product_promotion) {
-                $promotion = Promotion::where('id', $key)->first();
-                if (!$promotion) {
-                    abort(404);
-                }
-
-                $promotion->content = $old_product_promotion['content'];
-
-                //Xử lý ngày bắt đầu, ngày kết thúc
-                list($start_date, $end_date) = explode(' - ', $old_product_promotion['promotion_date']);
-
-                $start_date = str_replace('/', '-', $start_date);
-                $start_date = date('Y-m-d', strtotime($start_date));
-
-                $end_date = str_replace('/', '-', $end_date);
-                $end_date = date('Y-m-d', strtotime($end_date));
-
-                $promotion->start_date = $start_date;
-                $promotion->end_date = $end_date;
-
-                $promotion->save();
-            }
-        }
-
-        if ($request->has('product_promotions')) {
-            foreach ($request->product_promotions as $product_promotion) {
-                $promotion = new Promotion;
-                $promotion->product_id = $product->id;
-                $promotion->content = $product_promotion['content'];
-
-                //Xử lý ngày bắt đầu, ngày kết thúc
-                list($start_date, $end_date) = explode(' - ', $product_promotion['promotion_date']);
-
-                $start_date = str_replace('/', '-', $start_date);
-                $start_date = date('Y-m-d', strtotime($start_date));
-
-                $end_date = str_replace('/', '-', $end_date);
-                $end_date = date('Y-m-d', strtotime($end_date));
-
-                $promotion->start_date = $start_date;
-                $promotion->end_date = $end_date;
-
-                $promotion->save();
-            }
-        }
+//        if ($request->has('old_product_promotions')) {
+//            foreach ($request->old_product_promotions as $key => $old_product_promotion) {
+//                $promotion = Promotion::where('id', $key)->first();
+//                if (!$promotion) {
+//                    abort(404);
+//                }
+//
+//                $promotion->content = $old_product_promotion['content'];
+//
+//                //Xử lý ngày bắt đầu, ngày kết thúc
+//                list($start_date, $end_date) = explode(' - ', $old_product_promotion['promotion_date']);
+//
+//                $start_date = str_replace('/', '-', $start_date);
+//                $start_date = date('Y-m-d', strtotime($start_date));
+//
+//                $end_date = str_replace('/', '-', $end_date);
+//                $end_date = date('Y-m-d', strtotime($end_date));
+//
+//                $promotion->start_date = $start_date;
+//                $promotion->end_date = $end_date;
+//
+//                $promotion->save();
+//            }
+//        }
+//
+//        if ($request->has('product_promotions')) {
+//            foreach ($request->product_promotions as $product_promotion) {
+//                $promotion = new Promotion;
+//                $promotion->product_id = $product->id;
+//                $promotion->content = $product_promotion['content'];
+//
+//                //Xử lý ngày bắt đầu, ngày kết thúc
+//                list($start_date, $end_date) = explode(' - ', $product_promotion['promotion_date']);
+//
+//                $start_date = str_replace('/', '-', $start_date);
+//                $start_date = date('Y-m-d', strtotime($start_date));
+//
+//                $end_date = str_replace('/', '-', $end_date);
+//                $end_date = date('Y-m-d', strtotime($end_date));
+//
+//                $promotion->start_date = $start_date;
+//                $promotion->end_date = $end_date;
+//
+//                $promotion->save();
+//            }
+//        }
 
         if ($request->has('old_product_details')) {
             foreach ($request->old_product_details as $key => $product_detail) {
@@ -535,7 +504,7 @@ class ProductController extends Controller
 
                 $old_product_detail->color = $product_detail['color'];
                 $old_product_detail->import_quantity = $product_detail['quantity'];
-                $old_product_detail->quantity = $product_detail['quantity'] - $sum;
+                $old_product_detail->quantity = $product_detail['quantity'];
                 $old_product_detail->import_price = str_replace('.', '', $product_detail['import_price']);
                 $old_product_detail->sale_price = str_replace('.', '', $product_detail['sale_price']);
                 if ($product_detail['promotion_price'] != null) {

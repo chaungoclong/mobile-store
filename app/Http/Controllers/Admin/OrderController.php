@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\ProductDetail;
 
 class OrderController extends Controller
 {
@@ -114,6 +116,15 @@ class OrderController extends Controller
                         return redirect()->back()->with('error', 'Không thể Hủy đơn hàng đã hoàn thành');
                     }
                     $orderAction->status = OrderStatus::Cancelled->value;
+                    foreach ($orderAction->orderDetails as $orderDetail) {
+                        if (($orderDetail instanceof OrderDetail)
+                            && !empty($orderDetail->product_detail_id)
+                            && !empty($orderDetail->quantity)) {
+                            ProductDetail::query()
+                                ->where('id', $orderDetail->product_detail_id)
+                                ->increment('quantity', (int)$orderDetail->quantity);
+                        }
+                    }
                     break;
                 case 'delivery':
                     if ($orderAction->status == OrderStatus::Done->value) {

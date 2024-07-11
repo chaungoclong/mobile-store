@@ -83,7 +83,7 @@
 
                 <div class="timeline-item">
 
-                  <h3 class="timeline-header"><a>{{ $user->name }}</a> đã đánh giá <a>{{ $vote->rate }}</a> sao về sản phẩm <a>{{ $vote->product->name }}</a></h3>
+                  <h3 class="timeline-header"><a>{{ $user->name }}</a> đã đánh giá <a>{{ $vote->rate }}</a> sao về sản phẩm <a>{{ $vote?->product?->name ?? '' }}</a></h3>
 
                   <div class="timeline-body">
                     <b>Nội Dung:</b> {{ $vote->content }}
