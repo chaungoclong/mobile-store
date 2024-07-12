@@ -23,4 +23,13 @@ enum OrderStatus: int
             default => 'N/A'
         };
     }
+
+    public static function uncancellableStatus(): array
+    {
+        return [
+            self::Done->value,
+            self::Cancelled->value,
+            self::Delivery->value
+        ];
+    }
 }

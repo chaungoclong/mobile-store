@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DashboardStatisticController;
 use App\Http\Controllers\Admin\ProducerController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Pages\OrderController;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -123,6 +124,7 @@ Route::namespace('Pages')->group(function () {
     Route::get('post/{id}', 'PostController@show')->name('post_page');
     Route::get('orders', 'OrderController@index')->name('orders_page');
     Route::get('order/{id}', 'OrderController@show')->name('order_page');
+    Route::delete('order/{order}', [OrderController::class, 'cancelOrder'])->name('cancel_order');
 
     Route::get('user/profile', 'UserController@show')->name('show_user');
     Route::get('user/edit', 'UserController@edit')->name('edit_user');

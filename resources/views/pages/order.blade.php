@@ -1,3 +1,4 @@
+@php use App\Enums\OrderStatus; @endphp
 @extends('layouts.master')
 
 @section('title', $data['order']->order_code)
@@ -43,6 +44,13 @@
                 </div>
                 <div class="section-header-right">
                     Ngày tạo: {{ date_format($data['order']->created_at, 'd/m/Y') }}
+                </div>
+                <div>
+                    @if(!in_array($data['order']->status ?? null, OrderStatus::uncancellableStatus(), true))
+                        <button class="btn btn-danger" id="cancelOrderBtn"
+                                data-url="{{ route('cancel_order', $data['order']) }}">Hủy Đơn
+                        </button>
+                    @endif
                 </div>
             </div>
             <div class="section-content">
@@ -192,6 +200,45 @@
                     }
                 },
                 navText: ['<i class="fas fa-angle-left"></i>', '<i class="fas fa-angle-right"></i>']
+            });
+
+            $('#cancelOrderBtn').on('click', function () {
+                const url = $(this).attr('data-url');
+
+                Swal.fire({
+                    title: 'Bạn có muốn hủy đơn hàng này',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Không!',
+                    confirmButtonText: 'Có!'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const response = await fetch(url, {
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                                'Accept': 'application/json'
+                            },
+                            method: 'delete',
+                        });
+
+                        const jsonResponse = await response.json();
+
+                        if (response.ok) {
+                            Toast.fire({
+                                title: jsonResponse?.message,
+                                icon: 'success'
+                            });
+                            $('#cancelOrderBtn').hide()
+                        } else {
+                            Toast.fire({
+                                title: jsonResponse?.message,
+                                icon: 'error'
+                            });
+                        }
+                    }
+                });
             });
         });
     </script>

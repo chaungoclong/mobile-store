@@ -22,7 +22,8 @@
   <link rel="stylesheet" href="{{ asset('common/css/fontawesome/css/all.css') }}">
   <link rel="stylesheet" href="{{ asset('common/css/owl.carousel.min.css') }}">
   <link rel="stylesheet" href="{{ asset('common/css/owl.theme.default.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('common/css/sweetalert2.min.css') }}">
+{{--  <link rel="stylesheet" href="{{ asset('common/css/sweetalert2.min.css') }}">--}}
+
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
@@ -33,31 +34,7 @@
 </head>
 <body>
     <!-- Load Facebook SDK for JavaScript -->
-    <div id="fb-root"></div>
-    <script>
-      window.fbAsyncInit = function() {
-        FB.init({
-          xfbml            : true,
-          version          : 'v4.0'
-        });
-      };
 
-      (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js';
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
-
-    <!-- Your customer chat code -->
-    <div class="fb-customerchat"
-      attribution=setup_tool
-      page_id="106507137419133"
-      theme_color="#ff3300"
-      logged_in_greeting="{{ __('message.welcome') }}"
-      logged_out_greeting="{{ __('message.welcome') }}">
-    </div>
 
     <!-- Header -->
     @include('layouts.header')
@@ -81,13 +58,56 @@
     <script src="{{ asset('common/js/jquery-3.3.1.js') }}"></script>
     <script src="{{ asset('common/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('common/js/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('common/js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 
     <!-- Custom Scripts -->
     <script src="{{ asset('js/custom.js') }}"></script>
     @if(Request::route()->getName() != 'show_cart')
     <script src="{{ asset('js/minicart.js') }}"></script>
     @endif
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        function debounce(func, wait) {
+            return function (...args) {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+    </script>
+
+    @foreach (['error', 'success', 'warning'] as $messageStatus)
+        @if(session($messageStatus))
+            <script>
+                $(function () {
+                    Toast.fire(
+                        {
+                            'title': `{{ session($messageStatus )}}`,
+                            'icon': `{{ $messageStatus }}`
+                        }
+                    );
+                });
+            </script>
+        @endif
+    @endforeach
     @yield('js')
 </body>
 </html>
