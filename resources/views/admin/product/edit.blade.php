@@ -281,6 +281,7 @@
                                                        name="old_product_details[{{ $product_detail->id }}][color]"
                                                        class="form-control color" id="color_{{ $product_detail->id }}"
                                                        placeholder="Mầu sắc" required autocomplete="off"
+                                                       disabled
                                                        value="{{ $product_detail->color }}">
                                             </div>
                                         </div>

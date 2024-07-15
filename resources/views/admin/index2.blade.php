@@ -142,13 +142,29 @@
             <!-- Top Selling Products -->
             <div class="bg-white p-4 rounded shadow mb-4">
                 <h2 class="text-xl font-semibold mb-2">Top Sản Phẩm Bán Chạy</h2>
-                <ul>
+{{--                <ul>--}}
+{{--                    <template x-for="product in topProducts" :key="product.id">--}}
+{{--                        <li class="border-b py-2">--}}
+{{--                            <span x-text="product.name"></span> - <span x-text="product.total_sales"></span>--}}
+{{--                        </li>--}}
+{{--                    </template>--}}
+{{--                </ul>--}}
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr>
+                        <th class="p-2 border-b">Tên sản phẩm</th>
+                        <th class="p-2 border-b">Số lượng đã bán</th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     <template x-for="product in topProducts" :key="product.id">
-                        <li class="border-b py-2">
-                            <span x-text="product.name"></span> - <span x-text="product.total_sales"></span>
-                        </li>
+                        <tr>
+                            <td class="p-2 border-b" x-text="product?.name"></td>
+                            <td class="p-2 border-b" x-text="product?.total_sales"></td>
+                        </tr>
                     </template>
-                </ul>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Inventory -->

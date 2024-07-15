@@ -169,13 +169,14 @@ class DashboardController extends Controller
             });
     }
 
-    private function getTopProducts(): Collection
+    private function getTopProducts(string $startDate, string $endDate): Collection
     {
         return DB::table('order_details')
             ->join('orders', 'order_details.order_id', '=', 'orders.id')
             ->join('product_details', 'order_details.product_detail_id', '=', 'product_details.id')
             ->join('products', 'product_details.product_id', '=', 'products.id')
             ->where('orders.status', OrderStatus::Done->value)
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
             ->select('products.id', 'products.name', DB::raw('SUM(order_details.quantity) as total_sales'))
             ->groupBy('products.id', 'products.name')
             ->orderBy('total_sales', 'desc')

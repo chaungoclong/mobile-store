@@ -20,9 +20,48 @@
         </nav>
     </section>
 
-    <div class="row">
-        <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">
-            Thanh toán thành công
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4>Thông tin đặt hàng</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div class="form-group">
+                                <label>Mã đơn hàng:</label>
+                                <p class="form-control-static">{{ $_GET['vnp_TxnRef'] }}</p>
+                            </div>
+                            <div class="form-group">
+                                <label>Số tiền:</label>
+                                <p class="form-control-static">{{ $_GET['vnp_Amount'] }}</p>
+                            </div>
+                            <div class="form-group">
+                                <label>Nội dung thanh toán:</label>
+                                <p class="form-control-static">{{ $_GET['vnp_OrderInfo'] }}</p>
+                            </div>
+                            <div class="form-group">
+                                <label>Mã GD Tại VNPAY:</label>
+                                <p class="form-control-static">{{ $_GET['vnp_TransactionNo'] }}</p>
+                            </div>
+                            <div class="form-group">
+                                <label>Mã Ngân hàng:</label>
+                                <p class="form-control-static">{{ $_GET['vnp_BankCode'] }}</p>
+                            </div>
+                            <div class="form-group">
+                                <label>Thời gian thanh toán:</label>
+                                <p class="form-control-static">{{ $_GET['vnp_PayDate'] }}</p>
+                            </div>
+                            <div class="text-center mt-4">
+                                <a href="{{ route('home_page') }}" class="btn btn-primary">
+                                    <i class="fas fa-shopping-cart"></i> Quay lại mua sắm tiếp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

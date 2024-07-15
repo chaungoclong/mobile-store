@@ -502,7 +502,7 @@ class ProductController extends Controller
                     abort(404);
                 }
 
-                $old_product_detail->color = $product_detail['color'];
+//                $old_product_detail->color = $product_detail['color'];
                 $old_product_detail->import_quantity = $product_detail['quantity'];
                 $old_product_detail->quantity = $product_detail['quantity'];
                 $old_product_detail->import_price = str_replace('.', '', $product_detail['import_price']);

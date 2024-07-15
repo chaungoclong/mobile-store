@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -246,7 +247,7 @@ Route::namespace('Pages')->group(function () {
                 $paymentStatus = PaymentStatus::Failed->value;
             }
 
-            $order->update(['payment_status' => $paymentStatus]);
+            $order->update(['payment_status' => $paymentStatus, 'status' => OrderStatus::Confirmed->value]);
         } catch (Exception $e) {
             $returnData['RspCode'] = '99';
             $returnData['Message'] = 'Unknow error';
