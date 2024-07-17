@@ -44,45 +44,45 @@ class PostController extends Controller
     //Xử lý Ảnh trong nội dung
     $content = $request->content;
 
-    $dom = new \DomDocument();
-
-    // conver utf-8 to html entities
-    $content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
-
-    $dom->loadHtml($content, LIBXML_HTML_NODEFDTD);
-
-    $images = $dom->getElementsByTagName('img');
-
-    foreach($images as $k => $img){
-
-        $data = $img->getAttribute('src');
-
-        if(Str::containsAll($data, ['data:image', 'base64'])){
-
-            list(, $type) = explode('data:image/', $data);
-            list($type, ) = explode(';base64,', $type);
-
-            list(, $data) = explode(';base64,', $data);
-
-            $data = base64_decode($data);
-
-            $image_name= time().$k.'.'.$type;
-
-            Storage::disk('public')->put('images/posts/'.$image_name, $data);
-
-            $img->removeAttribute('src');
-            $img->setAttribute('src', '/storage/images/posts/'.$image_name);
-        }
-    }
-
-    $content = $dom->saveHTML();
-
-    //conver html-entities to utf-8
-    $content = mb_convert_encoding($content, "UTF-8", 'HTML-ENTITIES');
-
-    //get content
-    list(, $content) = explode('<html><body>', $content);
-    list($content, ) = explode('</body></html>', $content);
+//    $dom = new \DomDocument();
+//
+//    // conver utf-8 to html entities
+//    $content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
+//
+//    $dom->loadHtml($content, LIBXML_HTML_NODEFDTD);
+//
+//    $images = $dom->getElementsByTagName('img');
+//
+//    foreach($images as $k => $img){
+//
+//        $data = $img->getAttribute('src');
+//
+//        if(Str::containsAll($data, ['data:image', 'base64'])){
+//
+//            list(, $type) = explode('data:image/', $data);
+//            list($type, ) = explode(';base64,', $type);
+//
+//            list(, $data) = explode(';base64,', $data);
+//
+//            $data = base64_decode($data);
+//
+//            $image_name= time().$k.'.'.$type;
+//
+//            Storage::disk('public')->put('images/posts/'.$image_name, $data);
+//
+//            $img->removeAttribute('src');
+//            $img->setAttribute('src', '/storage/images/posts/'.$image_name);
+//        }
+//    }
+//
+//    $content = $dom->saveHTML();
+//
+//    //conver html-entities to utf-8
+//    $content = mb_convert_encoding($content, "UTF-8", 'HTML-ENTITIES');
+//
+//    //get content
+//    list(, $content) = explode('<html><body>', $content);
+//    list($content, ) = explode('</body></html>', $content);
 
     $post = new Post;
     $post->title = $request->title;
@@ -175,45 +175,45 @@ class PostController extends Controller
     //Xử lý Ảnh trong nội dung
     $content = $request->content;
 
-    $dom = new \DomDocument();
-
-    // conver utf-8 to html entities
-    $content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
-
-    $dom->loadHtml($content, LIBXML_HTML_NODEFDTD);
-
-    $images = $dom->getElementsByTagName('img');
-
-    foreach($images as $k => $img){
-
-        $data = $img->getAttribute('src');
-
-        if(Str::containsAll($data, ['data:image', 'base64'])){
-
-            list(, $type) = explode('data:image/', $data);
-            list($type, ) = explode(';base64,', $type);
-
-            list(, $data) = explode(';base64,', $data);
-
-            $data = base64_decode($data);
-
-            $image_name= time().$k.'.'.$type;
-
-            Storage::disk('public')->put('images/posts/'.$image_name, $data);
-
-            $img->removeAttribute('src');
-            $img->setAttribute('src', '/storage/images/posts/'.$image_name);
-        }
-    }
-
-    $content = $dom->saveHTML();
-
-    //conver html-entities to utf-8
-    $content = mb_convert_encoding($content, "UTF-8", 'HTML-ENTITIES');
-
-    //get content
-    list(, $content) = explode('<html><body>', $content);
-    list($content, ) = explode('</body></html>', $content);
+//    $dom = new \DomDocument();
+//
+//    // conver utf-8 to html entities
+//    $content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
+//
+//    $dom->loadHtml($content, LIBXML_HTML_NODEFDTD);
+//
+//    $images = $dom->getElementsByTagName('img');
+//
+//    foreach($images as $k => $img){
+//
+//        $data = $img->getAttribute('src');
+//
+//        if(Str::containsAll($data, ['data:image', 'base64'])){
+//
+//            list(, $type) = explode('data:image/', $data);
+//            list($type, ) = explode(';base64,', $type);
+//
+//            list(, $data) = explode(';base64,', $data);
+//
+//            $data = base64_decode($data);
+//
+//            $image_name= time().$k.'.'.$type;
+//
+//            Storage::disk('public')->put('images/posts/'.$image_name, $data);
+//
+//            $img->removeAttribute('src');
+//            $img->setAttribute('src', '/storage/images/posts/'.$image_name);
+//        }
+//    }
+//
+//    $content = $dom->saveHTML();
+//
+//    //conver html-entities to utf-8
+//    $content = mb_convert_encoding($content, "UTF-8", 'HTML-ENTITIES');
+//
+//    //get content
+//    list(, $content) = explode('<html><body>', $content);
+//    list($content, ) = explode('</body></html>', $content);
 
     $post = Post::where('id', $id)->first();
     $post->title = $request->title;
