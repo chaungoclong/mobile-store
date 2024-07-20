@@ -119,7 +119,7 @@
                                 <td>{{ $order->phone }}</td>
                                 <td>{{ $order->payment_method->name }}</td>
                                 <td>{{ $order->payment_status == 1 ? 'Đã thanh toán' : 'Chưa thanh toán' }}</td>
-                                <td> {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y')}}</td>
+                                <td> {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y H:i:s')}}</td>
                                 <td>
 
                                     @if($order->status == OrderStatus::Pending->value)

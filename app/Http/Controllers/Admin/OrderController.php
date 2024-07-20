@@ -35,7 +35,6 @@ class OrderController extends Controller
                     $query->select('id', 'name');
                 }
             ])
-            ->orderBy('status')
             ->orderBy('created_at', 'desc')
             ->get();
         return view('admin.order.index')->with('orders', $orders);

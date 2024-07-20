@@ -101,7 +101,8 @@
                                     <select class="form-control" name="category_id" required>
                                         <option value="">-- Chọn Danh mục --</option>
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                            <option
+                                                value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -189,58 +190,6 @@
                 </div>
             </div>
         </div>
-        {{--  <div class="box box-primary">--}}
-        {{--    <div class="box-header with-border">--}}
-        {{--      <h3 class="box-title">Thông Tin Khuyến Mãi</h3>--}}
-        {{--      <div class="box-tools">--}}
-        {{--        <!-- This will cause the box to collapse when clicked -->--}}
-        {{--        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>--}}
-        {{--      </div>--}}
-        {{--    </div>--}}
-        {{--    <div class="box-body">--}}
-        {{--      <div id="product-promotions">--}}
-        {{--      @if($product->promotions->isNotEmpty())--}}
-        {{--        @foreach($product->promotions as $promotion)--}}
-        {{--        <div class="box box-solid box-default collapsed-box" style="margin-bottom: 5px;">--}}
-        {{--          <div class="box-header">--}}
-        {{--            <h3 class="box-title">{{ $promotion->content }}</h3>--}}
-        {{--            <div class="box-tools">--}}
-        {{--              <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>--}}
-        {{--              <a href="javascript:void(0);" data-id="{{ $promotion->id }}" class="btn btn-box-tool remove-promotion" title="Xóa" data-url="{{ route('admin.product.delete_promotion') }}" style="color: #9fda58;">--}}
-        {{--                <i class="fa fa-times"></i>--}}
-        {{--              </a>--}}
-        {{--            </div>--}}
-        {{--          </div>--}}
-        {{--          <div class="box-body" style="display: none;">--}}
-        {{--            <div class="row">--}}
-        {{--              <div class="col-md-6">--}}
-        {{--                <div class="form-group" style="margin-bottom: 0;">--}}
-        {{--                  <label for="old_promotion_{{ $promotion->id }}">Khuyến Mãi <span class="text-red">*</span></label>--}}
-        {{--                  <input type="text" name="old_product_promotions[{{ $promotion->id }}][content]" class="form-control promotion" id="old_promotion_{{ $promotion->id }}" placeholder="Khuyến Mãi" required autocomplete="off" value="{{ $promotion->content }}">--}}
-        {{--                </div>--}}
-        {{--              </div>--}}
-        {{--              <div class="col-md-6">--}}
-        {{--                <div class="form-group">--}}
-        {{--                  <label>Thời Gian Khuyến Mãi</label>--}}
-        {{--                  <div class="input-group">--}}
-        {{--                    <div class="input-group-addon">--}}
-        {{--                      <i class="fa fa-calendar"></i>--}}
-        {{--                    </div>--}}
-        {{--                    <input type="text" class="form-control pull-right promotion-reservation" name="old_product_promotions[{{ $promotion->id }}][promotion_date]" autocomplete="off" required value="{{ date_format(date_create($promotion->start_date), 'd/m/Y').' - '.date_format(date_create($promotion->end_date), 'd/m/Y') }}">--}}
-        {{--                  </div>--}}
-        {{--                </div>--}}
-        {{--              </div>--}}
-        {{--            </div>--}}
-        {{--          </div>--}}
-        {{--        </div>--}}
-        {{--        @endforeach--}}
-        {{--      @endif--}}
-        {{--      </div>--}}
-        {{--      <div class="text-center">--}}
-        {{--        <button class="add-promotion btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i> Thêm Khuyến Mãi</button>--}}
-        {{--      </div>--}}
-        {{--    </div>--}}
-        {{--  </div>--}}
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Biến thể theo màu</h3>
@@ -293,7 +242,7 @@
                                                        name="old_product_details[{{ $product_detail->id }}][quantity]"
                                                        class="form-control" id="quantity_{{ $product_detail->id }}"
                                                        placeholder="Số lượng" required autocomplete="off"
-                                                       value="{{ $product_detail->import_quantity }}">
+                                                       value="{{ $product_detail->quantity }}">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -736,117 +685,59 @@
         });
 
         $(document).ready(function () {
-
-            $(".remove-promotion").click(function () {
-
-                var promotion_id = $(this).attr('data-id');
-                var url = $(this).attr('data-url');
-
-                Swal.fire({
-                    type: 'question',
-                    title: 'Thông báo',
-                    text: 'Bạn có chắc muốn xóa khuyến mãi này?',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    showLoaderOnConfirm: true,
-                    preConfirm: () => {
-                        return fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            body: JSON.stringify({'promotion_id': promotion_id}),
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(response.statusText);
-                                }
-                                return response.json();
-                            })
-                            .catch(error => {
-                                Swal.showValidationMessage(error);
-
-                                Swal.update({
-                                    type: 'error',
-                                    title: 'Lỗi!',
-                                    text: '',
-                                    showConfirmButton: false,
-                                    cancelButtonText: 'Ok',
-                                });
-                            })
-                    },
-                }).then((result) => {
-                    if (result.value) {
-                        Swal.fire({
-                            type: result.value.type,
-                            title: result.value.title,
-                            text: result.value.content,
-                        }).then((result) => {
-                            if (result.value) {
-                                $(this).closest('.box').remove();
-                            }
-                        });
-                    }
-                })
-            });
-
             $(".remove-product-detail").click(function () {
 
                 var product_detail_id = $(this).attr('data-id');
                 var url = $(this).attr('data-url');
 
                 Swal.fire({
-                    type: 'question',
-                    title: 'Thông báo',
-                    text: 'Bạn có chắc muốn xóa chi tiết sản phẩm này?',
+                    title: "Thông báo",
+                    text: "Bạn có chắc muốn xóa biến thể sản phẩm này?",
+                    icon: "question",
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    showLoaderOnConfirm: true,
-                    preConfirm: () => {
-                        return fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            body: JSON.stringify({'product_detail_id': product_detail_id}),
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(response.statusText);
-                                }
-                                return response.json();
-                            })
-                            .catch(error => {
-                                Swal.showValidationMessage(error);
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Có!",
+                    cancelButtonText: "Không!"
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        try {
+                            const response = await fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                body: JSON.stringify({'product_detail_id': product_detail_id}),
+                            });
 
-                                Swal.update({
-                                    type: 'error',
-                                    title: 'Lỗi!',
-                                    text: '',
-                                    showConfirmButton: false,
-                                    cancelButtonText: 'Ok',
+                            const json = await response.json();
+
+                            if (!response.ok) {
+                                Swal.fire({
+                                    title: json?.title,
+                                    text: json?.content,
+                                    icon: "error"
                                 });
-                            })
-                    },
-                }).then((result) => {
-                    if (result.value) {
-                        Swal.fire({
-                            type: result.value.type,
-                            title: result.value.title,
-                            text: result.value.content,
-                        }).then((result) => {
-                            if (result.value) {
+                            } else {
+                                Swal.fire({
+                                    title: json?.title,
+                                    text: json?.content,
+                                    icon: "success"
+                                });
+
                                 $(this).closest('.box').remove();
                             }
-                        });
+                        } catch (e) {
+                            Swal.fire({
+                                title: 'Lỗi',
+                                text: 'Đã có lỗi xảy ra',
+                                icon: "error"
+                            });
+                        }
                     }
-                })
+                });
             });
         });
     </script>

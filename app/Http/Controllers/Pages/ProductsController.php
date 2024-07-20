@@ -275,10 +275,7 @@ class ProductsController extends Controller
         }
 
         $product_details = ProductDetail::query()
-            ->where([
-                ['product_id', $id],
-                ['import_quantity', '>', 0]
-            ])
+            ->where('product_id', $id)
             ->with([
                 'product_images' => function ($query) {
                     $query->select('id', 'product_detail_id', 'image_name');

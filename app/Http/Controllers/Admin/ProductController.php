@@ -10,14 +10,20 @@ use App\Models\Product;
 use App\Models\ProductDetail;
 use App\Models\ProductImage;
 use App\Models\Promotion;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(): Factory|View|Application
     {
         $products = Product::query()
             ->select('id', 'producer_id', 'name', 'image', 'sku_code', 'OS', 'rate', 'created_at')
@@ -28,9 +34,12 @@ class ProductController extends Controller
             ])
             ->withCount([
                 'product_details' => function (Builder $query) {
-                    $query->where([['import_quantity', '>', 0], ['quantity', '>', 0]]);
+                    $query->where('quantity', '>', 0);
                 }
-            ])->latest()->get();
+            ])
+            ->latest()
+            ->get();
+
         return view('admin.product.index')->with('products', $products);
     }
 
@@ -83,99 +92,11 @@ class ProductController extends Controller
         ]);
     }
 
-    public function save(Request $request)
+    public function save(Request $request): RedirectResponse
     {
         $product = new Product;
-
-        if ($request->information_details != null) {
-            //Xử lý Ảnh trong nội dung
-            $information_details = $request->information_details;
-
-            $dom = new \DomDocument();
-
-            // conver utf-8 to html entities
-            $information_details = mb_convert_encoding($information_details, 'HTML-ENTITIES', "UTF-8");
-
-            $dom->loadHtml($information_details, LIBXML_HTML_NODEFDTD);
-
-            $images = $dom->getElementsByTagName('img');
-
-            foreach ($images as $k => $img) {
-                $data = $img->getAttribute('src');
-
-                if (Str::containsAll($data, ['data:image', 'base64'])) {
-                    list(, $type) = explode('data:image/', $data);
-                    list($type,) = explode(';base64,', $type);
-
-                    list(, $data) = explode(';base64,', $data);
-
-                    $data = base64_decode($data);
-
-                    $image_name = time() . $k . '_' . Str::random(8) . '.' . $type;
-
-                    Storage::disk('public')->put('images/posts/' . $image_name, $data);
-
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', '/storage/images/posts/' . $image_name);
-                }
-            }
-
-            $information_details = $dom->saveHTML();
-
-            //conver html-entities to utf-8
-            $information_details = mb_convert_encoding($information_details, "UTF-8", 'HTML-ENTITIES');
-
-            //get content
-            list(, $information_details) = explode('<html><body>', $information_details);
-            list($information_details,) = explode('</body></html>', $information_details);
-
-            $product->information_details = $information_details;
-        }
-        if ($request->product_introduction != null) {
-            //Xử lý Ảnh trong nội dung
-            $product_introduction = $request->product_introduction;
-
-            $dom = new \DomDocument();
-
-            // conver utf-8 to html entities
-            $product_introduction = mb_convert_encoding($product_introduction, 'HTML-ENTITIES', "UTF-8");
-
-            $dom->loadHtml($product_introduction, LIBXML_HTML_NODEFDTD);
-
-            $images = $dom->getElementsByTagName('img');
-
-            foreach ($images as $k => $img) {
-                $data = $img->getAttribute('src');
-
-                if (Str::containsAll($data, ['data:image', 'base64'])) {
-                    list(, $type) = explode('data:image/', $data);
-                    list($type,) = explode(';base64,', $type);
-
-                    list(, $data) = explode(';base64,', $data);
-
-                    $data = base64_decode($data);
-
-                    $image_name = time() . $k . '_' . Str::random(8) . '.' . $type;
-
-                    Storage::disk('public')->put('images/posts/' . $image_name, $data);
-
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', '/storage/images/posts/' . $image_name);
-                }
-            }
-
-            $product_introduction = $dom->saveHTML();
-
-            //conver html-entities to utf-8
-            $product_introduction = mb_convert_encoding($product_introduction, "UTF-8", 'HTML-ENTITIES');
-
-            //get content
-            list(, $product_introduction) = explode('<html><body>', $product_introduction);
-            list($product_introduction,) = explode('</body></html>', $product_introduction);
-
-            $product->product_introduction = $product_introduction;
-        }
-
+        $product->product_introduction = $request->input('product_introduction', '');
+        $product->information_details = $request->input('information_details', '');
         $product->name = $request->name;
         $product->producer_id = $request->producer_id;
         $product->category_id = $request->category_id;
@@ -200,34 +121,11 @@ class ProductController extends Controller
 
         $product->save();
 
-//        if ($request->has('product_promotions')) {
-//            foreach ($request->product_promotions as $product_promotion) {
-//                $promotion = new Promotion;
-//                $promotion->product_id = $product->id;
-//                $promotion->content = $product_promotion['content'];
-//
-//                //Xử lý ngày bắt đầu, ngày kết thúc
-//                list($start_date, $end_date) = explode(' - ', $product_promotion['promotion_date']);
-//
-//                $start_date = str_replace('/', '-', $start_date);
-//                $start_date = date('Y-m-d', strtotime($start_date));
-//
-//                $end_date = str_replace('/', '-', $end_date);
-//                $end_date = date('Y-m-d', strtotime($end_date));
-//
-//                $promotion->start_date = $start_date;
-//                $promotion->end_date = $end_date;
-//
-//                $promotion->save();
-//            }
-//        }
-
         if ($request->has('product_details')) {
             foreach ($request->product_details as $key => $product_detail) {
                 $new_product_detail = new ProductDetail;
                 $new_product_detail->product_id = $product->id;
                 $new_product_detail->color = $product_detail['color'];
-                $new_product_detail->import_quantity = $product_detail['quantity'];
                 $new_product_detail->quantity = $product_detail['quantity'];
                 $new_product_detail->import_price = str_replace('.', '', $product_detail['import_price']);
                 $new_product_detail->sale_price = str_replace('.', '', $product_detail['sale_price']);
@@ -264,32 +162,34 @@ class ProductController extends Controller
         }
 
         return redirect()
-            ->route('admin.product.index')->with(['success' => 'Thêm sản phẩm thành công.']);
+            ->route('admin.product.index')
+            ->with(['success' => 'Thêm sản phẩm thành công.']);
     }
 
-    public function edit($id)
+    public function edit($id): Factory|View|Application
     {
         $producers = Producer::select('id', 'name')->orderBy('name', 'asc')->get();
         $categories = Category::select('id', 'name')->orderBy('name', 'asc')->get();
-        $product = Product::select(
-            'id',
-            'producer_id',
-            'category_id',
-            'name',
-            'image',
-            'sku_code',
-            'monitor',
-            'front_camera',
-            'rear_camera',
-            'CPU',
-            'GPU',
-            'RAM',
-            'ROM',
-            'OS',
-            'pin',
-            'information_details',
-            'product_introduction'
-        )
+        $product = Product::query()
+            ->select(
+                'id',
+                'producer_id',
+                'category_id',
+                'name',
+                'image',
+                'sku_code',
+                'monitor',
+                'front_camera',
+                'rear_camera',
+                'CPU',
+                'GPU',
+                'RAM',
+                'ROM',
+                'OS',
+                'pin',
+                'information_details',
+                'product_introduction'
+            )
             ->where('id', $id)
             ->with([
                 'product_details' => function ($query) {
@@ -298,8 +198,8 @@ class ProductController extends Controller
                             'id',
                             'product_id',
                             'color',
-                            'import_quantity',
                             'import_price',
+                            'quantity',
                             'sale_price',
                             'promotion_price',
                             'promotion_start_date',
@@ -314,7 +214,8 @@ class ProductController extends Controller
                             }
                         ]);
                 }
-            ])->first();
+            ])
+            ->first();
         if (!$product) {
             abort(404);
         }
@@ -327,102 +228,16 @@ class ProductController extends Controller
         );
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
         $product = Product::where('id', $id)->first();
+
         if (!$product) {
             abort(404);
         }
 
-        if ($request->information_details != null) {
-            //Xử lý Ảnh trong nội dung
-            $information_details = $request->information_details;
-
-            $dom = new \DomDocument();
-
-            // conver utf-8 to html entities
-            $information_details = mb_convert_encoding($information_details, 'HTML-ENTITIES', "UTF-8");
-
-            $dom->loadHtml($information_details, LIBXML_HTML_NODEFDTD);
-
-            $images = $dom->getElementsByTagName('img');
-
-            foreach ($images as $k => $img) {
-                $data = $img->getAttribute('src');
-
-                if (Str::containsAll($data, ['data:image', 'base64'])) {
-                    list(, $type) = explode('data:image/', $data);
-                    list($type,) = explode(';base64,', $type);
-
-                    list(, $data) = explode(';base64,', $data);
-
-                    $data = base64_decode($data);
-
-                    $image_name = time() . $k . '_' . Str::random(8) . '.' . $type;
-
-                    Storage::disk('public')->put('images/posts/' . $image_name, $data);
-
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', '/storage/images/posts/' . $image_name);
-                }
-            }
-
-            $information_details = $dom->saveHTML();
-
-            //conver html-entities to utf-8
-            $information_details = mb_convert_encoding($information_details, "UTF-8", 'HTML-ENTITIES');
-
-            //get content
-            list(, $information_details) = explode('<html><body>', $information_details);
-            list($information_details,) = explode('</body></html>', $information_details);
-
-            $product->information_details = $information_details;
-        }
-        if ($request->product_introduction != null) {
-            //Xử lý Ảnh trong nội dung
-            $product_introduction = $request->product_introduction;
-
-            $dom = new \DomDocument();
-
-            // conver utf-8 to html entities
-            $product_introduction = mb_convert_encoding($product_introduction, 'HTML-ENTITIES', "UTF-8");
-
-            $dom->loadHtml($product_introduction, LIBXML_HTML_NODEFDTD);
-
-            $images = $dom->getElementsByTagName('img');
-
-            foreach ($images as $k => $img) {
-                $data = $img->getAttribute('src');
-
-                if (Str::containsAll($data, ['data:image', 'base64'])) {
-                    list(, $type) = explode('data:image/', $data);
-                    list($type,) = explode(';base64,', $type);
-
-                    list(, $data) = explode(';base64,', $data);
-
-                    $data = base64_decode($data);
-
-                    $image_name = time() . $k . '_' . Str::random(8) . '.' . $type;
-
-                    Storage::disk('public')->put('images/posts/' . $image_name, $data);
-
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', '/storage/images/posts/' . $image_name);
-                }
-            }
-
-            $product_introduction = $dom->saveHTML();
-
-            //conver html-entities to utf-8
-            $product_introduction = mb_convert_encoding($product_introduction, "UTF-8", 'HTML-ENTITIES');
-
-            //get content
-            list(, $product_introduction) = explode('<html><body>', $product_introduction);
-            list($product_introduction,) = explode('</body></html>', $product_introduction);
-
-            $product->product_introduction = $product_introduction;
-        }
-
+        $product->product_introduction = $request->input('product_introduction', '');
+        $product->information_details = $request->input('information_details', '');
         $product->name = $request->name;
         $product->producer_id = $request->producer_id;
         $product->sku_code = $request->sku_code;
@@ -447,63 +262,13 @@ class ProductController extends Controller
 
         $product->save();
 
-//        if ($request->has('old_product_promotions')) {
-//            foreach ($request->old_product_promotions as $key => $old_product_promotion) {
-//                $promotion = Promotion::where('id', $key)->first();
-//                if (!$promotion) {
-//                    abort(404);
-//                }
-//
-//                $promotion->content = $old_product_promotion['content'];
-//
-//                //Xử lý ngày bắt đầu, ngày kết thúc
-//                list($start_date, $end_date) = explode(' - ', $old_product_promotion['promotion_date']);
-//
-//                $start_date = str_replace('/', '-', $start_date);
-//                $start_date = date('Y-m-d', strtotime($start_date));
-//
-//                $end_date = str_replace('/', '-', $end_date);
-//                $end_date = date('Y-m-d', strtotime($end_date));
-//
-//                $promotion->start_date = $start_date;
-//                $promotion->end_date = $end_date;
-//
-//                $promotion->save();
-//            }
-//        }
-//
-//        if ($request->has('product_promotions')) {
-//            foreach ($request->product_promotions as $product_promotion) {
-//                $promotion = new Promotion;
-//                $promotion->product_id = $product->id;
-//                $promotion->content = $product_promotion['content'];
-//
-//                //Xử lý ngày bắt đầu, ngày kết thúc
-//                list($start_date, $end_date) = explode(' - ', $product_promotion['promotion_date']);
-//
-//                $start_date = str_replace('/', '-', $start_date);
-//                $start_date = date('Y-m-d', strtotime($start_date));
-//
-//                $end_date = str_replace('/', '-', $end_date);
-//                $end_date = date('Y-m-d', strtotime($end_date));
-//
-//                $promotion->start_date = $start_date;
-//                $promotion->end_date = $end_date;
-//
-//                $promotion->save();
-//            }
-//        }
-
         if ($request->has('old_product_details')) {
             foreach ($request->old_product_details as $key => $product_detail) {
-                $sum = OrderDetail::where('product_detail_id', $key)->sum('quantity');
                 $old_product_detail = ProductDetail::where('id', $key)->first();
                 if (!$old_product_detail) {
                     abort(404);
                 }
 
-//                $old_product_detail->color = $product_detail['color'];
-                $old_product_detail->import_quantity = $product_detail['quantity'];
                 $old_product_detail->quantity = $product_detail['quantity'];
                 $old_product_detail->import_price = str_replace('.', '', $product_detail['import_price']);
                 $old_product_detail->sale_price = str_replace('.', '', $product_detail['sale_price']);
@@ -512,7 +277,7 @@ class ProductController extends Controller
                 }
                 if ($product_detail['promotion_date'] != null) {
                     //Xử lý ngày bắt đầu, ngày kết thúc
-                    list($start_date, $end_date) = explode(' - ', $product_detail['promotion_date']);
+                    [$start_date, $end_date] = explode(' - ', $product_detail['promotion_date']);
 
                     $start_date = str_replace('/', '-', $start_date);
                     $start_date = date('Y-m-d', strtotime($start_date));
@@ -533,7 +298,6 @@ class ProductController extends Controller
                 $new_product_detail = new ProductDetail;
                 $new_product_detail->product_id = $product->id;
                 $new_product_detail->color = $product_detail['color'];
-                $new_product_detail->import_quantity = $product_detail['quantity'];
                 $new_product_detail->quantity = $product_detail['quantity'];
                 $new_product_detail->import_price = str_replace('.', '', $product_detail['import_price']);
                 $new_product_detail->sale_price = str_replace('.', '', $product_detail['sale_price']);
@@ -542,7 +306,7 @@ class ProductController extends Controller
                 }
                 if ($product_detail['promotion_date'] != null) {
                     //Xử lý ngày bắt đầu, ngày kết thúc
-                    list($start_date, $end_date) = explode(' - ', $product_detail['promotion_date']);
+                    [$start_date, $end_date] = explode(' - ', $product_detail['promotion_date']);
 
                     $start_date = str_replace('/', '-', $start_date);
                     $start_date = date('Y-m-d', strtotime($start_date));
@@ -612,34 +376,37 @@ class ProductController extends Controller
         return response()->json($data, 200);
     }
 
-    public function delete_product_detail(Request $request)
+    public function delete_product_detail(Request $request): JsonResponse
     {
-        $product_detail = ProductDetail::where([['id', $request->product_detail_id], ['import_quantity', '>', 0]]
-        )->first();
+        $product_detail = ProductDetail::query()->find($request->product_detail_id);
 
         if (!$product_detail) {
             $data['type'] = 'error';
             $data['title'] = 'Thất Bại';
-            $data['content'] = 'Bạn không thể xóa chi tiết sản phẩm không tồn tại!';
-        } else {
-            if ($product_detail->import_quantity == $product_detail->quantity) {
-                foreach ($product_detail->product_images as $image) {
-                    Storage::disk('public')->delete('images/products/' . $image->image_name);
-                    $image->delete();
-                }
-                $product_detail->delete();
-            } else {
-                $product_detail->import_quantity = 0;
-                $product_detail->quantity = 0;
-                $product_detail->save();
-            }
-
-            $data['type'] = 'success';
-            $data['title'] = 'Thành Công';
-            $data['content'] = 'Xóa chi tiết sản phẩm thành công!';
+            $data['content'] = 'Bạn không thể xóa biến thể sản phẩm không tồn tại!';
+            return response()->json($data, Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json($data, 200);
+        $hasOrder = OrderDetail::query()->where('product_detail_id', $product_detail->getKey())->exists();
+
+        if ($hasOrder) {
+            $data['type'] = 'error';
+            $data['title'] = 'Thất Bại';
+            $data['content'] = 'Bạn không thể xóa biến thể sản phẩm đã được đặt hàng!';
+
+            return response()->json($data, Response::HTTP_BAD_REQUEST);
+        }
+
+        foreach ($product_detail->product_images as $image) {
+            Storage::disk('public')->delete('images/products/' . $image->image_name);
+            $image->delete();
+        }
+        $product_detail->delete();
+
+        $data['type'] = 'success';
+        $data['title'] = 'Thành Công';
+        $data['content'] = 'Xóa chi tiết sản phẩm thành công!';
+        return response()->json($data, Response::HTTP_OK);
     }
 
     public function delete_image(Request $request)
