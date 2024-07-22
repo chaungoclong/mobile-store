@@ -1,4 +1,4 @@
-@php use App\Enums\OrderStatus; @endphp
+@php use App\Enums\OrderStatus;use App\Enums\PaymentStatus;use Carbon\Carbon; @endphp
 @extends('admin.layouts.master')
 
 @section('title', 'Quản Lý Đơn Hàng')
@@ -118,8 +118,8 @@
                                 <td>{{ $order->email }}</td>
                                 <td>{{ $order->phone }}</td>
                                 <td>{{ $order->payment_method->name }}</td>
-                                <td>{{ $order->payment_status == 1 ? 'Đã thanh toán' : 'Chưa thanh toán' }}</td>
-                                <td> {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y H:i:s')}}</td>
+                                <td>{{ $order->payment_status == PaymentStatus::Paid->value ? 'Đã thanh toán' : 'Chưa thanh toán' }}</td>
+                                <td> {{ Carbon::parse($order->created_at)->format('d/m/Y H:i:s')}}</td>
                                 <td>
 
                                     @if($order->status == OrderStatus::Pending->value)
@@ -131,7 +131,7 @@
                                     @elseif ($order->status == OrderStatus::Done->value)
                                         <span class="label label-success" style="font-size:13px">Đã Giao Hàng</span>
                                     @else
-                                        <span class="label label-danger" style="font-size:13px">Hủy</span>
+                                        <span class="label label-danger" style="font-size:13px">Đã Hủy</span>
                                     @endif
                                 </td>
                                 <td>

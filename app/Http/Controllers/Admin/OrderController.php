@@ -8,6 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductDetail;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
@@ -37,7 +41,22 @@ class OrderController extends Controller
             ])
             ->orderBy('created_at', 'desc')
             ->get();
-        return view('admin.order.index')->with('orders', $orders);
+        return view('admin.order.index2')->with('orders', $orders);
+    }
+
+    public function fetch(Request $request): JsonResponse
+    {
+        $orders = Order::query()
+            ->with(['customer', 'payment_method'])
+            ->when($request->has('status'), function (Builder $query) use ($request) {
+                $query->where('status', $request->input('status'));
+            })
+            ->when($request->has('payment_status'), function (Builder $query) use ($request) {
+                $query->when('payment_status', $request->input('payment_status'));
+            })
+            ->paginate(10)->appends($request->except(['page', '_token']));
+
+        return response()->json($orders, Response::HTTP_OK);
     }
 
     public function show($id)

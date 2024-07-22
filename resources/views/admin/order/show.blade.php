@@ -22,13 +22,26 @@
 
 @section('content')
     <section class="invoice mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <div class="no-print mt-6 text-left mb-6">
+            <button class="btn btn-primary">
+                Xác nhận đơn hàng
+            </button>
+            <button class="btn btn-danger">
+                Hủy Đơn
+            </button>
+            <button
+                class="btn btn-success btn-print bg-green-500 text-white py-2 px-4 rounded shadow hover:bg-green-600"><i
+                    class="fa fa-print"></i> In Hóa Đơn
+            </button>
+        </div>
+
         <div id="print-invoice">
             <div class="flex justify-between items-center border-b pb-4 mb-6">
                 <div class="flex items-center">
                     <div class="w-10 mr-3">
-                        {{-- <img src="{{ asset('images/favicon.png') }}" alt="PhoneStore Logo" class="w-full h-auto object-cover"> --}}
+                         <img src="{{ asset('images/favicon.png') }}" alt="PhoneStore Logo" class="w-full h-auto object-cover">
                     </div>
-                    <div class="text-2xl text-red-600 font-bold">{{ config('app.name') }}</div>
+                    <div class="text-3xl text-red-600 font-bold">{{ config('app.name') }}</div>
                 </div>
                 <div class="text-xl text-gray-500">
                     <p>Ngày: {{ date("d/m/Y") }}</p>
@@ -38,7 +51,7 @@
 
             <div class="grid grid-cols-3 gap-6 mb-6">
                 <div>
-                    <h3 class="text-lg font-semibold">Thông tin người nhận</h3>
+                    <h3 class="text-2xl font-semibold">Thông tin người nhận</h3>
                     <address class="text-gray-700">
                         <b>{{ $order->name }}</b><br>
                         SĐT: {{ $order->phone }}<br>
@@ -47,7 +60,7 @@
                     </address>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold">Thông tin người đặt</h3>
+                    <h3 class="text-2xl font-semibold">Thông tin người đặt</h3>
                     <address class="text-gray-700">
                         <b>{{ $order->user->name }}</b><br>
                         SĐT: {{ $order->user->phone }}<br>
@@ -56,11 +69,12 @@
                     </address>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold">Thông tin đơn hàng</h3>
+                    <h3 class="text-2xl font-semibold">Thông tin đơn hàng</h3>
                     <address class="text-gray-700">
                         <b>Đơn Hàng #{{ $order->order_code }}</b><br>
                         <b>Ngày Tạo:</b> {{ date_format($order->created_at, 'd/m/Y') }}<br>
-                        <b>Thanh Toán:</b> {{ $order->payment_method->name }}
+                        <b>Thanh Toán:</b> {{ $order->payment_method->name }}<br>
+                        <b>Mã vận đơn:</b> {{ $order->delivery_code ?? '' }}
                     </address>
                 </div>
             </div>
@@ -128,37 +142,30 @@
                                 <th class="p-2 text-left">Tổng Tiền:</th>
                                 <td class="p-2 text-green-500"> {{ Helpers::formatVietnameseCurrency($price) }}</td>
                             </tr>
-{{--                            <tr>--}}
-{{--                                <th class="p-2 text-left">Đã Thanh Toán:</th>--}}
-{{--                                <td class="p-2 text-green-500">--}}
-{{--                                    @if((int)($order?->payment_status ?? null) !== PaymentStatus::Paid->value)--}}
-{{--                                        {{ Helpers::formatVietnameseCurrency(0) }}--}}
-{{--                                    @else--}}
-{{--                                        {{ Helpers::formatVietnameseCurrency($price) }}--}}
-{{--                                    @endif--}}
-{{--                                </td>--}}
-{{--                            </tr>--}}
-{{--                            <tr>--}}
-{{--                                <th class="p-2 text-left">Tổng số tiền phải thanh toán:</th>--}}
-{{--                                <td class="p-2 text-green-500">--}}
-{{--                                    @if((int)($order?->payment_status ?? null) === PaymentStatus::Paid->value)--}}
-{{--                                        {{ Helpers::formatVietnameseCurrency(0) }}--}}
-{{--                                    @else--}}
-{{--                                        {{ Helpers::formatVietnameseCurrency($price) }}--}}
-{{--                                    @endif--}}
-{{--                                </td>--}}
-{{--                            </tr>--}}
+                            <tr>
+                                <th class="p-2 text-left">Đã Thanh Toán:</th>
+                                <td class="p-2 text-green-500">
+                                    @if((int)($order?->payment_status ?? null) !== PaymentStatus::Paid->value)
+                                        {{ Helpers::formatVietnameseCurrency(0) }}
+                                    @else
+                                        {{ Helpers::formatVietnameseCurrency($price) }}
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="p-2 text-left">Tổng số tiền phải thanh toán:</th>
+                                <td class="p-2 text-green-500">
+                                    @if((int)($order?->payment_status ?? null) === PaymentStatus::Paid->value)
+                                        {{ Helpers::formatVietnameseCurrency(0) }}
+                                    @else
+                                        {{ Helpers::formatVietnameseCurrency($price) }}
+                                    @endif
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="no-print mt-6 text-right">
-            <button
-                class="btn btn-success btn-print bg-green-500 text-white py-2 px-4 rounded shadow hover:bg-green-600"><i
-                    class="fa fa-print"></i> In Hóa Đơn
-            </button>
         </div>
     </section>
 @endsection

@@ -103,6 +103,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{{ asset('AdminLTE/dist/js/adminlte.min.js') }}"></script>
 <!-- Custom JS -->
 <script>
+    const BASE_URL = '{{ config('app.url') }}';
     $.ajaxSetup({
         headers: {
             'X-Requested-With': 'XMLHttpRequest',

@@ -95,19 +95,6 @@
             <canvas id="salesChart" width="400" height="200"></canvas>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Sales by Category Chart -->
-            <div class="bg-white p-4 rounded shadow mb-4">
-                <h2 class="text-xl font-semibold mb-2 text-center">Doanh Thu Theo Danh Mục Sản Phẩm</h2>
-                <canvas id="categoryChart" width="400" height="200"></canvas>
-            </div>
-
-            <!-- Sales by Brand Chart -->
-            <div class="bg-white p-4 rounded shadow mb-4">
-                <h2 class="text-xl font-semibold mb-2 text-center">Doanh Thu Theo Hãng Sản Xuất</h2>
-                <canvas id="brandChart" width="400" height="200"></canvas>
-            </div>
-        </div>
 
         <!-- Recent Orders -->
         <div class="bg-white p-4 rounded shadow mb-4">
@@ -323,8 +310,6 @@
                             this.brandChartData.data = data.salesByBrand.data;
 
                             this.updateSalesChart();
-                            this.updateCategoryChart();
-                            this.updateBrandChart();
                         });
                 },
                 updateSalesChart() {

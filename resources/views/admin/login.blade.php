@@ -37,8 +37,6 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
     <!-- Google Font -->
@@ -54,40 +52,39 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="../../index2.html"><b>Admin</b>LTE</a>
+        <span><b>Admin</b>LTE</span>
     </div>
 
     <div class="login-box-body">
-        <p class="login-box-msg">Sign in to start your session</p>
+
         <form action="{{ route('login') }}" method="post">
             @csrf
+            @if(session('message'))
+                <div class="form_message text-danger">
+                    {{ session('message') }}
+                </div>
+            @endif
             <div class="form-group has-feedback">
-                <input type="email" class="form-control" placeholder="Email" name="email">
+                <input type="email" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}">
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                @error('email')
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="Password" name="password">
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                @error('password')
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
             <div class="row">
-                <div class="col-xs-8">
-                    <div class="checkbox">
-                        <label>
-                            Remember Me
-                        </label>
-                    </div>
-                </div>
-
                 <div class="col-xs-4">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">Đăng nhập</button>
                 </div>
-
             </div>
         </form>
-
-        <a href="#">I forgot my password</a><br>
     </div>
-
 </div>
 
 
@@ -99,10 +96,5 @@
 @yield('embed-js')
 <!-- AdminLTE App -->
 <script src="{{ asset('AdminLTE/dist/js/adminlte.min.js') }}"></script>
-<script>
-
-</script>
-
-
 </body>
 </html>
