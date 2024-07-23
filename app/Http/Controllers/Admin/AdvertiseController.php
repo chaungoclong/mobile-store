@@ -2,153 +2,162 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
+use App\DataTables\AdvertiseDataTable;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-
 use App\Models\Advertise;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AdvertiseController extends Controller
 {
-  public function index()
-  {
-    $advertises = Advertise::select('id', 'title', 'image', 'at_home_page', 'start_date', 'end_date', 'created_at')->latest()->get();
-    return view('admin.advertise.index')->with('advertises', $advertises);
-  }
-  public function new()
-  {
-    return view('admin.advertise.new');
-  }
-  public function save(Request $request)
-  {
-    $validator = Validator::make($request->all(), [
-      'title' => 'required',
-      'at_home_page' => 'required',
-      'date' => 'required',
-      'image' => 'required',
-    ], [
-      'title.required' => 'Tiêu đề quảng cáo không được để trống!',
-      'at_home_page.required' => 'Vị trí trang hiển thị phải được chọn!',
-      'date.required' => 'Ngày bắt đầu và kết thúc phải được chọn!',
-      'image.required' => 'Hình ảnh hiển thị bài viết phải được tải lên!',
-    ]);
-
-    if ($validator->fails()) {
-      return back()
-        ->withErrors($validator)
-        ->withInput();
+    public function index(AdvertiseDataTable $dataTable)
+    {
+        return $dataTable->render('admin.advertise.index');
     }
 
-    //Xử lý ngày bắt đầu, ngày kết thúc
-    list($start_date, $end_date) = explode(' - ', $request->date);
-
-    $start_date = str_replace('/', '-', $start_date);
-    $start_date = date('Y-m-d', strtotime($start_date));
-
-    $end_date = str_replace('/', '-', $end_date);
-    $end_date = date('Y-m-d', strtotime($end_date));
-
-    $advertise = new Advertise;
-    $advertise->title = $request->title;
-
-    if($request->hasFile('image')){
-      $image = $request->file('image');
-      $image_name = time().'_'.$image->getClientOriginalName();
-      $image->storeAs('images/advertises',$image_name,'public');
-      $advertise->image = $image_name;
+    public function new()
+    {
+        return view('admin.advertise.new');
     }
 
-    $advertise->at_home_page = $request->at_home_page;
-    $advertise->start_date = $start_date;
-    $advertise->end_date = $end_date;
+    public function save(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'link' => 'required|url',
+            'at_home_page' => 'required',
+            'date' => 'required',
+            'image' => 'required',
+        ], [
+            'title.required' => 'Tiêu đề quảng cáo không được để trống!',
+            'at_home_page.required' => 'Vị trí trang hiển thị phải được chọn!',
+            'date.required' => 'Ngày bắt đầu và kết thúc phải được chọn!',
+            'image.required' => 'Hình ảnh hiển thị bài viết phải được tải lên!',
+        ]);
 
-    $advertise->save();
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-    return redirect()->route('admin.advertise.index')->with(['alert' => [
-      'type' => 'success',
-      'title' => 'Thành Công',
-      'content' => 'Quảng cáo của bạn đã được tạo thành công.'
-    ]]);
-  }
+        //Xử lý ngày bắt đầu, ngày kết thúc
+        list($start_date, $end_date) = explode(' - ', $request->date);
 
-  public function delete(Request $request)
-  {
-    $advertise = Advertise::where('id', $request->advertise_id)->first();
+        $start_date = str_replace('/', '-', $start_date);
+        $start_date = date('Y-m-d', strtotime($start_date));
 
-    if(!$advertise) {
+        $end_date = str_replace('/', '-', $end_date);
+        $end_date = date('Y-m-d', strtotime($end_date));
 
-      $data['type'] = 'error';
-      $data['title'] = 'Thất Bại';
-      $data['content'] = 'Bạn không thể xóa quảng cáo không tồn tại!';
-    } else {
-      Storage::disk('public')->delete('images/advertises/' . $advertise->image);
+        $advertise = new Advertise;
+        $advertise->title = $request->title;
 
-      $advertise->delete();
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $image_name = time() . '_' . $image->getClientOriginalName();
+            $image->storeAs('images/advertises', $image_name, 'public');
+            $advertise->image = $image_name;
+        }
 
-      $data['type'] = 'success';
-      $data['title'] = 'Thành Công';
-      $data['content'] = 'Xóa quảng cáo thành công!';
+        $advertise->at_home_page = $request->at_home_page;
+        $advertise->start_date = $start_date;
+        $advertise->end_date = $end_date;
+        $advertise->link = $request->link;
+
+        $advertise->save();
+
+        return redirect()->route('admin.advertise.index')->with([
+            'alert' => [
+                'type' => 'success',
+                'title' => 'Thành Công',
+                'content' => 'Quảng cáo của bạn đã được tạo thành công.'
+            ]
+        ]);
     }
 
-    return response()->json($data, 200);
-  }
+    public function delete(Request $request)
+    {
+        $advertise = Advertise::where('id', $request->advertise_id)->first();
 
-  public function edit($id)
-  {
-    $advertise = Advertise::where('id', $id)->first();
-    if(!$advertise) abort(404);
-    return view('admin.advertise.edit')->with('advertise', $advertise);
-  }
+        if (!$advertise) {
+            $data['type'] = 'error';
+            $data['title'] = 'Thất Bại';
+            $data['content'] = 'Bạn không thể xóa quảng cáo không tồn tại!';
+        } else {
+            Storage::disk('public')->delete('images/advertises/' . $advertise->image);
 
-  public function update(Request $request, $id)
-  {
-    $validator = Validator::make($request->all(), [
-      'title' => 'required',
-      'at_home_page' => 'required',
-      'date' => 'required',
-    ], [
-      'title.required' => 'Tiêu đề quảng cáo không được để trống!',
-      'at_home_page.required' => 'Vị trí trang hiển thị phải được chọn!',
-      'date.required' => 'Ngày bắt đầu và kết thúc phải được chọn!',
-    ]);
+            $advertise->delete();
 
-    if ($validator->fails()) {
-      return back()
-        ->withErrors($validator)
-        ->withInput();
+            $data['type'] = 'success';
+            $data['title'] = 'Thành Công';
+            $data['content'] = 'Xóa quảng cáo thành công!';
+        }
+
+        return response()->json($data, 200);
     }
 
-    //Xử lý ngày bắt đầu, ngày kết thúc
-    list($start_date, $end_date) = explode(' - ', $request->date);
-
-    $start_date = str_replace('/', '-', $start_date);
-    $start_date = date('Y-m-d', strtotime($start_date));
-
-    $end_date = str_replace('/', '-', $end_date);
-    $end_date = date('Y-m-d', strtotime($end_date));
-
-    $advertise = Advertise::where('id', $id)->first();
-    $advertise->title = $request->title;
-
-    if($request->hasFile('image')){
-      $image = $request->file('image');
-      $image_name = time().'_'.$image->getClientOriginalName();
-      $image->storeAs('images/advertises',$image_name,'public');
-      Storage::disk('public')->delete('images/advertises/' . $advertise->image);
-      $advertise->image = $image_name;
+    public function edit($id)
+    {
+        $advertise = Advertise::where('id', $id)->first();
+        if (!$advertise) {
+            abort(404);
+        }
+        return view('admin.advertise.edit')->with('advertise', $advertise);
     }
 
-    $advertise->at_home_page = $request->at_home_page;
-    $advertise->start_date = $start_date;
-    $advertise->end_date = $end_date;
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'at_home_page' => 'required',
+            'date' => 'required',
+        ], [
+            'title.required' => 'Tiêu đề quảng cáo không được để trống!',
+            'at_home_page.required' => 'Vị trí trang hiển thị phải được chọn!',
+            'date.required' => 'Ngày bắt đầu và kết thúc phải được chọn!',
+        ]);
 
-    $advertise->save();
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-    return redirect()->route('admin.advertise.index')->with(['alert' => [
-      'type' => 'success',
-      'title' => 'Thành Công',
-      'content' => 'Quảng cáo của bạn đã được cập nhật thành công.'
-    ]]);
-  }
+        //Xử lý ngày bắt đầu, ngày kết thúc
+        list($start_date, $end_date) = explode(' - ', $request->date);
+
+        $start_date = str_replace('/', '-', $start_date);
+        $start_date = date('Y-m-d', strtotime($start_date));
+
+        $end_date = str_replace('/', '-', $end_date);
+        $end_date = date('Y-m-d', strtotime($end_date));
+
+        $advertise = Advertise::where('id', $id)->first();
+        $advertise->title = $request->title;
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $image_name = time() . '_' . $image->getClientOriginalName();
+            $image->storeAs('images/advertises', $image_name, 'public');
+            Storage::disk('public')->delete('images/advertises/' . $advertise->image);
+            $advertise->image = $image_name;
+        }
+
+        $advertise->at_home_page = $request->at_home_page;
+        $advertise->start_date = $start_date;
+        $advertise->end_date = $end_date;
+        $advertise->link = $request->link;
+
+        $advertise->save();
+
+        return redirect()->route('admin.advertise.index')->with([
+            'alert' => [
+                'type' => 'success',
+                'title' => 'Thành Công',
+                'content' => 'Quảng cáo của bạn đã được cập nhật thành công.'
+            ]
+        ]);
+    }
 }

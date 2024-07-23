@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProducerController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Pages\OrderController;
 use App\Http\Controllers\Pages\VNPayController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use UniSharp\LaravelFilemanager\Lfm;
 
@@ -85,6 +86,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::get('orders/fetch', [\App\Http\Controllers\Admin\OrderController::class, 'fetch'])->name('order.fetch');
         Route::get('order/{id}/show', 'OrderController@show')->name('order.show');
         Route::get('active/{action}/{id}', 'OrderController@actionTransaction')->name('orderTransaction');
+        Route::post('orders', 'OrderController@update')->name('order.update');
 
         Route::get('statistic', 'StatisticController@index')->name('statistic');
         Route::get('statistic/change', [DashboardStatisticController::class, 'index'])->name('statistic.edit');

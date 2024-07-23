@@ -2,7 +2,8 @@
 
 namespace App\DataTables;
 
-use App\Models\Producer;
+use App\Helpers\Helpers;
+use App\Models\Post;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Yajra\DataTables\EloquentDataTable;
@@ -10,7 +11,7 @@ use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
-class ProducersDataTable extends DataTable
+class PostDataTable extends DataTable
 {
     /**
      * Build DataTable class.
@@ -25,43 +26,39 @@ class ProducersDataTable extends DataTable
             ->filter(function (Builder $query) {
                 if (request()?->has('search')) {
                     $query->where(function (Builder $searchQuery) {
-                        $searchQuery
-                            ->where('name', 'like', "%" . request('search') . "%")
-                            ->orWhere('slug', 'like', "%" . request('search') . "%");
+                        $searchQuery->where('title', 'like', "%" . request('search') . "%");
                     });
                 }
             })
-            ->rawColumns(['logo', 'action'])
-            ->editColumn('logo', function ($item) {
-                return '<img src="' . asset('storage/' . $item->logo) . '" width="100px">';
+            ->rawColumns(['image', 'action'])
+            ->editColumn('image', function ($item) {
+                return '<img src="' . Helpers::get_image_post_url($item->image) . '" width="100px">';
             })
             ->editColumn('created_at', function ($item) {
                 return Carbon::parse($item->created_at)->format('d-m-Y H:i:s');
             })
-            ->editColumn('updated_at', function ($item) {
-                return Carbon::parse($item->updated_at)->format('d-m-Y H:i:s');
-            })
             ->addColumn('action', function ($item) {
-                return '
-                <a href="' . route('admin.producers.edit', ['producer' => $item]) . '"
-                class="btn btn-icon btn-sm btn-primary tip" title="Chỉnh Sửa">
-                  <i class="fa fa-pencil" aria-hidden="true"></i>
+                $actions = '
+                <a href="' . route('admin.post.edit', ['id' => $item->id]) . '" class="btn btn-icon btn-sm btn-primary tip" title="Chi tiết">
+                  <i class="fa fa-eye"></i>
                 </a>
-                <a href="javascript:void(0);" data-id="{{ $producer->id }}"
-                   class="btn btn-icon btn-sm btn-danger deleteDialog tip" title="Xóa"
-                   data-url="' . route('admin.producers.destroy', ['producer' => $item]) . '">
-                    <i class="fa fa-trash"></i>
-                </a>';
+                <a href="javascript:void(0);" style="margin-left: 5px;" data-id="' . $item->id
+                    . '" class="btn btn-icon btn-sm btn-danger deleteDialog tip" title="Xóa" data-url="'
+                    . route('admin.post.delete') . '">
+                        <i class="fa fa-trash"></i>
+                      </a>';
+
+                return $actions;
             });
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param Producer $model
+     * @param Post $model
      * @return Builder
      */
-    public function query(Producer $model): Builder
+    public function query(Post $model): Builder
     {
         return $model->newQuery();
     }
@@ -74,20 +71,20 @@ class ProducersDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('producers-table')
+            ->setTableId('posts-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->stateSave(true)
             ->orderBy(1)
-//            ->selectStyleSingle()
+            ->selectStyleSingle()
             ->responsive()
             ->autoWidth(true)
             ->dom('rltp')
             ->addTableClass('table-hover')
             ->ajax([
-                'url' => route('admin.producers.index'),
+                'url' => route('admin.post.index'),
                 'type' => 'GET',
-                'data' => "function(d) { d.search = $('#searchInput').val(); }",
+                'data' => "function(d) { d.search = $('#search').val(); }",
             ]);
     }
 
@@ -100,22 +97,10 @@ class ProducersDataTable extends DataTable
     {
         return [
             Column::computed('DT_RowIndex', 'STT'),
-            Column::make('name')->title('Tên'),
-            Column::make('slug')->title('Slug'),
-            Column::computed('logo', 'Logo'),
+            Column::computed('image', 'Ảnh'),
+            Column::make('title')->title('Tiêu Đề'),
             Column::make('created_at')->title('Tạo lúc'),
-            Column::make('updated_at')->title('Cập nhật lúc'),
             Column::computed('action', 'Hành động')
         ];
-    }
-
-    /**
-     * Get filename for export.
-     *
-     * @return string
-     */
-    protected function filename(): string
-    {
-        return 'Producers' . date('YmdHis');
     }
 }

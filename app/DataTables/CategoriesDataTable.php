@@ -82,12 +82,12 @@ class CategoriesDataTable extends DataTable
             ->selectStyleSingle()
             ->responsive()
             ->autoWidth(true)
-            ->dom('rtip')
+            ->dom('rltp')
             ->addTableClass('table-hover')
             ->ajax([
                 'url' => route('admin.categories.index'),
                 'type' => 'GET',
-                'data' => "function(d) { d.search = $('#searchInput').val(); }",
+                'data' => "function(d) { d.search = $('#search').val(); }",
             ]);
     }
 

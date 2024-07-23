@@ -136,37 +136,6 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-success btn-xs" style=" height: 30px;">
-                                            Trạng thái
-                                        </button>
-                                        <button type="button" style="height: 30px;"
-                                                class="btn btn-success btn-xs dropdown-toggle"
-                                                data-toggle="dropdown" aria-expanded='false'>
-                                            <span class="caret"></span>
-                                            <span class="sr-only">Toggle-dropdown</span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="{{route('admin.orderTransaction',['pending',$order->id])}}"><i
-                                                        class="fa fa-ban"> </i>Chờ xác nhận</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{route('admin.orderTransaction',['confirmed',$order->id])}}"><i
-                                                        class="fa fa-ban"> </i>Đã xác nhận</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{route('admin.orderTransaction',['delivery',$order->id])}}"><i
-                                                        class="fa fa-ban"> </i>Đang Vận Chuyển</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{route('admin.orderTransaction',['success',$order->id])}}"><i
-                                                        class="fa fa-ban"> </i>Đã Giao Hàng</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{route('admin.orderTransaction',['cancel',$order->id])}}"><i
-                                                        class="fa fa-ban"> </i>Hủy</a>
-                                            </li>
-                                        </ul>
                                         <a href="{{ route('admin.order.show', ['id' => $order->id]) }}"
                                            class="btn btn-icon btn-sm btn-primary tip" title="Chi Tiết">
                                             <i class="fa fa-eye" aria-hidden="true"></i>

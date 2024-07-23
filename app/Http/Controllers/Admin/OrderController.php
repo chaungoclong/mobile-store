@@ -10,7 +10,10 @@ use App\Models\OrderDetail;
 use App\Models\ProductDetail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
@@ -29,7 +32,8 @@ class OrderController extends Controller
                 'email',
                 'phone',
                 'payment_status',
-                'created_at'
+                'created_at',
+                'delivery_code',
             )
             ->where('status', '<>', 0)->with([
                 'user' => function ($query) {
@@ -41,7 +45,7 @@ class OrderController extends Controller
             ])
             ->orderBy('created_at', 'desc')
             ->get();
-        return view('admin.order.index2')->with('orders', $orders);
+        return view('admin.order.index')->with('orders', $orders);
     }
 
     public function fetch(Request $request): JsonResponse
@@ -72,6 +76,8 @@ class OrderController extends Controller
             'address',
             'created_at',
             'payment_status',
+            'status',
+            'delivery_code',
         )->where([['status', '<>', 0], ['id', $id]])->with([
             'user' => function ($query) {
                 $query->select('id', 'name', 'email', 'phone', 'address');
@@ -160,5 +166,36 @@ class OrderController extends Controller
             $orderAction->save();
         }
         return redirect()->back();
+    }
+
+    public function update(Request $request): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => ['required', 'integer', Rule::exists('orders', 'id')],
+            'status' => ['required', 'integer', Rule::in(OrderStatus::values())],
+            'delivery_code' => ['nullable', 'string']
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        $order = Order::query()->find($request->input('id'));
+        $currentStatus = OrderStatus::tryFrom((int)$order->getAttribute('status'));
+        $newStatus = OrderStatus::tryFrom((int)$request->input('status'));
+
+        if ($currentStatus && $newStatus && !$currentStatus->canTransitionTo($newStatus)) {
+            return back()->with(
+                'error',
+                'Không thể chuyển trạng thái từ ' . $currentStatus->label() . ' thành ' . $newStatus->label()
+            );
+        }
+
+        $order->update([
+            'status' => $newStatus->value,
+            'delivery_code' => $request->input('delivery_code')
+        ]);
+
+        return back()->with('success', 'update success');
     }
 }

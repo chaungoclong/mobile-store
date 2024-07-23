@@ -28,9 +28,9 @@
         <h3 class="profile-username text-center">{{ $user->name }}</h3>
 
         @if($user->active)
-        <p class="text-center"><span class="label label-success">Activated</span></p>
+        <p class="text-center"><span class="label label-success">Active</span></p>
         @else
-        <p class="text-center"><span class="label label-danger">Not Activated</span></p>
+        <p class="text-center"><span class="label label-danger">Inactive</span></p>
         @endif
 
         <ul class="list-group list-group-unbordered">
@@ -39,9 +39,6 @@
           </li>
           <li class="list-group-item">
             <b>Số điện thoại</b> <a class="pull-right">{{ $user->phone }}</a>
-          </li>
-          <li class="list-group-item">
-            <b>Liên kết tài khoản</b> <a class="pull-right">{{ $user->provider ?: 'Không' }}</a>
           </li>
           <li class="list-group-item">
             <b>Ngày tạo</b> <a class="pull-right">{{ date_format($user->created_at, 'd/m/Y') }}</a>

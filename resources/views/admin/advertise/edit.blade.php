@@ -50,6 +50,11 @@
             <label for="title">Tiêu Đề <span class="text-red">*</span></label>
             <input type="text" name="title" class="form-control" id="title" placeholder="Tiêu đề quảng cáo" value="{{ old('title') ?: $advertise->title }}" autocomplete="off">
           </div>
+            <div class="form-group">
+                <label for="title">Link<span class="text-red">*</span></label>
+                <input type="text" name="link" class="form-control" id="link" placeholder="Link quảng cáo"
+                       value="{{ old('link', $advertise->link ?? '') }}" autocomplete="off">
+            </div>
           <div class="row">
             <div class="col-md-5">
               <div class="form-group">
@@ -100,7 +105,7 @@
     //Date range picker
     $('#reservation').daterangepicker({
       autoApply: true,
-      minDate: "{{ date_format(date_create($advertise->start_date), 'd/m/Y') }}",
+      {{--minDate: "{{ date_format(date_create($advertise->start_date), 'd/m/Y') }}",--}}
       "locale": {
         "format": "DD/MM/YYYY",
       }

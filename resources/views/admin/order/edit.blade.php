@@ -1,4 +1,4 @@
-@php use App\Enums\OrderStatus;use App\Enums\PaymentStatus;use App\Helpers\Helpers; @endphp
+@php use App\Enums\PaymentStatus;use App\Helpers\Helpers; @endphp
 @extends('admin.layouts.master')
 
 @section('title', 'Đơn Hàng: #'.$order->order_code)
@@ -22,15 +22,26 @@
 
 @section('content')
     <section class="invoice mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <div class="no-print mt-6 text-left mb-6">
+            <button class="btn btn-primary">
+                Xác nhận đơn hàng
+            </button>
+            <button class="btn btn-danger">
+                Hủy Đơn
+            </button>
+            <button
+                class="btn btn-success btn-print bg-green-500 text-white py-2 px-4 rounded shadow hover:bg-green-600"><i
+                    class="fa fa-print"></i> In Hóa Đơn
+            </button>
+        </div>
+
         <div id="print-invoice">
             <div class="flex justify-between items-center border-b pb-4 mb-6">
                 <div class="flex items-center">
                     <div class="w-10 mr-3">
-                        <img src="{{ asset('images/favicon.png') }}" alt="PhoneStore Logo"
-                             class="w-full h-auto object-cover">
+                        <img src="{{ asset('images/favicon.png') }}" alt="PhoneStore Logo" class="w-full h-auto object-cover">
                     </div>
                     <div class="text-3xl text-red-600 font-bold">{{ config('app.name') }}</div>
-                    <div><span>{{ $order->status ?? '' }}</span></div>
                 </div>
                 <div class="text-xl text-gray-500">
                     <p>Ngày: {{ date("d/m/Y") }}</p>
@@ -155,47 +166,6 @@
                     </div>
                 </div>
             </div>
-
-        </div>
-        <div class="no-print mt-6 text-left mb-6">
-            <form action="{{ route('admin.order.update') }}" method="post" id="formUpdateOrder">
-                @csrf
-                <input type="hidden" name="status" id="status">
-                <input type="hidden" name="id" id="id" value="{{ $order->id ?? '' }}">
-                <div style="margin-bottom: 10px;">
-                    @if($order->status == OrderStatus::Confirmed->value)
-                        <input type="text" placeholder="Mã vận đơn" name="delivery_code">
-                    @endif
-                </div>
-                @if($order->status == OrderStatus::Pending->value)
-                    <button class="btn btn-success btn-change-status"
-                            data-status="{{ OrderStatus::Confirmed->value }}">Xác nhận
-                    </button>
-                @endif
-
-                @if($order->status == OrderStatus::Confirmed->value)
-                    <button class="btn btn-primary btn-change-status"
-                            data-status="{{ OrderStatus::Delivery->value }}">Giao hàng
-                    </button>
-                @endif
-
-                @if($order->status == OrderStatus::Delivery->value)
-                    <button class="btn btn-info btn-change-status" data-status="{{ OrderStatus::Done->value }}">Hoàn
-                        thành
-                    </button>
-                @endif
-
-                @if($order->status != OrderStatus::Delivery->value && $order->status != OrderStatus::Done->value && $order->status != OrderStatus::Cancelled->value)
-                    <button class="btn btn-danger btn-change-status"
-                            data-status="{{ OrderStatus::Cancelled->value }}">Hủy đơn hàng
-                    </button>
-                @endif
-            </form>
-            <button
-                class="btn btn-success btn-print bg-green-500 text-white py-2 px-4 rounded shadow hover:bg-green-600">
-                <i
-                    class="fa fa-print"></i> In Hóa Đơn
-            </button>
         </div>
     </section>
 @endsection
@@ -218,25 +188,6 @@
                     ignoreElements: []
                 });
             });
-
-            $('.btn-change-status').on('click', function (e) {
-                e.preventDefault();
-
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "You won't be able to revert this!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $('#status').val($(this).data('status'));
-                        $('#formUpdateOrder').submit();
-                    }
-                });
-            })
         });
     </script>
 @endsection

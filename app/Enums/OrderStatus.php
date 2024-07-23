@@ -6,6 +6,8 @@ namespace App\Enums;
 
 enum OrderStatus: int
 {
+    use EnumToArray;
+
     case Pending = 1;
     case Delivery = 5;
     case Confirmed = 2;
@@ -31,5 +33,26 @@ enum OrderStatus: int
             self::Cancelled->value,
             self::Delivery->value
         ];
+    }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Pending => 'Đang chờ',
+            self::Confirmed => 'Đã xác nhận',
+            self::Delivery => 'Đang vận chuyển',
+            self::Done => 'Đã giao',
+            self::Cancelled => 'Đã hủy',
+        };
+    }
+
+    public function canTransitionTo(OrderStatus $newStatus): bool
+    {
+        return match ($this) {
+            self::Pending => in_array($newStatus, [self::Confirmed, self::Cancelled]),
+            self::Confirmed => in_array($newStatus, [self::Delivery, self::Cancelled]),
+            self::Delivery => in_array($newStatus, [self::Done, self::Cancelled]),
+            self::Done, self::Cancelled => false,
+        };
     }
 }

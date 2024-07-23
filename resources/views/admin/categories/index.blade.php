@@ -1,9 +1,8 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Danh mục')
+@section('title', 'Quản Lý Bài Viết')
 
 @section('embed-css')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link
         href="https://cdn.datatables.net/v/bs-3.3.7/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.css"
         rel="stylesheet">
@@ -11,48 +10,39 @@
 
 @section('custom-css')
     <style>
-        #advertise-table td,
-        #advertise-table th {
-            vertical-align: middle !important;
+        .table-container {
+            margin-top: 20px;
         }
 
-        #advertise-table span.status-label {
-            display: block;
-            width: 85px;
-            text-align: center;
-            padding: 2px 0px;
+        .pagination-container {
+            text-align: left;
         }
 
-        #search-input span.input-group-addon {
-            padding: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 34px;
-            border: none;
-            background: none;
+        .filter-container {
+            margin-bottom: 10px;
         }
 
-        #search-input span.input-group-addon i {
-            font-size: 18px;
-            line-height: 34px;
-            width: 34px;
-            color: #9fda58;
+        .filter-container .form-control,
+        .filter-container .btn {
+            display: inline-block;
+            width: auto;
+            vertical-align: middle;
         }
 
-        #search-input input {
-            position: static;
-            width: 100%;
-            font-size: 15px;
-            line-height: 22px;
-            padding: 5px 5px 5px 34px;
-            float: none;
-            height: unset;
-            border-color: #fbfbfb;
-            box-shadow: none;
-            background-color: #e8f0fe;
-            border-radius: 5px;
+        .filter-container .form-control {
+            margin-right: 10px;
+        }
+
+        .filter-container .items-per-page {
+            width: 100px;
+        }
+
+        .action-container {
+            text-align: right;
+        }
+
+        .badge {
+            padding: 5px 10px;
         }
     </style>
 @endsection
@@ -60,38 +50,31 @@
 @section('breadcrumb')
     <ol class="breadcrumb">
         <li><a href="{{ route('admin.dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Quản Lý Danh mục</li>
+        <li class="active">Quản Lý Bài Viết</li>
     </ol>
 @endsection
 
 @section('content')
-
     <!-- Main row -->
     <div class="row">
         <div class="col-md-12">
             <div class="box">
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-5 col-sm-6 col-xs-6">
-                            <div id="search-input" class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
-                                <input type="text" class="form-control" placeholder="Tìm kiếm theo tên, slug..."
-                                       id="searchInput">
-                            </div>
+                <div class="box-body">
+                    <div class="row filter-container">
+                        <div class="col-md-8">
+                            <input class="form-control" id="search" type="text"
+                                   placeholder="Tìm kiếm theo tiêu đề..." name="search">
                         </div>
-                        <div class="col-md-7 col-sm-6 col-xs-6">
-                            <div class="btn-group pull-right">
-                                <a href="{{ route('admin.categories.create') }}" class="btn btn-success btn-flat"
-                                   title="Thêm Mới">
-                                    <i class="fa fa-plus" aria-hidden="true"></i><span
-                                        class="hidden-xs"> Thêm Mới</span>
-                                </a>
-                            </div>
+                        <div class="col-md-4 action-container">
+                            <a class="btn btn-success" href="{{ route('admin.categories.create') }}">Tạo mới</a>
                         </div>
                     </div>
-                </div>
-                <div class="box-body">
-                    {{ $dataTable->table() }}
+                    <hr style="background: gray;">
+                    <div class="row">
+                        <div class="col-md-12 table-container">
+                            {{ $dataTable->table() }}
+                        </div>
+                    </div>
                 </div>
                 <!-- /.box-body -->
             </div>
@@ -100,20 +83,13 @@
         <!-- /.col -->
     </div>
     <!-- /.row -->
+    <!-- /.modal -->
 @endsection
 
 @section('embed-js')
     <!-- DataTables -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script
         src="https://cdn.datatables.net/v/bs-3.3.7/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.js"></script>
-    <!-- SlimScroll -->
-    <script src="{{ asset('AdminLTE/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
-    <!-- FastClick -->
-    <script src="{{ asset('AdminLTE/bower_components/fastclick/lib/fastclick.js') }}"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/date-euro.js"></script>
 @endsection
 
 @section('custom-js')
@@ -124,12 +100,16 @@
 
         $(function () {
             const $table = window.LaravelDataTables["categories-table"];
-            $("#searchInput").on(
+            $("#search").on(
                 "input",
                 debounce(function () {
                     $table.ajax.reload();
                 }, 650)
             );
+
+            $("#perPage").on("change", () => {
+                $table.ajax.reload();
+            });
 
             $(document).on('click', ".deleteDialog", function () {
                 const url = $(this).attr('data-url');
@@ -160,7 +140,7 @@
                                 icon: 'success'
                             });
 
-                            $table.ajax.reload();
+                            $table.ajax.reload(null, false);
                         } else {
                             Toast.fire({
                                 title: jsonResponse?.message,
@@ -173,6 +153,3 @@
         })
     </script>
 @endsection
-
-
-

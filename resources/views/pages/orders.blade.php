@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@php use App\Enums\OrderStatus; @endphp
+@php use App\Enums\OrderStatus;use Illuminate\Support\Facades\Request; @endphp
 
 @section('title', 'Đơn Hàng')
 
@@ -35,6 +35,17 @@
             <div class="section-content">
                 <div class="row">
                     <div class="col-md-12">
+                        <div style="margin-bottom: 10px;">
+                            <form action="">
+                                <select name="status" id="">
+                                    <option value="">Tất cả</option>
+                                    @foreach(OrderStatus::cases() as $status)
+                                        <option value="{{ $status->value }}" @if($status->value == request('status')) selected @endif>{{ $status->label() }}</option>
+                                    @endforeach
+                                </select>
+                                <button>Tìm</button>
+                            </form>
+                        </div>
                         <div class="orders-table">
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
@@ -44,20 +55,12 @@
                                         <th class="text-center">Mã<br>Đơn Hàng</th>
                                         <th class="text-center">Phương Thức<br>Thanh Toán</th>
                                         <th class="text-center">Số Lượng</th>
-                                        <th class="text-center">Đơn Giá</th>
+                                        <th class="text-center">Tổng tiền</th>
                                         <th class="text-center">Trạng Thái</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     @foreach($data['orders'] as $key => $order)
-                                        @php
-                                            $qty = 0;
-                                            $price = 0;
-                                            foreach($order->order_details as $order_detail) {
-                                              $qty = $qty + $order_detail->quantity;
-                                              $price = $price + $order_detail->price * $order_detail->quantity;
-                                            }
-                                        @endphp
                                         <tr>
                                             <td class="text-center">{{ $key + 1 }}</td>
                                             <td class="text-center"><a
@@ -65,9 +68,9 @@
                                                     title="Chi tiết đơn hàng: {{ $order->order_code }}">{{ $order->order_code }}</a>
                                             </td>
                                             <td class="text-center">{{ $order->payment_method->name }}</td>
-                                            <td class="text-center">{{ $qty }}</td>
+                                            <td class="text-center">{{ $order->order_details->sum('quantity') }}</td>
                                             <td class="text-center"
-                                                style="color: #9fda58;">{{ number_format($price,0,',','.') }}₫
+                                                style="color: #9fda58;">{{ number_format($order->amount,0,',','.') }}₫
                                             </td>
                                             <td>
                                                 @if($order->status == OrderStatus::Pending->value)
@@ -83,29 +86,14 @@
                                                     <span class="label label-danger" style="font-size:13px">Hủy</span>
                                                 @endif
                                             </td>
-                                            <td>
-
-                                            </td>
                                         </tr>
                                     @endforeach
                                     </tbody>
                                 </table>
+                                {{ $data['orders']->appends(Request::except('page'))->links('vendor.pagination.default') }}
                             </div>
                         </div>
                     </div>
-                    {{--          <div class="col-md-3">--}}
-                    {{--            <div class="online_support">--}}
-                    {{--              <h2 class="title">CHÚNG TÔI LUÔN SẴN SÀNG<br>ĐỂ GIÚP ĐỠ BẠN</h2>--}}
-                    {{--              <img src="{{ asset('images/support_online.jpg') }}">--}}
-                    {{--              <h3 class="sub_title">Để được hỗ trợ tốt nhất. Hãy gọi</h3>--}}
-                    {{--              <div class="phone">--}}
-                    {{--                <a href="tel:18006750" title="1800 6750">1800 6750</a>--}}
-                    {{--              </div>--}}
-                    {{--              <div class="or"><span>HOẶC</span></div>--}}
-                    {{--              <h3 class="title">Chat hỗ trợ trực tuyến</h3>--}}
-                    {{--              <h3 class="sub_title">Chúng tôi luôn trực tuyến 24/7.</h3>--}}
-                    {{--            </div>--}}
-                    {{--          </div>--}}
                 </div>
             </div>
         </section>

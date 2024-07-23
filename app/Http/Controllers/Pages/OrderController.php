@@ -6,6 +6,7 @@ use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Advertise;
 use App\Models\Order;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,14 +25,23 @@ class OrderController extends Controller
                 ['at_home_page', '=', false]
             ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
-            $orders = Order::where('user_id', Auth::user()->id)->with([
-                'payment_method' => function ($query) {
-                    $query->select('id', 'name');
-                },
-                'order_details' => function ($query) {
-                    $query->select('id', 'order_id', 'quantity', 'price');
-                }
-            ])->orderBy('id', 'ASC')->get();
+            $orders = Order::query()
+                ->where('user_id', Auth::id())
+                ->with([
+                    'payment_method' => function ($query) {
+                        $query->select('id', 'name');
+                    },
+                    'order_details' => function ($query) {
+                        $query->select('id', 'order_id', 'quantity', 'price');
+                    }
+                ])
+                ->when($request->has('status'), function (Builder $query) use ($request) {
+                    $status = trim($request->input('status'));
+                    if($status !== '') {
+                        $query->where('status', $request->input('status'));
+                    }
+                })
+                ->orderBy('created_at', 'desc')->paginate(10);
             if ($orders->isNotEmpty()) {
                 return view('pages.orders')->with('data', ['orders' => $orders, 'advertises' => $advertises]);
             } else {

@@ -76,7 +76,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </section>
 
         <!-- Main content -->
-        <section class="content container" style="padding: 20px 100px 20px 100px;">
+        <section class="content">
             @yield('content')
         </section>
         <!-- /.content -->

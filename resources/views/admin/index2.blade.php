@@ -92,7 +92,7 @@
         <!-- Sales Chart -->
         <div class="bg-white p-4 rounded shadow mb-4">
             <h2 class="text-xl font-semibold mb-2">Biểu Đồ Kinh Doanh</h2>
-            <canvas id="salesChart" width="400" height="200"></canvas>
+            <canvas id="salesChart" height="110"></canvas>
         </div>
 
 
@@ -362,6 +362,8 @@
                                     }
                                 }
                             },
+                            // responsive: true,
+                            // maintainAspectRatio: false
                         }
                     });
                 },

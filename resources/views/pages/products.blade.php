@@ -155,7 +155,7 @@
         @endif
       </div>
       <div class="section-footer text-center">
-        {{ $data['products']->appends(Request::query())->links() }}
+        {{ $data['products']->appends(Request::query())->links('vendor.pagination.default') }}
       </div>
     </section>
   </div>
