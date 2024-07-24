@@ -1,11 +1,9 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Bài Viết')
+@section('title', 'Quản Lý Danh Mục')
 
 @section('embed-css')
-    <link
-        href="https://cdn.datatables.net/v/bs-3.3.7/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.css"
-        rel="stylesheet">
+    <link href="{{ asset('plugins/datatables/datatables.min.css') }}" rel="stylesheet">
 @endsection
 
 @section('custom-css')
@@ -50,7 +48,7 @@
 @section('breadcrumb')
     <ol class="breadcrumb">
         <li><a href="{{ route('admin.dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Quản Lý Bài Viết</li>
+        <li class="active">Quản Lý Danh Mục </li>
     </ol>
 @endsection
 
@@ -88,8 +86,7 @@
 
 @section('embed-js')
     <!-- DataTables -->
-    <script
-        src="https://cdn.datatables.net/v/bs-3.3.7/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.js"></script>
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
 @endsection
 
 @section('custom-js')

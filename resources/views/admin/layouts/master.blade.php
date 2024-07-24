@@ -31,9 +31,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- AdminLTE Skins -->
     <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/skins/skin-red.min.css') }}">
     <script src="{{ asset('plugins/tailwindcss/tailwindcss.min.css') }}"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+    <link rel="stylesheet" href="{{ asset('plugins/flatpickr/flatpickr.min.css') }}">
     <script src="{{ asset('plugins/alpinejs/alpine3.min.js') }}" defer></script>
 
     <!-- Custom CSS -->
@@ -42,8 +40,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<!--    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
+<!--    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>-->
     <![endif]-->
 
     <!-- Google Font -->
@@ -95,8 +93,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{{ asset('AdminLTE/bower_components/jquery/dist/jquery.min.js') }}"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="{{ asset('AdminLTE/bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('plugins/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('plugins/flatpickr/lang/vn.js') }}"></script>
 <!-- Sweet Alert 2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <!-- Embed JS -->
 @yield('embed-js')
 <!-- AdminLTE App -->

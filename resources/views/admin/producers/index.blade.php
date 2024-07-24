@@ -9,48 +9,39 @@
 
 @section('custom-css')
     <style>
-        #post-table td,
-        #post-table th {
-            vertical-align: middle !important;
+        .table-container {
+            margin-top: 20px;
         }
 
-        #post-table span.status-label {
-            display: block;
-            width: 85px;
-            text-align: center;
-            padding: 2px 0px;
+        .pagination-container {
+            text-align: left;
         }
 
-        #search-input span.input-group-addon {
-            padding: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 34px;
-            border: none;
-            background: none;
+        .filter-container {
+            margin-bottom: 10px;
         }
 
-        #search-input span.input-group-addon i {
-            font-size: 18px;
-            line-height: 34px;
-            width: 34px;
-            color: #9fda58;
+        .filter-container .form-control,
+        .filter-container .btn {
+            display: inline-block;
+            width: auto;
+            vertical-align: middle;
         }
 
-        #search-input input {
-            position: static;
-            width: 100%;
-            font-size: 15px;
-            line-height: 22px;
-            padding: 5px 5px 5px 34px;
-            float: none;
-            height: unset;
-            border-color: #fbfbfb;
-            box-shadow: none;
-            background-color: #e8f0fe;
-            border-radius: 5px;
+        .filter-container .form-control {
+            margin-right: 10px;
+        }
+
+        .filter-container .items-per-page {
+            width: 100px;
+        }
+
+        .action-container {
+            text-align: right;
+        }
+
+        .badge {
+            padding: 5px 10px;
         }
     </style>
 @endsection
@@ -68,27 +59,22 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box">
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-5 col-sm-6 col-xs-6">
-                            <div id="search-input" class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
-                                <input id="searchInput" type="text" class="form-control" placeholder="Tìm kiếm theo tên hoặc slug...">
-                            </div>
+                <div class="box-body">
+                    <div class="row filter-container">
+                        <div class="col-md-8">
+                            <input class="form-control" id="search" type="text"
+                                   placeholder="Tìm kiếm theo tiêu đề..." name="search">
                         </div>
-                        <div class="col-md-7 col-sm-6 col-xs-6">
-                            <div class="btn-group pull-right">
-                                <a href="{{ route('admin.producers.create') }}" class="btn btn-success btn-flat"
-                                   title="Thêm Nhà sản xuất mới">
-                                    <i class="fa fa-plus" aria-hidden="true"></i><span
-                                        class="hidden-xs">Thêm Nhà sản xuất mới</span>
-                                </a>
-                            </div>
+                        <div class="col-md-4 action-container">
+                            <a class="btn btn-success" href="{{ route('admin.producers.create') }}">Tạo mới</a>
                         </div>
                     </div>
-                </div>
-                <div class="box-body">
-                    {{ $dataTable->table() }}
+                    <hr style="background: gray;">
+                    <div class="row">
+                        <div class="col-md-12 table-container">
+                            {{ $dataTable->table() }}
+                        </div>
+                    </div>
                 </div>
                 <!-- /.box-body -->
             </div>
@@ -102,11 +88,6 @@
 @section('embed-js')
     <!-- DataTables -->
     <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
-    <!-- SlimScroll -->
-    <script src="{{ asset('AdminLTE/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
-    <!-- FastClick -->
-    <script src="{{ asset('AdminLTE/bower_components/fastclick/lib/fastclick.js') }}"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/date-euro.js"></script>
 @endsection
 
 @section('custom-js')
@@ -116,7 +97,7 @@
         $(document).ready(function () {
             const $table = window.LaravelDataTables["producers-table"];
 
-            $("#searchInput").on("input", function () {
+            $("#search").on("input", function () {
                 $table.ajax.reload();
             });
 

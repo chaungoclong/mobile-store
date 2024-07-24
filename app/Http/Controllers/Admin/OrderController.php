@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DataTables\OrderDataTable;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\PaymentMethod;
 use App\Models\ProductDetail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -18,34 +20,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(OrderDataTable $dataTable)
     {
-        $orders = Order::query()
-            ->select(
-                'id',
-                'user_id',
-                'status',
-                'payment_method_id',
-                'status',
-                'order_code',
-                'name',
-                'email',
-                'phone',
-                'payment_status',
-                'created_at',
-                'delivery_code',
-            )
-            ->where('status', '<>', 0)->with([
-                'user' => function ($query) {
-                    $query->select('id', 'name');
-                },
-                'payment_method' => function ($query) {
-                    $query->select('id', 'name');
-                }
-            ])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        return view('admin.order.index')->with('orders', $orders);
+        return $dataTable->render(
+            'admin.order.index',
+            ['payment_methods' => PaymentMethod::query()->get()]
+        );
     }
 
     public function fetch(Request $request): JsonResponse
@@ -191,10 +171,16 @@ class OrderController extends Controller
             );
         }
 
-        $order->update([
+        $updateData = [
             'status' => $newStatus->value,
             'delivery_code' => $request->input('delivery_code')
-        ]);
+        ];
+
+        if ($newStatus === OrderStatus::Done) {
+            $updateData['payment_status'] = PaymentStatus::Paid->value;
+        }
+
+        $order->update($updateData);
 
         return back()->with('success', 'update success');
     }

@@ -35,6 +35,32 @@ enum OrderStatus: int
         ];
     }
 
+    public function canTransitionTo(OrderStatus $newStatus): bool
+    {
+        return match ($this) {
+            self::Pending => in_array($newStatus, [self::Confirmed, self::Cancelled]),
+            self::Confirmed => in_array($newStatus, [self::Delivery, self::Cancelled]),
+            self::Delivery => in_array($newStatus, [self::Done, self::Cancelled]),
+            self::Done, self::Cancelled => false,
+        };
+    }
+
+    public function toHtml(): string
+    {
+        return sprintf('<span class="%s">%s</span>', $this->cssClass(), $this->label());
+    }
+
+    public function cssClass(): string
+    {
+        return match ($this) {
+            self::Pending => 'label label-primary',
+            self::Confirmed => 'label label-info',
+            self::Delivery => 'label label-warning',
+            self::Done => 'label label-success',
+            self::Cancelled => 'label label-danger',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -43,16 +69,6 @@ enum OrderStatus: int
             self::Delivery => 'Đang vận chuyển',
             self::Done => 'Đã giao',
             self::Cancelled => 'Đã hủy',
-        };
-    }
-
-    public function canTransitionTo(OrderStatus $newStatus): bool
-    {
-        return match ($this) {
-            self::Pending => in_array($newStatus, [self::Confirmed, self::Cancelled]),
-            self::Confirmed => in_array($newStatus, [self::Delivery, self::Cancelled]),
-            self::Delivery => in_array($newStatus, [self::Done, self::Cancelled]),
-            self::Done, self::Cancelled => false,
         };
     }
 }

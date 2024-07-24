@@ -4,9 +4,7 @@
 @section('title', 'Quản Lý Quảng Cáo')
 
 @section('embed-css')
-    <link
-        href="https://cdn.datatables.net/v/bs-3.3.7/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.css"
-        rel="stylesheet">
+    <link href="{{ asset('plugins/datatables/datatables.min.css') }}" rel="stylesheet">
 @endsection
 
 @section('custom-css')
@@ -64,7 +62,6 @@
                 <div class="box-body">
                     <div class="row filter-container">
                         <div class="col-md-8">
-
                             <input class="form-control" id="search" type="text"
                                    placeholder="Tìm kiếm theo tiêu đề..." name="search">
 
@@ -98,8 +95,7 @@
 
 @section('embed-js')
     <!-- DataTables -->
-    <script
-        src="https://cdn.datatables.net/v/bs-3.3.7/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.js"></script>
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
 @endsection
 
 @section('custom-js')

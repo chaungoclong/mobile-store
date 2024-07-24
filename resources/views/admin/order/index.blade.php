@@ -1,57 +1,48 @@
-@php use App\Enums\OrderStatus;use App\Enums\PaymentStatus;use Carbon\Carbon; @endphp
+@php use App\Enums\OrderStatus;use App\Enums\PaymentStatus; @endphp
+
 @extends('admin.layouts.master')
 
 @section('title', 'Quản Lý Đơn Hàng')
 
 @section('embed-css')
-    <link rel="stylesheet"
-          href="{{ asset('AdminLTE/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+    <link href="{{ asset('plugins/datatables/datatables.min.css') }}" rel="stylesheet">
 @endsection
 
 @section('custom-css')
     <style>
-        #order-table td,
-        #order-table th {
-            vertical-align: middle !important;
+        .table-container {
+            margin-top: 20px;
         }
 
-        #order-table span.status-label {
-            display: block;
-            width: 85px;
-            text-align: center;
-            padding: 2px 0px;
+        .pagination-container {
+            text-align: left;
         }
 
-        #search-input span.input-group-addon {
-            padding: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 34px;
-            border: none;
-            background: none;
+        .filter-container {
+            margin-bottom: 10px;
         }
 
-        #search-input span.input-group-addon i {
-            font-size: 18px;
-            line-height: 34px;
-            width: 34px;
-            color: #9fda58;
+        .filter-container .form-control,
+        .filter-container .btn {
+            display: inline-block;
+            width: auto;
+            vertical-align: middle;
         }
 
-        #search-input input {
-            position: static;
-            width: 100%;
-            font-size: 15px;
-            line-height: 22px;
-            padding: 5px 5px 5px 34px;
-            float: none;
-            height: unset;
-            border-color: #fbfbfb;
-            box-shadow: none;
-            background-color: #e8f0fe;
-            border-radius: 5px;
+        .filter-container .form-control {
+            margin-right: 10px;
+        }
+
+        .filter-container .items-per-page {
+            width: 100px;
+        }
+
+        .action-container {
+            text-align: right;
+        }
+
+        .badge {
+            padding: 5px 10px;
         }
     </style>
 @endsection
@@ -69,83 +60,46 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box">
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-5 col-sm-6 col-xs-6">
-                            <div id="search-input" class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
-                                <input type="text" class="form-control" placeholder="search...">
-                            </div>
-                        </div>
-                        <div class="col-md-7 col-sm-6 col-xs-6">
-                            <div class="btn-group pull-right">
-                                <a href="{{ route('admin.order.index') }}" class="btn btn-flat btn-primary"
-                                   title="Refresh">
-                                    <i class="fa fa-refresh"></i><span class="hidden-xs"> Refresh</span>
-                                </a>
+                <div class="box-body">
+                    <div class="row filter-container">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <input class="form-control" id="search" type="text"
+                                       placeholder="Tìm kiếm theo tiêu đề...">
+
+                                <select class="form-control" id="status">
+                                    <option value="">Trạng Thái Thực Hiện</option>
+                                    @foreach(OrderStatus::cases() as $orderStatus)
+                                        <option value="{{ $orderStatus->value }}">{{ $orderStatus->label() }}</option>
+                                    @endforeach
+                                    <!-- Add more options as needed -->
+                                </select>
+
+                                <select class="form-control" id="paymentStatus">
+                                    <option value="">Trạng Thái Thanh Toán</option>
+                                    @foreach(PaymentStatus::cases() as $paymentStatus)
+                                        <option
+                                            value="{{ $paymentStatus->value }}">{{ $paymentStatus->labelText() }}</option>
+                                    @endforeach
+                                    <!-- Add more options as needed -->
+                                </select>
+
+                                <select class="form-control" id="paymentMethod">
+                                    <option value="">Phương Thức Thanh Toán</option>
+                                    @foreach($payment_methods as $paymentMethod)
+                                        <option value="{{ $paymentMethod->id ?? '' }}">{{ $paymentMethod->name ?? '' }}</option>
+                                    @endforeach
+                                    <!-- Add more options as needed -->
+                                </select>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="box-body">
-                    <table id="order-table" class="table table-hover" style="width:100%; min-width: 1024px;">
-                        <thead>
-                        <tr>
-                            <th data-width="10px">ID</th>
-                            <th data-orderable="false" data-width="85px">Mã Đơn Hàng</th>
-                            <th data-orderable="false" data-width="100px">Tài Khoản</th>
-                            <th data-orderable="false" data-width="100px">Tên</th>
-                            <th data-orderable="false">Email</th>
-                            <th data-orderable="false" data-width="70px">Điện Thoại</th>
-                            <th data-orderable="false">Phương Thức Thanh Toán</th>
-                            <th data-orderable="false">Trạng Thái Thanh Toán</th>
-                            <th data-width="60px" data-type="date-euro">Ngày Tạo</th>
-                            <th data-width="66px">Trạng Thái</th>
-                            <th data-orderable="false" data-width="130px">Tác Vụ</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        @foreach($orders as $order)
-                            <tr>
-                                <td class="text-center">{{ $order->id }}</td>
-                                <td>{{ '#'.$order->order_code }}</td>
-                                <td>
-                                    <a href="{{ route('admin.user_show', ['id' => $order->user->id]) }}"
-                                       class="text-left" title="{{ $order->user->name }}">{{ $order->user->name }}</a>
-                                </td>
-                                <td>{{ $order->name }}</td>
-                                <td>{{ $order->email }}</td>
-                                <td>{{ $order->phone }}</td>
-                                <td>{{ $order->payment_method->name }}</td>
-                                <td>{{ $order->payment_status == PaymentStatus::Paid->value ? 'Đã thanh toán' : 'Chưa thanh toán' }}</td>
-                                <td> {{ Carbon::parse($order->created_at)->format('d/m/Y H:i:s')}}</td>
-                                <td>
-
-                                    @if($order->status == OrderStatus::Pending->value)
-                                        <span class="label label-default" style="font-size:13px">Chờ xác nhận</span>
-                                    @elseif ($order->status == OrderStatus::Confirmed->value)
-                                        <span class="label label-info" style="font-size:13px">Đã xác nhận</span>
-                                    @elseif ($order->status == OrderStatus::Delivery->value)
-                                        <span class="label label-info" style="font-size:13px">Đang Vận Chuyển</span>
-                                    @elseif ($order->status == OrderStatus::Done->value)
-                                        <span class="label label-success" style="font-size:13px">Đã Giao Hàng</span>
-                                    @else
-                                        <span class="label label-danger" style="font-size:13px">Đã Hủy</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.order.show', ['id' => $order->id]) }}"
-                                           class="btn btn-icon btn-sm btn-primary tip" title="Chi Tiết">
-                                            <i class="fa fa-eye" aria-hidden="true"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                    <hr style="background: gray;">
+                    <div class="row">
+                        <div class="col-md-12 table-container">
+                            {{ $dataTable->table() }}
+                        </div>
+                    </div>
                 </div>
                 <!-- /.box-body -->
             </div>
@@ -158,40 +112,25 @@
 
 @section('embed-js')
     <!-- DataTables -->
-    <script src="{{ asset('AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
-    <!-- SlimScroll -->
-    <script src="{{ asset('AdminLTE/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
-    <!-- FastClick -->
-    <script src="{{ asset('AdminLTE/bower_components/fastclick/lib/fastclick.js') }}"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.10.20/sorting/date-euro.js"></script>
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
 @endsection
 
 @section('custom-js')
-    <script>
-        $(function () {
-            var table = $('#order-table').DataTable({
-                "language": {
-                    "zeroRecords": "Không tìm thấy kết quả phù hợp",
-                    "info": "Hiển thị trang <b>_PAGE_/_PAGES_</b> của <b>_TOTAL_</b> đơn hàng",
-                    "infoEmpty": "Hiển thị trang <b>1/1</b> của <b>0</b> đơn hàng",
-                    "infoFiltered": "(Tìm kiếm từ <b>_MAX_</b> đơn hàng)",
-                    "emptyTable": "Không có dữ liệu đơn hàng",
-                },
-                "lengthChange": false,
-                "autoWidth": false,
-                "order": [],
-                "dom": '<"table-responsive"t><<"row"<"col-md-6 col-sm-6"i><"col-md-6 col-sm-6"p>>>',
-                "drawCallback": function (settings) {
-                    var api = this.api();
-                    if (api.page.info().pages <= 1) {
-                        $('#' + $(this).attr('id') + '_paginate').hide();
-                    }
-                }
-            });
+    {{ $dataTable->scripts() }}
 
-            $('#search-input input').on('keyup', function () {
-                table.search(this.value).draw();
+    <script>
+        let debounceTimeout;
+        $(function () {
+            const $table = window.LaravelDataTables["orders-table"];
+            $("#search").on(
+                "input",
+                debounce(function () {
+                    $table.ajax.reload();
+                }, 650)
+            );
+
+            $("#status, #paymentStatus, #paymentMethod").on("change", () => {
+                $table.ajax.reload();
             });
         });
     </script>
