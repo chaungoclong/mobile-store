@@ -238,11 +238,12 @@
                                         </button>
                                     @endif
 
-                                    <button
+                                    <a
+                                        href="{{ route('admin.order.printInvoice', $order?->id) }}"
                                         class="btn-primary btn btn-space"
                                         id="btnPrintOrder">
                                         <i class="fa fa-print" style="margin-right: 5px;"></i>In Hóa đơn
-                                    </button>
+                                    </a>
                                 </div>
                                 <form action="{{ route('admin.order.update') }}" method="post" id="formUpdateStatus">
                                     @csrf
@@ -267,7 +268,7 @@
 @endsection
 
 @section('embed-js')
-    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+
 @endsection
 
 @section('custom-js')

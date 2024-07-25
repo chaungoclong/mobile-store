@@ -10,12 +10,14 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\PaymentMethod;
 use App\Models\ProductDetail;
+use App\Notifications\OrderStatusNotification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
@@ -209,11 +211,64 @@ class OrderController extends Controller
 
             DB::commit();
 
+            Notification::send(auth()->user(), new OrderStatusNotification($order, $newStatus));
+            Notification::send($order->user, new OrderStatusNotification($order, $newStatus));
+
             return back()->with('success', 'update success');
         } catch (Throwable $throwable) {
             DB::rollBack();
             Log::error(__METHOD__ . ' - ' . __LINE__ . ' - ' . $throwable->getMessage());
             return back()->with('error', 'Có lỗi xảy ra khi cập nhật đơn hàng.');
         }
+    }
+
+    public function printInvoice($id)
+    {
+        $order = Order::select(
+            'id',
+            'user_id',
+            'payment_method_id',
+            'order_code',
+            'name',
+            'email',
+            'phone',
+            'address',
+            'created_at',
+            'payment_status',
+            'status',
+            'delivery_code',
+            'amount',
+        )->where([['status', '<>', 0], ['id', $id]])->with([
+            'user' => function ($query) {
+                $query->select('id', 'name', 'email', 'phone', 'address');
+            },
+            'payment_method' => function ($query) {
+                $query->select('id', 'name', 'describe');
+            },
+            'order_details' => function ($query) {
+                $query->select('id', 'order_id', 'product_detail_id', 'quantity', 'price')
+                    ->with([
+                        'product_detail' => function ($query) {
+                            $query->select('id', 'product_id', 'color')
+                                ->with([
+                                    'product_images:id,image_name,product_detail_id',
+                                    'product:id,name'
+                                ]);
+                        }
+                    ]);
+            }
+        ])->first();
+        if (!($order instanceof Order)) {
+            abort(404);
+        }
+
+        $status = OrderStatus::tryFrom((int)$order->getAttribute('status'));
+        $paymentStatus = PaymentStatus::tryFrom((int)$order->getAttribute('payment_status'));
+
+        return view('admin.order.invoice', [
+            'order' => $order,
+            'status' => $status,
+            'payment_status' => $paymentStatus
+        ]);
     }
 }

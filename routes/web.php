@@ -83,6 +83,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('admin')
         Route::post('product/image/delete', 'ProductController@delete_image')->name('product.delete_image');
 
         Route::get('orders', 'OrderController@index')->name('order.index');
+        Route::get('order/{id}/print-invoice', [\App\Http\Controllers\Admin\OrderController::class, 'printInvoice'])->name('order.printInvoice');
         Route::get('orders/fetch', [\App\Http\Controllers\Admin\OrderController::class, 'fetch'])->name('order.fetch');
         Route::get('order/{id}/show', 'OrderController@show')->name('order.show');
         Route::get('active/{action}/{id}', 'OrderController@actionTransaction')->name('orderTransaction');

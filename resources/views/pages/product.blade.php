@@ -31,16 +31,6 @@
         </section>
 
         <section class="section-product" style="border-radius: 10px;">
-            {{--            <div class="section-header row" style="margin-top: 0; padding-top: 5px;">--}}
-            {{--                <div class="section-title col-md-5">--}}
-            {{--                    <span style="margin-left: 5px;">{{ $data['product']->name }}</span>--}}
-            {{--                </div>--}}
-            {{--                <div class="section-sub-title col-md-7 text-right">--}}
-            {{--                    <div class="sku-code">Mã sản phẩm: <i>{{ $data['product']->sku_code }}</i></div>--}}
-            {{--                    <div class="start-vote">{!! Helper::get_start_vote($data['product']->rate) !!}</div>--}}
-            {{--                    <div class="rate-link" onclick="scrollToxx();"><span>Đánh giá sản phẩm</span></div>--}}
-            {{--                </div>--}}
-            {{--            </div>--}}
             <div class="section-content">
                 <div class="section-infomation">
                     <div class="row">

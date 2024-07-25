@@ -1,6 +1,6 @@
-<header id="header" class="header" style="background: #9fda58; padding-bottom: 10px;">
+<header id="header" class="header" style="background: #9fda58; margin-top: 0;">
     <div class="container">
-        <div class="row" style="margin-bottom: 10px; margin-top: 10px;">
+        <div class="row" style="padding: 0; margin: 0;">
             <div class="col-md-2 trigger-menu">
 
                 <button type="button" class="navbar-toggle collapsed visible-xs" id="trigger-mobile">
@@ -9,24 +9,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-
-                <div class="logo">
-                    <a class="logo-wrapper" href="{{ route('home_page') }}" title="{{ config('app.name') }}">
-                        <img src="https://cdn.xtmobile.vn/vnt_upload/weblink/logoxt-01-01_1_copy.png" alt="{{ config('app.name') }}"></a>
-                </div>
             </div>
             <div class="col-md-6">
-                <div class="search">
-                    <form class="search-bar" action="{{ route('search') }}" method="get" accept-charset="utf-8">
-                        <input class="input-search" type="search" name="search_key" placeholder="{{ __('Tìm Kiếm') }}"
-                               autocomplete="off">
-                        <button type="submit"><i class="fas fa-search"></i></button>
-                    </form>
-                </div>
             </div>
         </div>
-        <div class="main-menu-responsive" style="background: white; border-radius: 10px;">
+        <div class="main-menu-responsive" style="background: white; border-radius: 8px; margin-bottom: 2px;">
             <div class="main-menu">
+                <div>
+                    <img src="{{ asset('images/dragon-phone-logo-5.png') }}" alt="" style="width: 150px; margin-left: 10px;">
+                </div>
                 <div class="nav">
                     <ul>
                         <li class="nav-item {{ Helper::check_active(['home_page']) }}"><a
@@ -38,22 +29,22 @@
                         <li class="nav-item dropdown {{ Helper::check_active(['products_page', 'producer_page', 'product_page']) }}">
                             <a href="{{ route('products_page') }}" title="{{ __('Sản Phẩm') }}">
                                 <span class="fas fa-gifts"></span>
-                                {{ __('Sản Phẩm') }} <i class="fas fa-angle-down"></i>
+                                {{ __('Sản Phẩm') }}
                             </a>
-                            <div class="dropdown-menu">
-                                <ul class="dropdown-menu-item">
-                                    <li>
-                                        <h4>{{ __('Nhà sản xuất') }}</h4>
-                                        <ul class="dropdown-menu-subitem">
-                                            @foreach($producers as $producer)
-                                                <li class="{{ Helper::check_param_active('producer_page', $producer->id) }}">
-                                                    <a href="{{ route('producer_page', ['id' => $producer->id]) }}"
-                                                       title="{{ $producer->name }}">{{ $producer->name }}</a></li>
-                                            @endforeach
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
+{{--                            <div class="dropdown-menu">--}}
+{{--                                <ul class="dropdown-menu-item">--}}
+{{--                                    <li>--}}
+{{--                                        <h4>{{ __('Nhà sản xuất') }}</h4>--}}
+{{--                                        <ul class="dropdown-menu-subitem">--}}
+{{--                                            @foreach($producers as $producer)--}}
+{{--                                                <li class="{{ Helper::check_param_active('producer_page', $producer->id) }}">--}}
+{{--                                                    <a href="{{ route('producer_page', ['id' => $producer->id]) }}"--}}
+{{--                                                       title="{{ $producer->name }}">{{ $producer->name }}</a></li>--}}
+{{--                                            @endforeach--}}
+{{--                                        </ul>--}}
+{{--                                    </li>--}}
+{{--                                </ul>--}}
+{{--                            </div>--}}
                         </li>
 
                         <li class="nav-item {{ Helper::check_active(['about_page']) }}"><a
@@ -74,6 +65,13 @@
 {{--                                {{ __('Liên Hệ') }}</a>--}}
 {{--                        </li>--}}
                     </ul>
+                </div>
+                <div class="search" style="width: 350px;">
+                    <form class="search-bar" action="{{ route('search') }}" method="get" accept-charset="utf-8">
+                        <input class="input-search" type="search" name="search_key" placeholder="{{ __('Tìm Kiếm') }}"
+                               autocomplete="off">
+                        <button type="submit"><i class="fas fa-search"></i></button>
+                    </form>
                 </div>
                 <div class="accout-menu">
                     @if(Auth::guest())

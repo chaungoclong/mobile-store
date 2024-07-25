@@ -59,10 +59,10 @@ class ActiveAccountNotification extends Notification implements ShouldQueue
         }
 
         return (new MailMessage)
-            ->greeting('Hello '.$notifiable->name.'.')
-            ->subject('Active Account Notification')
-            ->line('Email này đã được liên kết với một tài khoản trên hệ thống website VDO. Vui lòng click vào nút bên dưới để kích hoạt.')
-            ->action('Active Account', route('active_account', ['token' => $this->token]));
+            ->greeting('Xin chào '.$notifiable->name.'.')
+            ->subject('Thông Báo Kích Hoạt Tài Khoản')
+            ->line('Email này đã được liên kết với một tài khoản trên hệ thống của chúng tôi. Vui lòng click vào nút bên dưới để kích hoạt.')
+            ->action('Kích Hoạt Tài Khoản', route('active_account', ['token' => $this->token]));
     }
 
     /**
