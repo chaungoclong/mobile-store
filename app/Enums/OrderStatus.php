@@ -61,6 +61,17 @@ enum OrderStatus: int
         };
     }
 
+    public function buttonClass(): string
+    {
+        return match ($this) {
+            self::Pending => 'btn btn-primary',
+            self::Confirmed => 'btn btn-info',
+            self::Delivery => 'btn btn-warning',
+            self::Done => 'btn btn-success',
+            self::Cancelled => 'btn btn-danger',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {

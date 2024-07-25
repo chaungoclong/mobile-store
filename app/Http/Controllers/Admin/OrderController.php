@@ -14,9 +14,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -58,6 +61,7 @@ class OrderController extends Controller
             'payment_status',
             'status',
             'delivery_code',
+            'amount',
         )->where([['status', '<>', 0], ['id', $id]])->with([
             'user' => function ($query) {
                 $query->select('id', 'name', 'email', 'phone', 'address');
@@ -71,18 +75,25 @@ class OrderController extends Controller
                         'product_detail' => function ($query) {
                             $query->select('id', 'product_id', 'color')
                                 ->with([
-                                    'product' => function ($query) {
-                                        $query->select('id', 'name', 'image', 'sku_code');
-                                    }
+                                    'product_images:id,image_name,product_detail_id',
+                                    'product:id,name'
                                 ]);
                         }
                     ]);
             }
         ])->first();
-        if (!$order) {
+        if (!($order instanceof Order)) {
             abort(404);
         }
-        return view('admin.order.show')->with('order', $order);
+
+        $status = OrderStatus::tryFrom((int)$order->getAttribute('status'));
+        $paymentStatus = PaymentStatus::tryFrom((int)$order->getAttribute('payment_status'));
+
+        return view('admin.order.show', [
+            'order' => $order,
+            'status' => $status,
+            'payment_status' => $paymentStatus
+        ]);
     }
 
     public function actionTransaction($action, $id)
@@ -150,38 +161,59 @@ class OrderController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
-            'id' => ['required', 'integer', Rule::exists('orders', 'id')],
-            'status' => ['required', 'integer', Rule::in(OrderStatus::values())],
-            'delivery_code' => ['nullable', 'string']
-        ]);
+        DB::beginTransaction();
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator);
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required', 'integer', Rule::exists('orders', 'id')],
+                'status' => ['required', 'integer', Rule::in(OrderStatus::values())],
+                'delivery_code' => ['nullable', 'string']
+            ]);
+
+            if ($validator->fails()) {
+                return back()->with('error', 'Dữ liệu không hợp lệ');
+            }
+
+            /**
+             * @var Order $order
+             */
+            $order = Order::query()->find($request->input('id'));
+            $currentStatus = OrderStatus::tryFrom((int)$order->getAttribute('status'));
+            $newStatus = OrderStatus::tryFrom((int)$request->input('status'));
+
+            if ($currentStatus === null || $newStatus === null) {
+                return back()->with('error', 'Dữ liệu không hợp lệ');
+            }
+
+            if (!$currentStatus->canTransitionTo($newStatus)) {
+                return back()->with(
+                    'error',
+                    'Không thể chuyển trạng thái từ ' . $currentStatus->label() . ' thành ' . $newStatus->label()
+                );
+            }
+
+            $updateData = [
+                'status' => $newStatus->value,
+                'delivery_code' => $request->input('delivery_code')
+            ];
+
+            if ($newStatus === OrderStatus::Done) {
+                $updateData['payment_status'] = PaymentStatus::Paid->value;
+            }
+
+            $order->update($updateData);
+
+            if($newStatus === OrderStatus::Cancelled && $currentStatus !== OrderStatus::Cancelled) {
+                $order->revertProductQuantityOnOrderCancel();
+            }
+
+            DB::commit();
+
+            return back()->with('success', 'update success');
+        } catch (Throwable $throwable) {
+            DB::rollBack();
+            Log::error(__METHOD__ . ' - ' . __LINE__ . ' - ' . $throwable->getMessage());
+            return back()->with('error', 'Có lỗi xảy ra khi cập nhật đơn hàng.');
         }
-
-        $order = Order::query()->find($request->input('id'));
-        $currentStatus = OrderStatus::tryFrom((int)$order->getAttribute('status'));
-        $newStatus = OrderStatus::tryFrom((int)$request->input('status'));
-
-        if ($currentStatus && $newStatus && !$currentStatus->canTransitionTo($newStatus)) {
-            return back()->with(
-                'error',
-                'Không thể chuyển trạng thái từ ' . $currentStatus->label() . ' thành ' . $newStatus->label()
-            );
-        }
-
-        $updateData = [
-            'status' => $newStatus->value,
-            'delivery_code' => $request->input('delivery_code')
-        ];
-
-        if ($newStatus === OrderStatus::Done) {
-            $updateData['payment_status'] = PaymentStatus::Paid->value;
-        }
-
-        $order->update($updateData);
-
-        return back()->with('success', 'update success');
     }
 }

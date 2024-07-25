@@ -73,4 +73,14 @@ class Order extends Model
     {
         return $this->orderDetails()->sum('quantity');
     }
+
+    public function revertProductQuantityOnOrderCancel(): void
+    {
+        $this->orderDetails()
+            ->get()
+            ->each(function (OrderDetail $orderDetail) {
+                $productDetail = $orderDetail->productDetail()->first();
+                $productDetail?->increment('quantity', (int)$orderDetail->getAttribute('quantity'));
+            });
+    }
 }
