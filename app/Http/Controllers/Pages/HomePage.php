@@ -50,7 +50,7 @@ class HomePage extends Controller
                         'promotion_end_date'
                     )->where('quantity', '>', 0)->orderBy('sale_price', 'ASC');
                 }
-            ])->latest()->limit(9)->get();
+            ])->latest()->limit(5)->get();
 
         $favorite_products = Product::query()
             ->select(
@@ -91,7 +91,7 @@ class HomePage extends Controller
             ])
             ->latest()
             ->orderBy('rate', 'DESC')
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         $promotionProducts = Product::query()
@@ -133,7 +133,7 @@ class HomePage extends Controller
                 }
             ])
             ->latest()
-            ->limit(10)
+            ->limit(5)
             ->get();
 
 //        dd($promotionProducts);
@@ -174,7 +174,7 @@ class HomePage extends Controller
             ])
             ->latest()
             ->orderBy('created_at', 'DESC')
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         $producers = Producer::query()->select('id', 'name')->get();
