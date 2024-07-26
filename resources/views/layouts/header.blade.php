@@ -16,7 +16,9 @@
         <div class="main-menu-responsive" style="background: white; border-radius: 8px; margin-bottom: 2px;">
             <div class="main-menu">
                 <div>
-                    <img src="{{ asset('images/dragon-phone-logo-5.png') }}" alt="" style="width: 150px; margin-left: 10px;">
+                    <a href="{{ route('home_page') }}">
+                        <img src="{{ asset('images/dragon-phone-logo-5.png') }}" alt="" style="width: 150px; margin-left: 10px;">
+                    </a>
                 </div>
                 <div class="nav">
                     <ul>
@@ -69,7 +71,7 @@
                 <div class="search" style="width: 350px;">
                     <form class="search-bar" action="{{ route('search') }}" method="get" accept-charset="utf-8">
                         <input class="input-search" type="search" name="search_key" placeholder="{{ __('Tìm Kiếm') }}"
-                               autocomplete="off">
+                               autocomplete="off" value="{{ request('search_key') }}">
                         <button type="submit"><i class="fas fa-search"></i></button>
                     </form>
                 </div>

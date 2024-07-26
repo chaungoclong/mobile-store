@@ -12,7 +12,7 @@
   <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+{{--  <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">--}}
 
   <!-- Embed CSS -->
   <link rel="stylesheet" href="{{ asset('common/css/normalize.min.css') }}">

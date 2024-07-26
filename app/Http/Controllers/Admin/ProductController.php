@@ -377,6 +377,14 @@ class ProductController extends Controller
             return response()->json($data, Response::HTTP_BAD_REQUEST);
         }
 
+        $product = $product_detail->product;
+        if($product->productDetails()->count() === 1) {
+            $data['type'] = 'error';
+            $data['title'] = 'Thất Bại';
+            $data['content'] = 'Một sản phẩm phải có ít nhất một biến thể!';
+            return response()->json($data, Response::HTTP_BAD_REQUEST);
+        }
+
         $hasOrder = OrderDetail::query()->where('product_detail_id', $product_detail->getKey())->exists();
 
         if ($hasOrder) {

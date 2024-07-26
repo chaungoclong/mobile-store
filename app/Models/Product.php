@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
-    protected $appends = ['total_sold'];
+    use Sluggable;
+
+    protected $appends = ['total_sold', 'product_detail_promotion'];
     protected $guarded = ['id'];
 
     public function product_votes(): HasMany
@@ -72,5 +75,30 @@ class Product extends Model
             'id',
             'id'
         );
+    }
+
+    public function getProductDetailPromotionAttribute(): Model
+    {
+        $productDetail = $this->productDetails()
+            ->whereNotNull('promotion_price')
+            ->where('promotion_start_date', '<=', date('Y-m-d'))
+            ->where('promotion_end_date', '>=', date('Y-m-d'))
+            ->first();
+
+        if (!$productDetail) {
+            return $this->productDetails()->first();
+        }
+
+        return $productDetail;
+    }
+
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name',
+                'onUpdate' => true
+            ]
+        ];
     }
 }

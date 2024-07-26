@@ -49,9 +49,9 @@
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label for="title">Slug <span class="text-red">*</span></label>
+                            <label for="title">Slug </label>
                             <input type="text" name="slug" class="form-control" id="slug"
-                                   placeholder="Slug" required value="{{ old('slug', $category->slug ?? '') }}"
+                                   placeholder="Slug"  value="{{ old('slug', $category->slug ?? '') }}"
                                    autocomplete="off">
 
                             @error('slug')

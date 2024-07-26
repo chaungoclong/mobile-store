@@ -9,9 +9,6 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('home_page') }}">{{ __('Trang Chủ') }}</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('products_page') }}">Sản Phẩm</a></li>
-                <li class="breadcrumb-item"><a
-                        href="{{ route('producer_page', ['id' => $data['product']->producer_id]) }}">{{ $data['product']->producer->name }}</a>
-                </li>
                 <li class="breadcrumb-item active" aria-current="page">{{ $data['product']->name }}</li>
             </ol>
         </nav>
@@ -22,9 +19,11 @@
             <div class="content-advertise">
                 <div id="slide-advertise" class="owl-carousel">
                     @foreach($data['advertises'] as $advertise)
-                        <div class="slide-advertise-inner"
-                             style="background-image: url('{{ Helper::get_image_advertise_url($advertise->image) }}');"
-                             data-dot="<button>{{ $advertise->title }}</button>"></div>
+                        <a href="{{ $advertise?->link ?? '' }}">
+                            <div class="slide-advertise-inner"
+                                 style="background-image: url('{{ Helper::get_image_advertise_url($advertise->image) }}');"
+                                 data-dot="<button>{{ $advertise->title }}</button>"></div>
+                        </a>
                     @endforeach
                 </div>
             </div>

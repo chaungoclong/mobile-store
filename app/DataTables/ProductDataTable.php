@@ -135,7 +135,7 @@ class ProductDataTable extends DataTable
             ->setTableId('products-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(9)
+            ->orderBy(10)
             ->responsive()
             ->autoWidth(true)
             ->dom('rltp')
@@ -181,6 +181,7 @@ class ProductDataTable extends DataTable
             Column::computed('image', 'Ảnh'),
             Column::make('sku_code')->title('Mã sản phẩm'),
             Column::make('name')->title('Tên sản phẩm'),
+            Column::make('slug')->title('Slug'),
             Column::computed('producer', 'Hãng sản xuất'),
             Column::computed('category', 'Danh mục'),
             Column::make('rate')->title('Sao đánh giá'),

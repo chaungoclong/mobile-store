@@ -20,7 +20,9 @@
       <div class="content-advertise">
         <div id="slide-advertise" class="owl-carousel">
           @foreach($data['advertises'] as $advertise)
-            <div class="slide-advertise-inner" style="background-image: url('{{ Helper::get_image_advertise_url($advertise->image) }}');" data-dot="<button>{{ $advertise->title }}</button>"></div>
+                <a href="{{ $advertise?->link ?? '' }}">
+                    <div class="slide-advertise-inner" style="background-image: url('{{ Helper::get_image_advertise_url($advertise->image) }}');" data-dot="<button>{{ $advertise->title }}</button>"></div>
+                </a>
           @endforeach
         </div>
       </div>
@@ -87,7 +89,7 @@
               @if($data['suggest_products']->isNotEmpty())
                 <div class="suggest-content">
                   @foreach($data['suggest_products'] as $product)
-                    <a href="{{ route('product_page', ['id' => $product->id]) }}" title="{{ $product->name }}">
+                    <a href="{{ route('product_detail', ['slug' => $product?->slug ?? '']) }}" title="{{ $product->name }}">
                       <div class="product-content">
                         <div class="image">
                           <img src="{{ Helper::get_image_product_url($product->image) }}">
@@ -98,7 +100,7 @@
                             {!! Helper::get_start_vote($product->rate) !!}
                           </div>
                           <div class="price">
-                            {!! Helper::get_real_price($product->product_detail->sale_price, $product->product_detail->promotion_price, $product->product_detail->promotion_start_date, $product->product_detail->promotion_end_date) !!}
+                            {!! Helper::get_real_price($product?->product_detail_promotion?->sale_price, $product?->product_detail_promotion?->promotion_price, $product?->product_detail_promotion?->promotion_start_date, $product?->product_detail_promotion?->promotion_end_date) !!}
                           </div>
                         </div>
                       </div>

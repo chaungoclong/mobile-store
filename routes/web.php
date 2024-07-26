@@ -132,6 +132,7 @@ Route::namespace('Pages')->group(function () {
     Route::post('user/save', 'UserController@save')->name('save_user');
     //page products
     Route::get('products', 'ProductsController@index')->name('products_page');
+    Route::get('products/{slug}', 'ProductsController@show')->name('product_detail');
     Route::get('producer/{id}', 'ProductsController@getProducer')->name('producer_page');
     Route::get('product/{id}', 'ProductsController@getProduct')->name('product_page');
     Route::post('vote', 'ProductsController@addVote')->name('add_vote');

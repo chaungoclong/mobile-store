@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pages;
 
 use App\Http\Controllers\Controller;
 use App\Models\Advertise;
+use App\Models\Category;
 use App\Models\Producer;
 use App\Models\Product;
 use App\Models\ProductDetail;
@@ -21,18 +22,12 @@ class ProductsController extends Controller
         if ($request->has('type') && $request->input('type') == 'promotion') {
             $query_products = Product::query()
                 ->whereHas('product_detail', function (Builder $query) {
-                    $query->where([
-                        ['quantity', '>', 0],
-                        ['promotion_price', '>', 0],
-                        ['promotion_start_date', '<=', date('Y-m-d')],
-                        ['promotion_end_date', '>=', date('Y-m-d')]
-                    ]);
+                    $query->whereNotNull('promotion_price')
+                        ->where('promotion_start_date', '<=', date('Y-m-d'))
+                        ->where('promotion_end_date', '>=', date('Y-m-d'));
                 });
         } else {
-            $query_products = Product::query()
-                ->whereHas('product_detail', function (Builder $query) {
-                    $query->where('quantity', '>', 0);
-                });
+            $query_products = Product::query()->whereHas('product_detail');
         }
 
         $query_products->with([
@@ -47,7 +42,6 @@ class ProductsController extends Controller
                         'promotion_start_date',
                         'promotion_end_date'
                     )
-                    ->where('quantity', '>', 0)
                     ->orderBy('sale_price', 'ASC');
             }
         ]);
@@ -60,46 +54,58 @@ class ProductsController extends Controller
             $query_products->where('OS', 'LIKE', '%' . $request->input('os') . '%');
         }
 
-        if ($request->has('price') && $request->input('price') != null) {
-            $min_price_query = ProductDetail::select('product_id', DB::raw('min(sale_price) as min_sale_price'))->where(
-                'quantity',
-                '>',
-                0
-            )->groupBy('product_id');
+        if ($request->has('category_id') && $request->input('category_id') != null) {
+            $query_products->where('category_id', $request->input('category_id'));
+        }
 
-            $query_products->joinSub($min_price_query, 'min_price_query', function ($join) {
-                $join->on('products.id', '=', 'min_price_query.product_id');
-            })->select(
-                'id',
-                'name',
-                'image',
-                'monitor',
-                'front_camera',
-                'rear_camera',
-                'CPU',
-                'GPU',
-                'RAM',
-                'ROM',
-                'OS',
-                'pin',
-                'rate'
-            )->orderBy('min_sale_price', $request->input('price'));
+        if ($request->has('producer_id') && $request->input('producer_id') != null) {
+            $query_products->where('producer_id', $request->input('producer_id'));
+        }
+
+        if ($request->has('price') && $request->input('price') != null) {
+            $min_price_query = ProductDetail::select('product_id', DB::raw('min(sale_price) as min_sale_price'))
+                ->groupBy('product_id');
+
+            $query_products
+                ->joinSub($min_price_query, 'min_price_query', function ($join) {
+                    $join->on('products.id', '=', 'min_price_query.product_id');
+                })
+                ->select(
+                    'id',
+                    'name',
+                    'image',
+                    'monitor',
+                    'front_camera',
+                    'rear_camera',
+                    'CPU',
+                    'GPU',
+                    'RAM',
+                    'ROM',
+                    'OS',
+                    'pin',
+                    'rate',
+                    'slug',
+                )
+                ->orderBy('min_sale_price', $request->input('price'));
         } else {
-            $query_products->select(
-                'id',
-                'name',
-                'image',
-                'monitor',
-                'front_camera',
-                'rear_camera',
-                'CPU',
-                'GPU',
-                'RAM',
-                'ROM',
-                'OS',
-                'pin',
-                'rate'
-            )->latest();
+            $query_products
+                ->select(
+                    'id',
+                    'name',
+                    'image',
+                    'monitor',
+                    'front_camera',
+                    'rear_camera',
+                    'CPU',
+                    'GPU',
+                    'RAM',
+                    'ROM',
+                    'OS',
+                    'pin',
+                    'rate',
+                    'slug',
+                )
+                ->latest();
         }
 
         if ($request->has('type') && $request->input('type') == 'vote') {
@@ -115,9 +121,19 @@ class ProductsController extends Controller
         ])->latest()->limit(5)->get(['link', 'title', 'image']);
 
         $producers = Producer::select('id', 'name')->get();
+        $categories = Category::select('id', 'name')->get();
 
         return view('pages.products')->with(
-            ['data' => ['advertises' => $advertises, 'producers' => $producers, 'products' => $products]]
+            [
+                'data' => [
+                    'advertises' => $advertises,
+                    'producers' => $producers,
+                    'products' => $products,
+                    'categories' => $categories
+                ],
+                'category_id' => $request->input('category_id'),
+                'producer_id' => $request->input('producer_id'),
+            ]
         );
     }
 
@@ -239,7 +255,7 @@ class ProductsController extends Controller
             ])
             ->latest()
             ->limit(5)
-            ->get(['title', 'image']);
+            ->get(['title', 'image', 'link']);
 
         $product = Product::query()
             ->select(
@@ -387,5 +403,123 @@ class ProductsController extends Controller
                 'content' => 'Cảm ơn bạn đã đóng góp về sản phẩm này. Chúng tôi luôn luôn trân trong những đóng góp của bạn.'
             ]
         ]);
+    }
+
+    public function show($slug): View
+    {
+        $slug = trim((string)$slug);
+        $advertises = Advertise::query()
+            ->where([
+                ['start_date', '<=', date('Y-m-d')],
+                ['end_date', '>=', date('Y-m-d')],
+                ['at_home_page', '=', false]
+            ])
+            ->latest()
+            ->limit(5)
+            ->get(['title', 'image', 'link']);
+
+        $product = Product::query()
+            ->select(
+                'id',
+                'producer_id',
+                'name',
+                'sku_code',
+                'monitor',
+                'front_camera',
+                'rear_camera',
+                'CPU',
+                'GPU',
+                'RAM',
+                'ROM',
+                'OS',
+                'pin',
+                'rate',
+                'information_details',
+                'product_introduction',
+            )
+            ->whereHas('productDetails')
+            ->where('slug', $slug)
+            ->with([
+                'producer' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->withCount('votes')
+            ->first();
+
+        if (!$product) {
+            abort(404);
+        }
+
+        $product_details = ProductDetail::query()
+            ->where('product_id', $product->getKey())
+            ->with([
+                'product_images' => function ($query) {
+                    $query->select('id', 'product_detail_id', 'image_name');
+                }
+            ])
+            ->select(
+                'id',
+                'color',
+                'quantity',
+                'sale_price',
+                'promotion_price',
+                'promotion_start_date',
+                'promotion_end_date'
+            )
+            ->get();
+
+        $suggest_products = Product::query()
+            ->select('id', 'name', 'image', 'rate')
+            ->whereHas('product_detail')
+            ->where(
+                [
+                    ['producer_id', $product->producer_id],
+                    ['id', '<>', $product->getKey()]
+                ]
+            )
+            ->with([
+                'product_detail' => function ($query) {
+                    $query
+                        ->select(
+                            'id',
+                            'product_id',
+                            'quantity',
+                            'sale_price',
+                            'promotion_price',
+                            'promotion_start_date',
+                            'promotion_end_date'
+
+                        )
+                        ->where('quantity', '>', 0)
+                        ->orderBy('sale_price', 'ASC');
+                }
+            ])
+            ->latest()
+            ->limit(3)
+            ->get();
+
+        $product_votes = ProductVote::query()
+            ->whereHas('user')
+            ->where('product_id', $product->getKey())
+            ->with([
+                'user' => function ($query) {
+                    $query->select('id', 'name', 'avatar_image');
+                }
+            ])
+            ->latest()
+            ->get();
+
+        return view('pages.product')->with(
+            [
+                'data' => [
+                    'advertises' => $advertises,
+                    'product' => $product,
+                    'product_details' => $product_details,
+                    'suggest_products' => $suggest_products,
+                    'product_votes' => $product_votes
+                ]
+            ]
+        );
     }
 }
