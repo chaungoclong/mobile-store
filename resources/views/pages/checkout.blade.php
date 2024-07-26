@@ -63,12 +63,6 @@
                                        autocomplete="address" value="{{ Auth::user()->address }}" required>
                                 <div class="messages"></div>
                             </div>
-
-                            <div class="form-group">
-                                <label for="note">Ghi Chú</label>
-                                <textarea name="note" type="text" class="form-control" id="note"
-                                          rows="3"></textarea>
-                            </div>
                         </form>
                     </div>
                 </div>

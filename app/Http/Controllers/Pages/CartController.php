@@ -248,7 +248,7 @@ class CartController extends Controller
 
                 Notification::send(auth()->user(), new OrderStatusNotification($order, false));
 
-                return redirect()->route('home_page')->with([
+                return redirect()->route('orders_page')->with([
                     'alert' => [
                         'type' => 'success',
                         'title' => 'Mua hàng thành công',
@@ -295,7 +295,7 @@ class CartController extends Controller
 
                 Notification::send(auth()->user(), new OrderStatusNotification($order, false));
 
-                return redirect()->route('home_page')->with([
+                return redirect()->route('order_pages')->with([
                     'alert' => [
                         'type' => 'success',
                         'title' => 'Mua hàng thành công',

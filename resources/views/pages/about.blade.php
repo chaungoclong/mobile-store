@@ -14,18 +14,6 @@
     </section>
 
     <div class="site-about">
-        <section class="section-advertise">
-            <div class="content-advertise">
-                <div id="slide-advertise" class="owl-carousel">
-                    @foreach($advertises as $advertise)
-                        <div class="slide-advertise-inner"
-                             style="background-image: url('{{ Helper::get_image_advertise_url($advertise->image) }}');"
-                             data-dot="<button>{{ $advertise->title }}</button>"></div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
         <section class="section-about">
             <div class="section-header">
                 <h2 class="section-title">Giới Thiệu</h2>
