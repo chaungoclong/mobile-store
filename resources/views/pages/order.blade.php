@@ -1,161 +1,216 @@
-@php use App\Enums\OrderStatus; @endphp
+@php use App\Enums\OrderStatus;use App\Helpers\Helpers; @endphp
 @extends('layouts.master')
 
-@section('title', $data['order']->order_code)
+@section('title', $order?->order_code ?? '')
 
 @section('content')
+    <style>
+        body {
+            background-color: #f5f5f5; /* Light grey background for the whole page */
+        }
 
+        .container {
+            margin-top: 20px;
+        }
+
+        .panel-custom {
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Space between panels */
+        }
+
+        .panel-heading-custom {
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .panel-body-custom {
+            padding: 15px;
+        }
+
+        .product-image {
+            max-width: 50px;
+            max-height: 50px;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .status-container h2 {
+            margin: 0;
+            margin-right: 20px;
+        }
+
+        .label-status {
+            font-size: 16px;
+            padding: 8px 12px;
+            margin-left: 10px;
+        }
+
+        .delivery-info {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f9f9f9; /* Slightly darker background for input section */
+            border: 1px solid #ddd; /* Border for input section */
+            border-radius: 4px; /* Rounded corners for input section */
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px; /* Adjust spacing between buttons */
+        }
+
+        .btn-space {
+            margin-right: 10px;
+        }
+
+        /* Flexbox styles to make panels equal height */
+        .row-equal-height {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .panel-equal {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+    </style>
     <section class="bread-crumb">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('home_page') }}">{{ __('Trang Chủ') }}</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('orders_page') }}">Đơn Hàng</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ $data['order']->order_code }}</li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $order?->order_code ?? '' }}</li>
             </ol>
         </nav>
     </section>
 
     <div class="site-order">
-        <section class="section-advertise">
-            <div class="content-advertise">
-                <div id="slide-advertise" class="owl-carousel">
-                    @foreach($data['advertises'] as $advertise)
-                        <div class="slide-advertise-inner"
-                             style="background-image: url('{{ Helper::get_image_advertise_url($advertise->image) }}');"
-                             data-dot="<button>{{ $advertise->title }}</button>"></div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        @php
-            $qty = 0;
-            $price = 0;
-            foreach($data['order']->order_details as $order_detail) {
-              $qty = $qty + $order_detail->quantity;
-              $price = $price + $order_detail->price * $order_detail->quantity;
-            }
-        @endphp
-
-        <section class="section-order">
-            <div class="section-header">
-                <div class="section-header-left">
-                    <h2 class="section-title">{{ $data['order']->order_code }} <span>( {{ $qty }} sản phẩm)</span></h2>
-                </div>
-                <div class="section-header-right">
-                    Ngày tạo: {{ date_format($data['order']->created_at, 'd/m/Y') }}
-                </div>
-                <div>
-                    @if(!in_array($data['order']->status ?? null, OrderStatus::uncancellableStatus(), true))
-                        <button class="btn btn-danger" id="cancelOrderBtn"
-                                data-url="{{ route('cancel_order', $data['order']) }}">Hủy Đơn
-                        </button>
-                    @endif
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="order-info">
-                            <div class="row">
-                                <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <div class="order-info-left">
-                                        <div class="order-info-header">
-                                            <h3 class="text-center">Thông Tin Tài Khoản</h3>
-                                        </div>
-                                        <div class="order-info-content">
-                                            <div><span>Tên</span> <span>{{ $data['order']->user->name }}</span></div>
-                                            <div><span>Email</span> <span>{{ $data['order']->user->email }}</span></div>
-                                            <div><span>Số Điện Thoại</span>
-                                                <span>{{ $data['order']->user->phone }}</span></div>
-                                            <div><span>Địa Chỉ</span> <span>{{ $data['order']->user->address }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <div class="order-info-right">
-                                        <div class="order-info-header">
-                                            <h3 class="text-center">Thông Tin Mua Hàng</h3>
-                                        </div>
-                                        <div class="order-info-content">
-                                            <div><span>Tên</span> <span>{{ $data['order']->name }}</span></div>
-                                            <div><span>Email</span> <span>{{ $data['order']->email }}</span></div>
-                                            <div><span>Số Điện Thoại</span> <span>{{ $data['order']->phone }}</span>
-                                            </div>
-                                            <div><span>Địa Chỉ</span> <span>{{ $data['order']->address }}</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 col-sm-12 col-xs-12">
-                                    <div class="order-info-center">
-                                        <div class="order-info-header">
-                                            <h3 class="text-center">Thông Tin Đơn Hàng</h3>
-                                        </div>
-                                        <div class="order-info-content">
-                                            <div><span>Mã Hóa Đơn</span> <span>{{ $data['order']->order_code }}</span>
-                                            </div>
-                                            <div><span>Phương Thức Thanh Toán</span>
-                                                <span>{{ $data['order']->payment_method->name }}</span></div>
-                                            <div><span>Số Lượng</span> <span>{{ $qty }} sản phẩm</span></div>
-                                            <div><span>Đơn giá</span> <span style="color: #9fda58;">{{ number_format($price,0,',','.') }}₫</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        <div class="section-order" style="padding: 10px;">
+            <div class="row row-equal-height">
+                <div class="col-md-4">
+                    <div class="panel panel-custom panel-equal">
+                        <div class="panel-heading panel-heading-custom">
+                            <h3 class="panel-title">Thông Tin Đơn Hàng</h3>
                         </div>
-                        <div class="order-table">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-center">STT</th>
-                                        <th class="text-center">Mã<br>Sản Phẩm</th>
-                                        <th class="text-center">Tên<br>Sản Phẩm</th>
-                                        <th class="text-center">Mầu Sắc</th>
-                                        <th class="text-center">Số Lượng</th>
-                                        <th class="text-center">Đơn Giá</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($data['order']->order_details as $key => $order_detail)
-                                        <tr>
-                                            <td class="text-center">{{ $key + 1 }}</td>
-                                            <td class="text-center">
-                                                <a href="{{ route('product_page', ['id' => $order_detail->product_detail->product->id]) }}"
-                                                   title="{{ $order_detail->product_detail->product->name }}">{{ $order_detail->product_detail->product->sku_code }}</a>
-                                            </td>
-                                            <td class="text-center">{{ $order_detail->product_detail->product->name }}</td>
-                                            <td class="text-center">{{ $order_detail->product_detail->color }}</td>
-                                            <td class="text-center">{{ $order_detail->quantity }}</td>
-                                            <td class="text-center"
-                                                style="color: #9fda58;">{{ number_format($order_detail->price,0,',','.') }}
-                                                ₫
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="panel-body panel-body-custom">
+                            <p><strong>Mã Đơn Hàng:</strong> #{{ $order->order_code ?? '' }}</p>
+                            <p><strong>Trạng Thái:</strong> {!! $status?->toHtml() !!}</p>
+                            <p><strong>Tình Trạng Thanh Toán:</strong>
+                                <span id="paymentStatusText">{!! $payment_status?->toHtml() !!}</span>
+                            </p>
+                            <p>
+                                <strong>Mã Vận Chuyển:</strong>
+                                <span id="deliveryCodeText">{{ $order->delivery_code ?? '' }}</span>
+                            </p>
+                            <p>
+                                <strong>Số Tiền:</strong>
+                                {{ Helpers::formatVietnameseCurrency($order?->amount ?? null) }}
+                            </p>
                         </div>
                     </div>
-                    {{--          <div class="col-md-3">--}}
-                    {{--            <div class="online_support">--}}
-                    {{--              <h2 class="title">CHÚNG TÔI LUÔN SẴN SÀNG<br>ĐỂ GIÚP ĐỠ BẠN</h2>--}}
-                    {{--              <img src="{{ asset('images/support_online.jpg') }}">--}}
-                    {{--              <h3 class="sub_title">Để được hỗ trợ tốt nhất. Hãy gọi</h3>--}}
-                    {{--              <div class="phone">--}}
-                    {{--                <a href="tel:18006750" title="1800 6750">1800 6750</a>--}}
-                    {{--              </div>--}}
-                    {{--              <div class="or"><span>HOẶC</span></div>--}}
-                    {{--              <h3 class="title">Chat hỗ trợ trực tuyến</h3>--}}
-                    {{--              <h3 class="sub_title">Chúng tôi luôn trực tuyến 24/7.</h3>--}}
-                    {{--            </div>--}}
-                    {{--          </div>--}}
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-custom panel-equal">
+                        <div class="panel-heading panel-heading-custom">
+                            <h3 class="panel-title">Thông Tin Khách Hàng</h3>
+                        </div>
+                        <div class="panel-body panel-body-custom">
+                            <p>
+                                <strong>Tên:</strong>
+                                <span>{{ $order?->user?->name ?? '' }}</span>
+                            </p>
+                            <p><strong>Email:</strong> {{ $order?->user?->email ?? '' }}</p>
+                            <p><strong>Điện Thoại:</strong> {{ $order?->user?->phone ?? '' }}</p>
+                            <p><strong>Địa Chỉ:</strong> {{ $order?->user?->address ?? '' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-custom panel-equal">
+                        <div class="panel-heading panel-heading-custom">
+                            <h3 class="panel-title">Thông Tin Giao Hàng</h3>
+                        </div>
+                        <div class="panel-body panel-body-custom">
+                            <p><strong>Tên Người Nhận:</strong> {{ $order?->name ?? '' }}</p>
+                            <p><strong>Email Người Nhận:</strong> {{ $order?->email ?? '' }}</p>
+                            <p><strong>Điện Thoại Người Nhận:</strong> {{ $order?->phone ?? '' }}</p>
+                            <p><strong>Địa Chỉ Giao Hàng:</strong> {{ $order?->address ?? '' }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
+
+            <div class="panel panel-custom" style="margin-top: 20px;">
+                <div class="panel-heading panel-heading-custom">
+                    <h3 class="panel-title">Sản Phẩm</h3>
+                </div>
+                <div class="panel-body panel-body-custom">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Hình Ảnh</th>
+                            <th>Tên</th>
+                            <th>Màu</th>
+                            <th>Số Lượng</th>
+                            <th>Giá</th>
+                            <th>Tổng</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($order?->order_details ?? [] as $orderDetail)
+                            <tr>
+                                <td>
+                                    <img
+                                        src="{{ $orderDetail?->product_detail?->product_image_urls[0] ?? '' }}"
+                                        class="product-image" alt="Hình Ảnh Sản Phẩm">
+                                </td>
+                                <td>{{ $orderDetail?->product_detail?->product?->name ?? '' }}</td>
+                                <td>{{ $orderDetail?->product_detail?->color ?? '' }}</td>
+                                <td>{{ $orderDetail?->quantity ?? '' }}</td>
+                                <td>{{ Helpers::formatVietnameseCurrency($orderDetail?->price ?? null) }}</td>
+                                <td>{{ Helpers::formatVietnameseCurrency($orderDetail?->price * $orderDetail?->quantity) }}</td>
+                            </tr>
+                        @endforeach
+                        <!-- Repeat for other products -->
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="5" class="text-right">Tổng Tiền:</th>
+                            <th>{{ Helpers::formatVietnameseCurrency($order?->amount ?? null) }}</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            @if($status !== OrderStatus::Delivery && $status !== OrderStatus::Done && $status !== OrderStatus::Cancelled)
+                <div class="panel panel-custom" style="margin-top: 20px;">
+                    <div class="panel-heading panel-heading-custom">
+                        <h3 class="panel-title">Tùy Chọn Đơn Hàng</h3>
+                    </div>
+                    <div class="panel-body panel-body-custom">
+                        <div class="button-container">
+                            <button
+                                data-status="{{ OrderStatus::Cancelled->value }}"
+                                class="{{ OrderStatus::Cancelled->buttonClass() }} btn-space btn-update-status"
+                                data-action="cancel"
+                                id="cancelOrderBtn">
+                                <i class="fa fa-times" style="margin-right: 5px;"></i>Hủy Đơn
+                            </button>
+                        </div>
+                        <form action="{{ route('cancel_order', $order) }}" method="post" id="formUpdateStatus">
+                            @csrf
+                            @method('delete')
+                        </form>
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 
 @endsection
@@ -180,30 +235,8 @@
 @section('js')
     <script>
         $(document).ready(function () {
-
-            $("#slide-advertise").owlCarousel({
-                items: 2,
-                autoplay: true,
-                loop: true,
-                margin: 10,
-                autoplayHoverPause: true,
-                nav: true,
-                dots: false,
-                responsive: {
-                    0: {
-                        items: 1,
-                    },
-                    992: {
-                        items: 2,
-                        animateOut: 'zoomInRight',
-                        animateIn: 'zoomOutLeft',
-                    }
-                },
-                navText: ['<i class="fas fa-angle-left"></i>', '<i class="fas fa-angle-right"></i>']
-            });
-
-            $('#cancelOrderBtn').on('click', function () {
-                const url = $(this).attr('data-url');
+            $('#cancelOrderBtn').on('click', function (event) {
+                event.preventDefault();
 
                 Swal.fire({
                     title: 'Bạn có muốn hủy đơn hàng này',
@@ -215,28 +248,7 @@
                     confirmButtonText: 'Có!'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
-                        const response = await fetch(url, {
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                                'Accept': 'application/json'
-                            },
-                            method: 'delete',
-                        });
-
-                        const jsonResponse = await response.json();
-
-                        if (response.ok) {
-                            Toast.fire({
-                                title: jsonResponse?.message,
-                                icon: 'success'
-                            });
-                            $('#cancelOrderBtn').hide()
-                        } else {
-                            Toast.fire({
-                                title: jsonResponse?.message,
-                                icon: 'error'
-                            });
-                        }
+                        $('#formUpdateStatus').submit();
                     }
                 });
             });

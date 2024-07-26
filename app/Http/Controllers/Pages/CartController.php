@@ -10,9 +10,12 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\PaymentMethod;
 use App\Models\ProductDetail;
+use App\Models\User;
 use App\NL_Checkout;
+use App\Notifications\OrderStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
@@ -235,6 +238,16 @@ class CartController extends Controller
                 $product->quantity = $product->quantity - $request->totalQty;
                 $product->save();
 
+                $adminUsers = User::query()
+                    ->where('active', 1)
+                    ->where('admin', 1)
+                    ->get();
+                if ($adminUsers->isNotEmpty()) {
+                    Notification::send($adminUsers, new OrderStatusNotification($order, true));
+                }
+
+                Notification::send(auth()->user(), new OrderStatusNotification($order, false));
+
                 return redirect()->route('home_page')->with([
                     'alert' => [
                         'type' => 'success',
@@ -271,6 +284,17 @@ class CartController extends Controller
                     $product->save();
                 }
                 Session::forget('cart');
+
+                $adminUsers = User::query()
+                    ->where('active', 1)
+                    ->where('admin', 1)
+                    ->get();
+                if ($adminUsers->isNotEmpty()) {
+                    Notification::send($adminUsers, new OrderStatusNotification($order, true));
+                }
+
+                Notification::send(auth()->user(), new OrderStatusNotification($order, false));
+
                 return redirect()->route('home_page')->with([
                     'alert' => [
                         'type' => 'success',
@@ -307,6 +331,16 @@ class CartController extends Controller
 
                 $product->quantity = $product->quantity - $request->totalQty;
                 $product->save();
+
+                $adminUsers = User::query()
+                    ->where('active', 1)
+                    ->where('admin', 1)
+                    ->get();
+                if ($adminUsers->isNotEmpty()) {
+                    Notification::send($adminUsers, new OrderStatusNotification($order, true));
+                }
+
+                Notification::send(auth()->user(), new OrderStatusNotification($order, false));
 
                 // Tạo url thanh toán
                 $vnp_TxnRef = $order->order_code; //Mã giao dịch thanh toán tham chiếu của merchant
@@ -379,6 +413,16 @@ class CartController extends Controller
                     $product->quantity = $product->quantity - $item['qty'];
                     $product->save();
                 }
+
+                $adminUsers = User::query()
+                    ->where('active', 1)
+                    ->where('admin', 1)
+                    ->get();
+                if ($adminUsers->isNotEmpty()) {
+                    Notification::send($adminUsers, new OrderStatusNotification($order, true));
+                }
+
+                Notification::send(auth()->user(), new OrderStatusNotification($order, false));
 
                 $vnp_TxnRef = $order->order_code; //Mã giao dịch thanh toán tham chiếu của merchant
                 $vnp_Amount = $cart->totalPrice; // Số tiền thanh toán

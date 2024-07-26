@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\PaymentMethod;
 use App\Models\ProductDetail;
+use App\Models\User;
 use App\Notifications\OrderStatusNotification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -179,7 +180,7 @@ class OrderController extends Controller
             /**
              * @var Order $order
              */
-            $order = Order::query()->find($request->input('id'));
+            $order = Order::query()->findOrFail($request->input('id'));
             $currentStatus = OrderStatus::tryFrom((int)$order->getAttribute('status'));
             $newStatus = OrderStatus::tryFrom((int)$request->input('status'));
 
@@ -205,16 +206,26 @@ class OrderController extends Controller
 
             $order->update($updateData);
 
-            if($newStatus === OrderStatus::Cancelled && $currentStatus !== OrderStatus::Cancelled) {
+            if ($newStatus === OrderStatus::Cancelled && $currentStatus !== OrderStatus::Cancelled) {
                 $order->revertProductQuantityOnOrderCancel();
             }
 
             DB::commit();
 
-            Notification::send(auth()->user(), new OrderStatusNotification($order, $newStatus));
-            Notification::send($order->user, new OrderStatusNotification($order, $newStatus));
+            $adminUsers = User::query()
+                ->where('active', 1)
+                ->where('admin', 1)
+                ->get();
+            if ($adminUsers->isNotEmpty()) {
+                Notification::send($adminUsers, new OrderStatusNotification($order, true));
+            }
 
-            return back()->with('success', 'update success');
+            $customer = $order->customer()->first();
+            if ($customer) {
+                Notification::send($customer, new OrderStatusNotification($order, false));
+            }
+
+            return back()->with('success', 'Cập nhật đơn hành thành công');
         } catch (Throwable $throwable) {
             DB::rollBack();
             Log::error(__METHOD__ . ' - ' . __LINE__ . ' - ' . $throwable->getMessage());

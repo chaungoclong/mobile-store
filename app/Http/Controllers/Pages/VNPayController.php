@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductDetail;
+use App\Models\User;
+use App\Notifications\OrderStatusNotification;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -15,6 +17,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class VNPayController extends Controller
 {
@@ -137,6 +140,16 @@ class VNPayController extends Controller
             }
 
             $order->update(['payment_status' => $paymentStatus, 'status' => OrderStatus::Confirmed->value]);
+
+            $adminUsers = User::query()
+                ->where('active', 1)
+                ->where('admin', 1)
+                ->get();
+            if ($adminUsers->isNotEmpty()) {
+                Notification::send($adminUsers, new OrderStatusNotification($order, true));
+            }
+
+            Notification::send(auth()->user(), new OrderStatusNotification($order, false));
 
             $returnData['RspCode'] = '00';
             $returnData['Message'] = 'Confirm Success';

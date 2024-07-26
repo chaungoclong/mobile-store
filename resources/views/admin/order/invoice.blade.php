@@ -53,7 +53,7 @@
             <h3 style="font-size: 20px; margin-top: 0; border-bottom: 2px solid #ddd; padding-bottom: 5px;">Thông Tin
                 Giao Hàng</h3>
             <p style="margin: 5px 0;"><span style="font-weight: bold;">Tên Người Nhận:</span> {{ $order?->name ?? '' }}</p>
-            <p style="margin: 5px 0;"><span style="font-weight: bold;">Điện Thoại Người Nhận:</span> {{ $order?->email ?? '' }}</p>
+            <p style="margin: 5px 0;"><span style="font-weight: bold;">Email Người Nhận:</span> {{ $order?->email ?? '' }}</p>
             <p style="margin: 5px 0;"><span style="font-weight: bold;">Điện Thoại Người Nhận:</span> {{ $order?->phone ?? '' }}</p>
             <p style="margin: 5px 0;"><span style="font-weight: bold;">Địa Chỉ Giao Hàng:</span> {{ $order?->address ?? '' }}</p>
         </div>
@@ -92,7 +92,7 @@
             <tr class="total-row">
                 <th colspan="5" style="border: 1px solid #ddd; padding-top: 10px; text-align: right;">Tổng Tiền:
                 </th>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">1,000,000 VND</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;"> {{ Helpers::formatVietnameseCurrency($order?->amount ?? null) }}</td>
             </tr>
             </tfoot>
         </table>
