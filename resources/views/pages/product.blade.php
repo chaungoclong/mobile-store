@@ -45,11 +45,11 @@
                                                             @endif
 
                                                             @if($product->product_images->isNotEmpty())
-                                                                <ul id="imageGallery-{{ $key }}">
+                                                                <ul id="imageGallery-{{ $key }}" style="text-align: center;">
                                                                     @foreach($product->product_images as $image)
                                                                         <li data-thumb="{{ Helper::get_image_product_url($image->image_name) }}"
                                                                             data-src="{{ Helper::get_image_product_url($image->image_name) }}">
-                                                                            <img
+                                                                            <img style="max-width: 100%;"
                                                                                 src="{{ Helper::get_image_product_url($image->image_name) }}"/>
                                                                         </li>
                                                                     @endforeach

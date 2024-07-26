@@ -102,9 +102,9 @@
                         <div class="content">Không có sản phẩm</div>
                     </div>
                 @else
-                    <div class="row" style="padding: 0 5px 0 5px;">
+                    <div class="row" style="">
                         @foreach($data['products'] as $key => $product)
-                            <div class="col-md-2 col-md-20" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px; padding: 5px; margin: 5px;">
+                            <div class="col-md-2 col-md-20" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px; ">
                                 <div class="item-product" style="">
                                     <a href="{{ route('product_detail', ['slug' => $product?->slug ?? '']) }}"
                                        title="{{ $product->name }}">

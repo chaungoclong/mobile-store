@@ -364,6 +364,23 @@ class ProductsController extends Controller
     {
         $productId = $request->input('product_id');
 
+        $canVote = Product::query()
+            ->where('id', $productId)
+            ->whereHas('productDetails.orderDetails.order', function (Builder $query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->exists();
+
+        if (!$canVote) {
+            return back()->with([
+                'vote_alert' => [
+                    'type' => 'success',
+                    'title' => 'Đã Gửi Đánh Giá',
+                    'content' => 'Bạn chỉ có thể đánh giá sản phẩm khi đã mua nó.'
+                ]
+            ]);
+        }
+
         $alreadyVote = ProductVote::query()
             ->where('user_id', $request->input('user_id'))
             ->where('product_id', $productId)
