@@ -70,21 +70,21 @@ class OrderStatusNotification extends Notification implements ShouldQueue
 
         return match ($status) {
             OrderStatus::Pending => $this->isAdmin
-                ? '[Admin] Đơn Hàng Mới #' . $this->order->id . ' - Đang Chờ Xác Nhận'
-                : '[Cửa Hàng] Xác Nhận Đơn Hàng #' . $this->order->id . ' - Đang Chờ',
+                ? '[Admin] Đơn Hàng Mới #' . ($this->order->order_code ?? '') . ' - Đang Chờ Xác Nhận'
+                : '[Cửa Hàng] Xác Nhận Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Đang Chờ',
             OrderStatus::Confirmed => $this->isAdmin
-                ? '[Admin] Đơn Hàng #' . $this->order->id . ' - Đã Xác Nhận, Chuẩn Bị Giao Hàng'
-                : '[Cửa Hàng] Đơn Hàng #' . $this->order->id . ' - Đã Xác Nhận',
+                ? '[Admin] Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Đã Xác Nhận, Chuẩn Bị Giao Hàng'
+                : '[Cửa Hàng] Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Đã Xác Nhận',
             OrderStatus::Delivery => $this->isAdmin
-                ? '[Admin] Đơn Hàng #' . $this->order->id . ' - Đang Vận Chuyển, Theo Dõi Tiến Trình'
-                : '[Cửa Hàng] Đơn Hàng #' . $this->order->id . ' - Đang Vận Chuyển',
+                ? '[Admin] Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Đang Vận Chuyển, Theo Dõi Tiến Trình'
+                : '[Cửa Hàng] Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Đang Vận Chuyển',
             OrderStatus::Done => $this->isAdmin
-                ? '[Admin] Đơn Hàng #' . $this->order->id . ' - Hoàn Thành, Giao Hàng Thành Công'
-                : '[Cửa Hàng] Đơn Hàng #' . $this->order->id . ' - Hoàn Thành',
+                ? '[Admin] Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Hoàn Thành, Giao Hàng Thành Công'
+                : '[Cửa Hàng] Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Hoàn Thành',
             OrderStatus::Cancelled => $this->isAdmin
-                ? '[Admin] Đơn Hàng #' . $this->order->id . ' - Đã Hủy, Kiểm Tra Lý Do'
-                : '[Cửa Hàng] Đơn Hàng #' . $this->order->id . ' - Đã Hủy',
-            default => '[Cửa Hàng] Đơn Hàng #' . $this->order->id,
+                ? '[Admin] Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Đã Hủy, Kiểm Tra Lý Do'
+                : '[Cửa Hàng] Đơn Hàng #' . ($this->order->order_code ?? '') . ' - Đã Hủy',
+            default => '[Cửa Hàng] Đơn Hàng #' . ($this->order->order_code ?? ''),
         };
     }
 
