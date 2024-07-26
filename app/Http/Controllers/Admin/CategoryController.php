@@ -45,7 +45,7 @@ class CategoryController extends Controller
             $createData = [
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
-                'slug' => Str::slug($request->input('slug') ?? $request->input('name')),
+//                'slug' => Str::slug($request->input('slug') ?? $request->input('name')),
             ];
 
             if ($request->hasFile('image')) {
@@ -74,7 +74,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string'],
-            'slug' => ['string', 'unique:categories,slug,' . $category->getKey()],
+//            'slug' => ['string', 'unique:categories,slug,' . $category->getKey()],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif', 'max:1024'],
         ]);

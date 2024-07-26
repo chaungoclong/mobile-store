@@ -35,7 +35,6 @@ class ProducerController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string'],
-            'slug' => ['string', 'unique:producers,slug'],
             'image' => ['required', 'file']
         ]);
 
@@ -52,7 +51,7 @@ class ProducerController extends Controller
 
             $createData = [
                 'name' => $request->input('name'),
-                'slug' => Str::slug($request->input('slug')),
+//                'slug' => Str::slug($request->input('slug')),
                 'logo' => $logoUrl
             ];
 
@@ -87,7 +86,6 @@ class ProducerController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string'],
-            'slug' => ['string', 'unique:producers,slug,' . $producer->getKey()],
             'logo' => ['nullable', 'file', 'max:1024']
         ]);
 
@@ -96,7 +94,7 @@ class ProducerController extends Controller
         try {
             $updateData = [
                 'name' => $request->input('name'),
-                'slug' => Str::slug($request->input('slug', $request->input('name', ''))),
+//                'slug' => Str::slug($request->input('slug', $request->input('name', ''))),
             ];
 
             if ($request->hasFile('logo')) {
@@ -105,7 +103,6 @@ class ProducerController extends Controller
                 }
 
                 $file = $request->file('logo');
-//                dd($file);
                 $updateData['logo'] = $file->store('images/producers', 'public');
             }
 

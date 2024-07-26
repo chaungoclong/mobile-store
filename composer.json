@@ -8,6 +8,7 @@
         "php": "^8.0.2",
         "ext-dom": "*",
         "barryvdh/laravel-dompdf": "^2.2",
+        "cviebrock/eloquent-sluggable": "^9.0",
         "fideloper/proxy": "^4.4",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^3.7",
