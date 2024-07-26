@@ -77,9 +77,7 @@ class ProducersDataTable extends DataTable
             ->setTableId('producers-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->stateSave(true)
-            ->orderBy(1)
-//            ->selectStyleSingle()
+            ->orderBy(4)
             ->responsive()
             ->autoWidth(true)
             ->dom('rltp')
@@ -88,6 +86,28 @@ class ProducersDataTable extends DataTable
                 'url' => route('admin.producers.index'),
                 'type' => 'GET',
                 'data' => "function(d) { d.search = $('#searchInput').val(); }",
+            ])
+            ->parameters([
+                'language' => [
+                    'sProcessing' => 'Đang xử lý...',
+                    'sLengthMenu' => 'Hiển thị _MENU_ mục',
+                    'sZeroRecords' => 'Không tìm thấy dữ liệu',
+                    'sInfo' => 'Hiển thị từ _START_ đến _END_ trong tổng số _TOTAL_ mục',
+                    'sInfoEmpty' => 'Hiển thị 0 đến 0 trong tổng số 0 mục',
+                    'sInfoFiltered' => '(được lọc từ tổng số _MAX_ mục)',
+                    'sSearch' => 'Tìm kiếm:',
+                    'sLoadingRecords' => 'Đang tải...',
+                    'oPaginate' => [
+                        'sFirst' => '<i class="fa fa-angle-double-left"></i>', // Biểu tượng cho "Đầu tiên"
+                        'sLast' => '<i class="fa fa-angle-double-right"></i>', // Biểu tượng cho "Cuối cùng"
+                        'sNext' => '<i class="fa fa-angle-right"></i>', // Biểu tượng cho "Tiếp theo"
+                        'sPrevious' => '<i class="fa fa-angle-left"></i>' // Biểu tượng cho "Trước đó"
+                    ],
+                    'oAria' => [
+                        'sSortAscending' => ': Sắp xếp cột theo thứ tự tăng dần',
+                        'sSortDescending' => ': Sắp xếp cột theo thứ tự giảm dần'
+                    ]
+                ],
             ]);
     }
 

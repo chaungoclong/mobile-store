@@ -2,8 +2,9 @@
 
 namespace App\DataTables;
 
+use App\Enums\StockStatus;
 use App\Helpers\Helpers;
-use App\Models\Advertise;
+use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Yajra\DataTables\EloquentDataTable;
@@ -11,7 +12,7 @@ use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
-class AdvertiseDataTable extends DataTable
+class ProductDataTable extends DataTable
 {
     /**
      * Build DataTable class.
@@ -27,42 +28,53 @@ class AdvertiseDataTable extends DataTable
                 if (request()?->has('search')) {
                     $query->where(function (Builder $searchQuery) {
                         $searchQuery
-                            ->where('title', 'like', "%" . request('search') . "%")
-                            ->orWhere('link', 'like', "%" . request('search') . "%");
+                            ->where('name', 'like', "%" . request('search') . "%");
                     });
                 }
 
-                if (request()?->has('status')) {
-                    $status = request('status');
-                    if (is_string($status) && trim($status) !== '') {
-                        $status = strtolower(trim($status));
-                        if ($status === 'active') {
-                            $query->where('end_date', '>=', date('Y-m-d'));
-                        } else {
-                            $query->where('end_date', '<', date('Y-m-d'));
+                if (request()?->has('stock_status')) {
+                    $stockStatus = request('stock_status');
+                    if (is_string($stockStatus) && trim($stockStatus) !== '') {
+                        $stockStatus = strtolower(trim($stockStatus));
+                        if ($stockStatus === StockStatus::IN_STOCK->value) {
+                            $query->having('product_details_sum_quantity', '>=', 10);
+                        } elseif ($stockStatus === StockStatus::RUNNING_OUT->value) {
+                            $query
+                                ->having('product_details_sum_quantity', '>', 0)
+                                ->having('product_details_sum_quantity', '<', 10);
+                        } elseif ($stockStatus === StockStatus::OUT_OF_STOCK->value) {
+                            $query->having('product_details_sum_quantity', '<=', 0);
                         }
                     }
                 }
+
+                if (is_numeric(request('category_id'))) {
+                    $query->where('category_id', (int)request('category_id'));
+                }
+
+                if (is_numeric(request('producer_id'))) {
+                    $query->where('producer_id', (int)request('producer_id'));
+                }
             })
-            ->rawColumns(['image', 'action', 'status', 'link', 'position'])
+            ->rawColumns(['image', 'action', 'stock_status'])
             ->editColumn('image', function ($item) {
-                return '<img src="' . Helpers::get_image_advertise_url($item->image) . '" width="200px">';
-            })
-            ->editColumn('link', function ($item) {
-                return "<a href='$item->link'>$item->link</a>";
+                return '<img src="' . Helpers::get_image_product_url($item->image) . '" width="100px">';
             })
             ->editColumn('created_at', function ($item) {
                 return Carbon::parse($item->created_at)->format('d-m-Y H:i:s');
             })
+            ->editColumn('rate', function ($item) {
+                return $item?->rate . '/5';
+            })
             ->addColumn('action', function ($item) {
                 return '
-                <a href="' . route('admin.advertise.edit', ['id' => $item->id]) . '"
+                <a href="' . route('admin.product.edit', ['id' => $item->id]) . '"
                    class="btn btn-icon btn-sm btn-primary tip" title="Chỉnh Sửa">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </a>
                 <a href="javascript:void(0);" data-id="' . $item->id . '"
                    class="btn btn-icon btn-sm btn-danger deleteDialog tip" title="Xóa"
-                   data-url="' . route('admin.advertise.delete') . '">
+                   data-url="' . route('admin.product.delete') . '">
                     <i class="fa fa-trash"></i>
                 </a>';
             })
@@ -73,23 +85,43 @@ class AdvertiseDataTable extends DataTable
 
                 return '<span class="label-danger label">Hết Hạn</span>';
             })
-            ->addColumn('position', function ($item) {
-                if ($item->at_home_page) {
-                    return '<span class="label-success label">Trang chủ</span>';
+            ->addColumn('producer', function ($item) {
+                return $item?->producer?->name;
+            })
+            ->addColumn('category', function ($item) {
+                return $item?->category?->name;
+            })
+            ->addColumn('quantity', function ($item) {
+                return $item?->product_details_sum_quantity ?? 0;
+            })
+            ->addColumn('stock_status', function ($item) {
+                $quantity = (int)($item?->product_details_sum_quantity ?? 0);
+                if ($quantity >= 10) {
+                    return '<span class="label-success label">Còn hàng</span>';
                 }
-                return '<span class="label-danger label">Trang thường</span>';
+
+                if ($quantity > 0) {
+                    return '<span class="label-warning label">Sắp hết hàng</span>';
+                }
+
+                return '<span class="label-danger label">Hết hàng</span>';
             });
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param Advertise $model
+     * @param Product $model
      * @return Builder
      */
-    public function query(Advertise $model): Builder
+    public function query(Product $model): Builder
     {
-        return $model->newQuery();
+        return $model->newQuery()
+            ->with([
+                'category:id,name',
+                'producer:id,name'
+            ])
+            ->withSum('productDetails', 'quantity');
     }
 
     /**
@@ -100,18 +132,18 @@ class AdvertiseDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('advertises-table')
+            ->setTableId('products-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(6)
+            ->orderBy(9)
             ->responsive()
             ->autoWidth(true)
             ->dom('rltp')
             ->addTableClass('table-hover')
             ->ajax([
-                'url' => route('admin.advertise.index'),
+                'url' => route('admin.product.index'),
                 'type' => 'GET',
-                'data' => "function(d) { d.search = $('#search').val(); d.status = $('#status').val(); }",
+                'data' => "function(d) { d.search = $('#search').val(); d.stock_status = $('#stock_status').val(); d.category_id = $('#category_id').val(); d.producer_id = $('#producer_id').val();}",
             ])
             ->parameters([
                 'language' => [
@@ -146,11 +178,14 @@ class AdvertiseDataTable extends DataTable
     {
         return [
             Column::computed('DT_RowIndex', 'STT'),
-            Column::make('title')->title('Tiêu Đề'),
-            Column::computed('link', 'Link'),
             Column::computed('image', 'Ảnh'),
-            Column::computed('status', 'Trạng thái'),
-            Column::computed('position', 'Vị trí'),
+            Column::make('sku_code')->title('Mã sản phẩm'),
+            Column::make('name')->title('Tên sản phẩm'),
+            Column::computed('producer', 'Hãng sản xuất'),
+            Column::computed('category', 'Danh mục'),
+            Column::make('rate')->title('Sao đánh giá'),
+            Column::make('quantity')->title('Số lượng'),
+            Column::computed('stock_status', 'Trạng thái tồn kho'),
             Column::make('created_at')->title('Tạo lúc'),
             Column::computed('action', 'Hành động')
         ];

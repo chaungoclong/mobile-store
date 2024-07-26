@@ -375,8 +375,10 @@ class ProductsController extends Controller
         $rate = ProductVote::query()->where('product_id', $productId)->avg('rate');
 
         $product = Product::query()->where('id', $productId)->first();
-        $product->rate = $rate;
-        $product->save();
+        if ($product) {
+            $product->rate = $rate;
+            $product->save();
+        }
 
         return back()->with([
             'vote_alert' => [

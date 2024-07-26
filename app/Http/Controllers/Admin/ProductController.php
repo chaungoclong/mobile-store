@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DataTables\ProductDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\OrderDetail;
@@ -13,7 +14,6 @@ use App\Models\Promotion;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,24 +23,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
-    public function index(): Factory|View|Application
+    public function index(ProductDataTable $dataTable)
     {
-        $products = Product::query()
-            ->select('id', 'producer_id', 'name', 'image', 'sku_code', 'OS', 'rate', 'created_at')
-            ->with([
-                'producer' => function ($query) {
-                    $query->select('id', 'name');
-                }
-            ])
-            ->withCount([
-                'product_details' => function (Builder $query) {
-                    $query->where('quantity', '>', 0);
-                }
-            ])
-            ->latest()
-            ->get();
-
-        return view('admin.product.index')->with('products', $products);
+        $categories = Category::query()->pluck('id', 'name');
+        $producers = Producer::query()->pluck('id', 'name');
+        return $dataTable->render('admin.product.index', [
+            'categories' => $categories,
+            'producers' => $producers
+        ]);
     }
 
     public function delete(Request $request)
