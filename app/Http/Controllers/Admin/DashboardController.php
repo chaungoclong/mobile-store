@@ -36,7 +36,7 @@ class DashboardController extends Controller
         $startDate = $periodRange['start'];
         $endDate = $periodRange['end'];
 
-        $recentOrders = $this->getRecentOrders($startDate, $endDate);
+        $recentOrders = $this->getRecentOrders();
         $topProducts = $this->getTopProducts($startDate, $endDate);
         $lowStockProducts = $this->getLowStockProduct();
         $salesData = $this->getSalesData($periodRange);
@@ -144,7 +144,7 @@ class DashboardController extends Controller
         return $query->sum('amount');
     }
 
-    private function getRecentOrders(string $startDate, string $endDate): Collection
+    private function getRecentOrders(): Collection
     {
         return Order::query()
             ->with([
@@ -152,7 +152,7 @@ class DashboardController extends Controller
                     $query->select(['name', 'id']);
                 }
             ])
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', OrderStatus::Pending->value)
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get()
@@ -176,7 +176,7 @@ class DashboardController extends Controller
             ->join('product_details', 'order_details.product_detail_id', '=', 'product_details.id')
             ->join('products', 'product_details.product_id', '=', 'products.id')
             ->where('orders.status', OrderStatus::Done->value)
-            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->whereBetween('orders.updated_at', [$startDate, $endDate])
             ->select('products.id', 'products.name', DB::raw('SUM(order_details.quantity) as total_sales'))
             ->groupBy('products.id', 'products.name')
             ->orderBy('total_sales', 'desc')
@@ -227,17 +227,17 @@ class DashboardController extends Controller
     private function getAggregatedData(string $start, string $end, string $interval): Collection
     {
         $selectPeriod = match ($interval) {
-            TimeInterval::Hour->value => 'DATE_FORMAT(orders.created_at, "%Y-%m-%d %H") as period',
-            TimeInterval::Day->value => 'DATE(orders.created_at) as period',
-            TimeInterval::Month->value => 'DATE_FORMAT(orders.created_at, "%Y-%m") as period',
-            TimeInterval::Year->value => 'DATE_FORMAT(orders.created_at, "%Y") as period',
+            TimeInterval::Hour->value => 'DATE_FORMAT(orders.updated_at, "%Y-%m-%d %H") as period',
+            TimeInterval::Day->value => 'DATE(orders.updated_at) as period',
+            TimeInterval::Month->value => 'DATE_FORMAT(orders.updated_at, "%Y-%m") as period',
+            TimeInterval::Year->value => 'DATE_FORMAT(orders.updated_at, "%Y") as period',
             default => throw new InvalidArgumentException('Invalid interval specified for date format ' . $interval)
         };
 
         return DB::table('order_details')
             ->join('orders', 'order_details.order_id', '=', 'orders.id')
             ->where('orders.status', OrderStatus::Done->value)
-            ->whereBetween('orders.created_at', [$start, $end])
+            ->whereBetween('orders.updated_at', [$start, $end])
             ->select(
                 DB::raw($selectPeriod),
                 DB::raw('SUM(order_details.price * order_details.quantity) as revenue'),
@@ -268,7 +268,7 @@ class DashboardController extends Controller
         $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $end);
         $months = [];
 
-        for ($date = $startDate; $date->lte($endDate); $date->addMonth()) {
+        for ($date = $startDate; $date->lte($endDate->endOfMonth()); $date->addMonth()) {
             $months[] = $date->copy()->format('Y-m');
         }
 
@@ -281,7 +281,7 @@ class DashboardController extends Controller
         $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $end);
         $dates = [];
 
-        for ($date = $startDate; $date->lte($endDate); $date->addHour()) {
+        for ($date = $startDate; $date->lte($endDate->endOfHour()); $date->addHour()) {
             $dates[] = $date->copy()->format('Y-m-d H');
         }
         return $dates;
@@ -293,7 +293,7 @@ class DashboardController extends Controller
         $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $end);
         $dates = [];
 
-        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+        for ($date = $startDate; $date->lte($endDate->endOfDay()); $date->addDay()) {
             $dates[] = $date->copy()->format('Y-m-d');
         }
         return $dates;
@@ -305,7 +305,7 @@ class DashboardController extends Controller
         $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $end);
         $dates = [];
 
-        for ($date = $startDate; $date->lte($endDate); $date->addYear()) {
+        for ($date = $startDate; $date->lte($endDate->endOfYear()); $date->addYear()) {
             $dates[] = $date->copy()->format('Y');
         }
         return $dates;

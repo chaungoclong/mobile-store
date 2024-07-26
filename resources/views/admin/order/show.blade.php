@@ -113,6 +113,9 @@
                                         <p><strong>Tình Trạng Thanh Toán:</strong>
                                             <span id="paymentStatusText">{!! $payment_status?->toHtml() !!}</span>
                                         </p>
+                                        <p><strong>Phương Thức Thanh Toán:</strong>
+                                            <span id="paymentStatusText">{!! $order?->payment_method?->name ?? '' !!}</span>
+                                        </p>
                                         <p>
                                             <strong>Mã Vận Chuyển:</strong>
                                             <span id="deliveryCodeText">{{ $order->delivery_code ?? '' }}</span>

@@ -43,7 +43,7 @@
 
         <!-- Sales Overview -->
         <div class="bg-white p-4 rounded shadow mb-4">
-            <h2 class="text-xl font-semibold mb-2">Tổng quan</h2>
+            <h2 class="text-3xl font-semibold mb-2">Tổng quan</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="p-6 bg-green-100 rounded-lg shadow-md flex items-center">
                     <div class="flex-1">
@@ -91,14 +91,14 @@
 
         <!-- Sales Chart -->
         <div class="bg-white p-4 rounded shadow mb-4">
-            <h2 class="text-xl font-semibold mb-2">Biểu Đồ Kinh Doanh</h2>
+            <h2 class="text-3xl font-semibold mb-2">Biểu Đồ Kinh Doanh</h2>
             <canvas id="salesChart" height="110"></canvas>
         </div>
 
 
         <!-- Recent Orders -->
         <div class="bg-white p-4 rounded shadow mb-4">
-            <h2 class="text-xl font-semibold mb-2">Đơn Hàng Gần Đây</h2>
+            <h2 class="text-3xl font-semibold mb-2">Đơn Hàng Chờ Duyệt</h2>
             <table class="w-full text-left border-collapse">
                 <thead>
                 <tr>
@@ -128,7 +128,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Top Selling Products -->
             <div class="bg-white p-4 rounded shadow mb-4">
-                <h2 class="text-xl font-semibold mb-2">Top Sản Phẩm Bán Chạy</h2>
+                <h2 class="text-3xl font-semibold mb-2">Top Sản Phẩm Bán Chạy</h2>
 {{--                <ul>--}}
 {{--                    <template x-for="product in topProducts" :key="product.id">--}}
 {{--                        <li class="border-b py-2">--}}
@@ -156,7 +156,7 @@
 
             <!-- Inventory -->
             <div class="bg-white p-4 rounded shadow mb-4">
-                <h2 class="text-xl font-semibold mb-2">Sản Phẩm Sắp Hết Hàng</h2>
+                <h2 class="text-3xl font-semibold mb-2">Sản Phẩm Sắp Hết Hàng</h2>
                 <table class="w-full text-left border-collapse">
                     <thead>
                     <tr>
@@ -182,7 +182,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-white p-4 rounded shadow mb-4">
-                <h2 class="text-xl font-semibold mb-2">Trạng thái đơn hàng</h2>
+                <h2 class="text-3xl font-semibold mb-2">Trạng thái đơn hàng</h2>
                 <table class="w-full text-left border-collapse">
                     <thead>
                     <tr>
