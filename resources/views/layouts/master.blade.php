@@ -92,6 +92,14 @@
                 toast.onmouseleave = Swal.resumeTimer;
             }
         });
+
+        @if(session('alert'))
+        Swal.fire(
+            '{{ session('alert')['title'] }}',
+            '{{ session('alert')['content'] }}',
+            '{{ session('alert')['type'] }}'
+        )
+        @endif
     </script>
 
     @foreach (['error', 'success', 'warning'] as $messageStatus)

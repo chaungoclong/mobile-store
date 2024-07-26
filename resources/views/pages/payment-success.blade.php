@@ -9,6 +9,52 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+
+    <style>
+        .card {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            background-color: #337ab7;
+            color: #fff;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #337ab7;
+            border-color: #2e6da4;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background-color: #286090;
+            border-color: #204d74;
+        }
+
+        .form-control-static {
+            padding-top: 7px;
+            padding-bottom: 7px;
+            margin-bottom: 0;
+        }
+
+        .text-center {
+            margin-top: 20px;
+        }
+
+        .fa-shopping-cart {
+            margin-right: 5px;
+        }
+    </style>
 @endsection
 @section('content')
     <section class="bread-crumb">
@@ -20,14 +66,14 @@
         </nav>
     </section>
 
-    <div class="container mt-4">
+    <div class="container">
         <div class="row">
-            <div class="col-lg-8 offset-lg-2">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h4>Thông tin đặt hàng</h4>
+                    <div class="card-header">
+                        <h4>Thanh Toán Thành Công</h4>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 20px;">
                         <div class="table-responsive">
                             <div class="form-group">
                                 <label>Mã đơn hàng:</label>
@@ -49,13 +95,9 @@
                                 <label>Mã Ngân hàng:</label>
                                 <p class="form-control-static">{{ $_GET['vnp_BankCode'] }}</p>
                             </div>
-                            <div class="form-group">
-                                <label>Thời gian thanh toán:</label>
-                                <p class="form-control-static">{{ $_GET['vnp_PayDate'] }}</p>
-                            </div>
-                            <div class="text-center mt-4">
+                            <div class="text-center">
                                 <a href="{{ route('home_page') }}" class="btn btn-primary">
-                                    <i class="fas fa-shopping-cart"></i> Quay lại mua sắm tiếp
+                                    <i class="fa fa-shopping-cart"></i> Quay lại mua sắm tiếp
                                 </a>
                             </div>
                         </div>
