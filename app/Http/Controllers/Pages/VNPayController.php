@@ -50,8 +50,42 @@ class VNPayController extends Controller
 
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
 
+        $orderId = $inputData['vnp_TxnRef'];
+        $order = Order::query()->where('order_code', $orderId)->first();
+
         if ($secureHash === $vnp_SecureHash) {
+            if ($order instanceof Order) {
+                $order->update([
+                    'payment_status' => PaymentStatus::Paid->value,
+                    'status' => OrderStatus::Confirmed->value
+                ]);
+
+                $adminUsers = User::query()
+                    ->where('active', 1)
+                    ->where('admin', 1)
+                    ->get();
+                if ($adminUsers->isNotEmpty()) {
+                    Notification::send($adminUsers, new OrderStatusNotification($order, true));
+                }
+
+                Notification::send(auth()->user(), new OrderStatusNotification($order, false));
+            }
             return view('pages.payment-success');
+        }
+
+        if ($order instanceof Order) {
+            $order->update([
+                'payment_status' => PaymentStatus::Failed->value,
+                'status' => OrderStatus::Pending->value
+            ]);
+
+            $order->orderDetails()
+                ->get()
+                ->each(function (OrderDetail $orderDetail) {
+                    ProductDetail::query()
+                        ->where('id', $orderDetail->getAttribute('product_detail_id'))
+                        ->increment('quantity', (int)$orderDetail->getAttribute('quantity'));
+                });
         }
 
         return view('pages.payment-failed');
